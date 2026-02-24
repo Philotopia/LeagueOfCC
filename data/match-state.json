@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T12:15:53.929Z"
+    "savedAt": "2026-02-24T12:16:15.155Z"
   },
   "state": {
     "meta": {
@@ -421,14 +421,14 @@
         "committed": true
       },
       "m_p3_p8": {
-        "streamUrl": "",
+        "streamUrl": "uui",
         "tkA": "0",
         "pkA": "0",
         "tkB": "1",
         "pkB": "1",
-        "updatedAt": "2026-02-24T12:15:53.784Z",
+        "updatedAt": "2026-02-24T12:16:10.778Z",
         "updatedBy": "p2",
-        "committed": false
+        "committed": true
       },
       "m_p4_p7": {
         "streamUrl": "",
@@ -776,26 +776,26 @@
         "pub": {
           "pick": "B",
           "amount": 50,
-          "settled": false,
-          "payout": 0,
-          "win": false,
+          "settled": true,
+          "payout": 100,
+          "win": true,
           "placedAt": "2026-02-24T11:44:59.882Z",
-          "settledAt": ""
+          "settledAt": "2026-02-24T12:16:10.778Z"
         },
         "p2": {
           "pick": "A",
           "amount": 50,
-          "settled": false,
+          "settled": true,
           "payout": 0,
           "win": false,
           "placedAt": "2026-02-24T12:11:29.560Z",
-          "settledAt": ""
+          "settledAt": "2026-02-24T12:16:10.778Z"
         }
       }
     },
     "credits": {
       "pub": {
-        "balance": 50
+        "balance": 150
       },
       "p1": {
         "balance": 100
@@ -827,10 +827,10 @@
     },
     "betStats": {
       "pub": {
-        "bets": 0,
-        "wins": 0,
-        "staked": 0,
-        "payout": 0
+        "bets": 1,
+        "wins": 1,
+        "staked": 50,
+        "payout": 100
       },
       "p1": {
         "bets": 0,
@@ -839,9 +839,9 @@
         "payout": 0
       },
       "p2": {
-        "bets": 0,
+        "bets": 1,
         "wins": 0,
-        "staked": 0,
+        "staked": 50,
         "payout": 0
       },
       "p3": {
@@ -888,6 +888,23 @@
       }
     },
     "audit": [
+      {
+        "at": "2026-02-24T12:16:10.778Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p3_p8",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-24T12:16:10.350Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p3_p8"
+        }
+      },
       {
         "at": "2026-02-24T12:15:53.784Z",
         "by": "p2",
@@ -960,6 +977,21 @@
       }
     ],
     "undoStack": [
+      {
+        "at": "2026-02-24T12:16:10.350Z",
+        "by": "p2",
+        "matchId": "m_p3_p8",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-24T12:15:53.784Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
       {
         "at": "2026-02-24T12:15:53.784Z",
         "by": "p2",
