@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T11:22:29.624Z"
+    "savedAt": "2026-02-24T11:22:34.521Z"
   },
   "state": {
     "meta": {
@@ -411,12 +411,12 @@
     ],
     "results": {
       "m_p2_p9": {
-        "streamUrl": "123",
-        "tkA": "",
-        "pkA": "1",
-        "tkB": "",
-        "pkB": "0",
-        "updatedAt": "2026-02-24T11:22:28.124Z",
+        "streamUrl": "",
+        "tkA": "1",
+        "pkA": "",
+        "tkB": "0",
+        "pkB": "",
+        "updatedAt": "2026-02-24T11:22:32.915Z",
         "updatedBy": "p2"
       },
       "m_p3_p8": {
@@ -832,41 +832,19 @@
     },
     "audit": [
       {
-        "at": "2026-02-24T11:22:28.124Z",
-        "by": "p2",
-        "action": "edit_stream",
-        "payload": {
-          "matchId": "m_p2_p9"
-        }
-      },
-      {
-        "at": "2026-02-24T11:22:20.157Z",
+        "at": "2026-02-24T11:22:32.915Z",
         "by": "p2",
         "action": "edit_score_switch",
         "payload": {
           "matchId": "m_p2_p9",
-          "metric": "pk",
+          "metric": "tk",
           "side": "A"
         }
       }
     ],
     "undoStack": [
       {
-        "at": "2026-02-24T11:22:28.124Z",
-        "by": "p2",
-        "matchId": "m_p2_p9",
-        "before": {
-          "streamUrl": "",
-          "tkA": "",
-          "pkA": "1",
-          "tkB": "",
-          "pkB": "0",
-          "updatedAt": "2026-02-24T11:22:20.157Z",
-          "updatedBy": "p2"
-        }
-      },
-      {
-        "at": "2026-02-24T11:22:20.157Z",
+        "at": "2026-02-24T11:22:32.915Z",
         "by": "p2",
         "matchId": "m_p2_p9",
         "before": {
