@@ -689,7 +689,7 @@
 
             <div class="sep"></div>
 
-            <div class="small">Sync GitHub (sans serveur): lecture auto pour tous, écriture via token admin.</div>
+            <div class="small">Sync GitHub (sans serveur): état global auto (matchs, paris, soldes), session utilisateur gardée locale.</div>
             <div style="height:8px"></div>
             <input id="ghSyncRepo" class="input" placeholder="owner/repo (ex: QuentinFauquembergue/lan-chat-overlay)" />
             <div style="height:8px"></div>
@@ -836,7 +836,7 @@
     meta: {version:3, app:"league_planner_v2_complete"},
     players: DEFAULT_PLAYERS.map(p=>({id:p.id, name:p.name})),
     profiles: DEFAULT_PROFILES.map(p=>({id:p.id, name:p.name})),
-    session: { profileId: null },
+    session: { profileId: null }, // cache local navigateur (non synchronisé GitHub)
     rounds: [],
     results: {}, // matchId -> {streamUrl, tkA, pkA, tkB, pkB, updatedAt, updatedBy}
     bets: {},    // matchId -> { profileId -> bet }
@@ -870,14 +870,41 @@
     return out;
   }
 
-  function buildMatchStateJson(){
+  function buildSharedStateData(){
     return {
-      meta: {version:1, app:"league_planner_match_state", savedAt: nowIso()},
-      results: deepClone(state.results || {})
+      meta: {version:3, app:"league_planner_v2_complete"},
+      players: deepClone(state.players || []),
+      profiles: deepClone(state.profiles || []),
+      session: {profileId: null},
+      rounds: deepClone(state.rounds || []),
+      results: deepClone(state.results || {}),
+      bets: deepClone(state.bets || {}),
+      credits: deepClone(state.credits || {}),
+      betStats: deepClone(state.betStats || {}),
+      audit: deepClone(state.audit || []),
+      undoStack: deepClone(state.undoStack || [])
     };
   }
 
-  function applyMatchStateJson(obj){
+  function buildMatchStateJson(){
+    return {
+      meta: {version:2, app:"league_planner_shared_state", savedAt: nowIso()},
+      state: buildSharedStateData()
+    };
+  }
+
+  function sharedStateSignature(){
+    return JSON.stringify(buildSharedStateData());
+  }
+
+  function isLegacyResultsOnlyPayload(obj){
+    if(!obj || typeof obj !== "object") return false;
+    if(obj.state && typeof obj.state === "object") return false;
+    if(Array.isArray(obj.players) && Array.isArray(obj.profiles)) return false;
+    return !!(obj.results && typeof obj.results === "object" && !Array.isArray(obj.results));
+  }
+
+  function applyLegacyResultsOnlyJson(obj){
     if(!obj || typeof obj !== "object") return false;
     if(!obj.results || typeof obj.results !== "object" || Array.isArray(obj.results)) return false;
     const clean = {};
@@ -888,6 +915,35 @@
     }
     state.results = clean;
     return true;
+  }
+
+  function applyMatchStateJson(obj, opts={}){
+    const preserveSession = opts.preserveSession !== false;
+    if(!obj || typeof obj !== "object") return false;
+
+    const currentSessionId = preserveSession ? (state.session?.profileId ?? null) : null;
+    let incoming = null;
+
+    if(obj.state && typeof obj.state === "object" && !Array.isArray(obj.state)){
+      incoming = deepClone(obj.state);
+    } else {
+      const metaVersion = Number(obj?.meta?.version);
+      const isCompleteState = !!(obj.meta && (metaVersion===2 || metaVersion===3) && Array.isArray(obj.players) && Array.isArray(obj.profiles));
+      if(isCompleteState) incoming = deepClone(obj);
+    }
+
+    if(incoming){
+      if(!incoming.meta || (incoming.meta.version!==2 && incoming.meta.version!==3)){
+        incoming.meta = {version:3, app:"league_planner_v2_complete"};
+      }
+      incoming.session = {profileId: currentSessionId};
+      if(!sanitizeLoaded(incoming)) return false;
+      state.rounds = generateRounds();
+      ensureAllCredits();
+      return true;
+    }
+
+    return applyLegacyResultsOnlyJson(obj);
   }
 
   function saveMatchStateJson(){
@@ -1107,24 +1163,27 @@
       }
 
       const remoteObj = JSON.parse(txt);
+      const localSig = sharedStateSignature();
+      const legacyMode = isLegacyResultsOnlyPayload(remoteObj);
 
-      const localSig = JSON.stringify(state.results || {});
-      const remoteSig = JSON.stringify(remoteObj.results || {});
-      if(localSig === remoteSig){
+      if(!applyMatchStateJson(remoteObj, {preserveSession:true})) throw new Error("JSON distant invalide.");
+
+      const appliedSig = sharedStateSignature();
+      if(localSig === appliedSig){
         if(manual) setGhSyncStatus("Déjà à jour.");
         return false;
       }
 
-      if(!applyMatchStateJson(remoteObj)) throw new Error("JSON distant invalide.");
-
-      githubPushSuppressed = true;
-      try{
-        recalcAllEconomyAndStats();
-      } finally {
-        githubPushSuppressed = false;
+      if(legacyMode){
+        githubPushSuppressed = true;
+        try{
+          recalcAllEconomyAndStats();
+        } finally {
+          githubPushSuppressed = false;
+        }
       }
 
-      ghSync.lastPushedSignature = remoteSig;
+      ghSync.lastPushedSignature = sharedStateSignature();
       renderAll();
       setGhSyncStatus("Etat distant appliqué.");
       return true;
@@ -1142,15 +1201,15 @@
       if(reason !== "auto") setGhSyncStatus("Push impossible: sync/token non configurés.");
       return false;
     }
-    if(!isAdmin()){
-      if(reason !== "auto") setGhSyncStatus("Push réservé à l'arbitre.");
+    if(!isLogged()){
+      if(reason !== "auto") setGhSyncStatus("Push impossible: profil non connecté.");
       return false;
     }
     if(ghSync.pushing) return false;
 
     ghSync.pushing = true;
     try{
-      const signature = JSON.stringify(state.results || {});
+      const signature = sharedStateSignature();
       if(signature === ghSync.lastPushedSignature){
         if(reason !== "auto") setGhSyncStatus("Aucun changement à pousser.");
         return false;
@@ -1164,7 +1223,7 @@
         "Authorization":`Bearer ${ghSync.token}`
       };
       const body = {
-        message: `sync match state (${reason}) ${nowIso()}`,
+        message: `sync tournament shared state (${reason}) ${nowIso()}`,
         content: b64EncodeUtf8(JSON.stringify(buildMatchStateJson(), null, 2)),
         branch: ghSync.branch
       };
@@ -1191,7 +1250,7 @@
   function scheduleGithubPush(reason="auto"){
     if(githubPushSuppressed) return;
     if(!isGhSyncWritable()) return;
-    if(!isAdmin()) return;
+    if(!isLogged()) return;
     clearTimeout(ghSync.pushTimer);
     ghSync.pushTimer = setTimeout(()=>{
       githubPushMatchState(reason);
@@ -1888,7 +1947,7 @@
     const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json;charset=utf-8"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "league_match_state_v1.json";
+    a.download = "league_shared_state_v2.json";
     a.click();
   });
 
@@ -1923,7 +1982,7 @@
       importMatchStateJsonObject(JSON.parse(text));
       e.target.value = "";
     }catch(err){
-      alert("Import état matchs impossible.");
+      alert("Import état global impossible.");
       console.error(err);
     }
   });
@@ -1955,14 +2014,14 @@
   function importMatchStateJsonObject(obj){
     if(!requireAdminAction()) return;
     if(!applyMatchStateJson(obj)){
-      alert("JSON état matchs invalide.");
+      alert("JSON état global invalide.");
       return;
     }
     recalcAllEconomyAndStats();
     addAudit("import_match_state_json", {});
     save();
     renderAll();
-    alert("Etat des matchs importé.");
+    alert("Etat global importé.");
   }
 
   /* =========================
