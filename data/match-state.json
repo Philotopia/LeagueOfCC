@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T11:24:37.251Z"
+    "savedAt": "2026-02-24T11:45:00.491Z"
   },
   "state": {
     "meta": {
@@ -417,7 +417,8 @@
         "tkB": "0",
         "pkB": "0",
         "updatedAt": "2026-02-24T11:24:35.752Z",
-        "updatedBy": "p2"
+        "updatedBy": "p2",
+        "committed": true
       },
       "m_p3_p8": {
         "streamUrl": "",
@@ -426,7 +427,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p4_p7": {
         "streamUrl": "",
@@ -435,7 +437,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p5_p6": {
         "streamUrl": "",
@@ -444,7 +447,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p9": {
         "streamUrl": "",
@@ -453,7 +457,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p7": {
         "streamUrl": "",
@@ -462,7 +467,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p3_p6": {
         "streamUrl": "",
@@ -471,7 +477,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p4_p5": {
         "streamUrl": "",
@@ -480,7 +487,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p8": {
         "streamUrl": "",
@@ -489,7 +497,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p5": {
         "streamUrl": "",
@@ -498,7 +507,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p3_p4": {
         "streamUrl": "",
@@ -507,7 +517,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p7_p9": {
         "streamUrl": "",
@@ -516,7 +527,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p7": {
         "streamUrl": "",
@@ -525,7 +537,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p3": {
         "streamUrl": "",
@@ -534,7 +547,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p5_p9": {
         "streamUrl": "",
@@ -543,7 +557,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p6_p8": {
         "streamUrl": "",
@@ -552,7 +567,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p6": {
         "streamUrl": "",
@@ -561,7 +577,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p3_p9": {
         "streamUrl": "",
@@ -570,7 +587,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p4_p8": {
         "streamUrl": "",
@@ -579,7 +597,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p5_p7": {
         "streamUrl": "",
@@ -588,7 +607,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p5": {
         "streamUrl": "",
@@ -597,7 +617,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p8": {
         "streamUrl": "",
@@ -606,7 +627,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p3_p7": {
         "streamUrl": "",
@@ -615,7 +637,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p4_p6": {
         "streamUrl": "",
@@ -624,7 +647,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p4": {
         "streamUrl": "",
@@ -633,7 +657,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p6": {
         "streamUrl": "",
@@ -642,7 +667,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p3_p5": {
         "streamUrl": "",
@@ -651,7 +677,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p8_p9": {
         "streamUrl": "",
@@ -660,7 +687,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p3": {
         "streamUrl": "",
@@ -669,7 +697,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p2_p4": {
         "streamUrl": "",
@@ -678,7 +707,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p6_p9": {
         "streamUrl": "",
@@ -687,7 +717,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p7_p8": {
         "streamUrl": "",
@@ -696,7 +727,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p1_p2": {
         "streamUrl": "",
@@ -705,7 +737,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p4_p9": {
         "streamUrl": "",
@@ -714,7 +747,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p5_p8": {
         "streamUrl": "",
@@ -723,7 +757,8 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       },
       "m_p6_p7": {
         "streamUrl": "",
@@ -732,13 +767,26 @@
         "tkB": "",
         "pkB": "",
         "updatedAt": "",
-        "updatedBy": ""
+        "updatedBy": "",
+        "committed": false
       }
     },
-    "bets": {},
+    "bets": {
+      "m_p3_p8": {
+        "pub": {
+          "pick": "B",
+          "amount": 50,
+          "settled": false,
+          "payout": 0,
+          "win": false,
+          "placedAt": "2026-02-24T11:44:59.882Z",
+          "settledAt": ""
+        }
+      }
+    },
     "credits": {
       "pub": {
-        "balance": 100
+        "balance": 50
       },
       "p1": {
         "balance": 100
@@ -831,6 +879,17 @@
       }
     },
     "audit": [
+      {
+        "at": "2026-02-24T11:44:59.882Z",
+        "by": "pub",
+        "action": "bet_place",
+        "payload": {
+          "matchId": "m_p3_p8",
+          "pid": "pub",
+          "pick": "B",
+          "amount": 50
+        }
+      },
       {
         "at": "2026-02-24T11:24:35.752Z",
         "by": "p2",
