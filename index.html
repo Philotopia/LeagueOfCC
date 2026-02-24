@@ -794,6 +794,7 @@
   const LS_SESSION_KEY = "league_planner_v2_session";
   const LS_MATCH_STATE_KEY = "league_planner_v2_match_state";
   const LS_GH_SYNC_KEY = "league_planner_v2_github_sync";
+  const GH_SYNC_SHARED_CONFIG_PATH = "data/sync-config.json";
 
   const GH_SYNC_DEFAULT = Object.freeze({
     enabled: true,
@@ -808,8 +809,10 @@
     ...GH_SYNC_DEFAULT,
     timer: null,
     pushTimer: null,
+    configPushTimer: null,
     pulling: false,
     pushing: false,
+    readAuthAllowed: true,
     lastStatus: "Sync GitHub inactif."
   };
 
@@ -1018,6 +1021,23 @@
     };
   }
 
+  function buildSharedGhSyncConfigJson(){
+    return {
+      meta: {version:1, app:"league_planner_sync_config", savedAt: nowIso()},
+      config: ghSyncPersistable()
+    };
+  }
+
+  function sanitizeSharedGhSyncConfigPayload(obj){
+    if(!obj || typeof obj !== "object") return null;
+    const src = (obj.config && typeof obj.config === "object") ? obj.config : obj;
+    if(!src || typeof src !== "object") return null;
+    const keys = ["enabled","repo","branch","path","pollSec","token"];
+    const hasKnown = keys.some(k=>Object.prototype.hasOwnProperty.call(src, k));
+    if(!hasKnown) return null;
+    return sanitizeGhSyncConfig(src);
+  }
+
   function loadGhSyncConfig(){
     const raw = localStorage.getItem(LS_GH_SYNC_KEY);
     if(raw){
@@ -1031,6 +1051,7 @@
       Object.assign(ghSync, sanitizeGhSyncConfig(null));
       saveGhSyncConfig();
     }
+    ghSync.readAuthAllowed = !!ghSync.token;
     ghSync.lastStatus = isGhSyncReadable()
       ? "Sync GitHub prête (lecture)."
       : "Sync GitHub inactif.";
@@ -1051,18 +1072,20 @@
     return String(path || "").split("/").filter(Boolean).map(encodeURIComponent).join("/");
   }
 
-  function buildGhContentsApiUrl(){
+  function buildGhContentsApiUrl(pathOverride=""){
     const rp = parseGhRepoParts(ghSync.repo);
     if(!rp) return "";
-    const encodedPath = encodePathForGitHubApi(ghSync.path);
+    const targetPath = String(pathOverride || ghSync.path || "").trim().replace(/^\/+/, "");
+    const encodedPath = encodePathForGitHubApi(targetPath);
     if(!encodedPath) return "";
     return `https://api.github.com/repos/${encodeURIComponent(rp.owner)}/${encodeURIComponent(rp.name)}/contents/${encodedPath}?ref=${encodeURIComponent(ghSync.branch)}`;
   }
 
-  function buildGhRawUrl(){
+  function buildGhRawUrl(pathOverride=""){
     const rp = parseGhRepoParts(ghSync.repo);
     if(!rp) return "";
-    const encodedPath = encodePathForGitHubApi(ghSync.path);
+    const targetPath = String(pathOverride || ghSync.path || "").trim().replace(/^\/+/, "");
+    const encodedPath = encodePathForGitHubApi(targetPath);
     if(!encodedPath) return "";
     return `https://raw.githubusercontent.com/${encodeURIComponent(rp.owner)}/${encodeURIComponent(rp.name)}/${encodeURIComponent(ghSync.branch)}/${encodedPath}`;
   }
@@ -1130,8 +1153,8 @@
     }, ghSync.pollSec * 1000);
   }
 
-  async function githubFetchMatchStateFromRepo(useAuth=false){
-    const url = buildGhContentsApiUrl();
+  async function githubFetchMatchStateFromRepo(useAuth=false, pathOverride=""){
+    const url = buildGhContentsApiUrl(pathOverride);
     if(!url) throw new Error("Configuration repo GitHub invalide.");
 
     const headers = {"Accept":"application/vnd.github+json"};
@@ -1165,6 +1188,110 @@
     return {exists:true, sha:String(data.sha || ""), obj};
   }
 
+  async function githubPullSharedSyncConfig(manual=false){
+    const rp = parseGhRepoParts(ghSync.repo);
+    if(!rp || !ghSync.branch){
+      if(manual) setGhSyncStatus("Config sync partagée non configurée.");
+      return false;
+    }
+
+    try{
+      const rawUrl = buildGhRawUrl(GH_SYNC_SHARED_CONFIG_PATH);
+      if(!rawUrl) throw new Error("URL config sync partagée invalide.");
+
+      const res = await fetch(`${rawUrl}?t=${Date.now()}`, {cache:"no-store"});
+      if(res.status === 404){
+        if(manual) setGhSyncStatus("Aucune config sync partagée trouvée.");
+        return false;
+      }
+      if(!res.ok) throw new Error(`GitHub RAW GET ${res.status}`);
+
+      const txt = await res.text();
+      if(!txt.trim()){
+        if(manual) setGhSyncStatus("Config sync partagée vide.");
+        return false;
+      }
+
+      const parsed = JSON.parse(txt);
+      const cfg = sanitizeSharedGhSyncConfigPayload(parsed);
+      if(!cfg) throw new Error("JSON config sync partagée invalide.");
+
+      const before = JSON.stringify(ghSyncPersistable());
+      Object.assign(ghSync, cfg);
+      ghSync.readAuthAllowed = !!ghSync.token;
+      saveGhSyncConfig();
+      writeGhSyncForm();
+      startGhSyncPolling();
+
+      const after = JSON.stringify(ghSyncPersistable());
+      if(before === after){
+        if(manual) setGhSyncStatus("Config sync partagée déjà à jour.");
+        return false;
+      }
+      if(manual) setGhSyncStatus("Config sync partagée appliquée.");
+      return true;
+    }catch(e){
+      console.error(e);
+      if(manual) setGhSyncStatus(`Config sync pull erreur: ${e.message}`);
+      return false;
+    }
+  }
+
+  async function githubPushSharedSyncConfig(reason="config"){
+    if(!isGhSyncWritable()) return false;
+
+    const url = buildGhContentsApiUrl(GH_SYNC_SHARED_CONFIG_PATH);
+    if(!url) return false;
+
+    try{
+      let existing = {exists:false, sha:"", obj:null};
+      try{
+        existing = await githubFetchMatchStateFromRepo(true, GH_SYNC_SHARED_CONFIG_PATH);
+      }catch(getErr){
+        const msg = String(getErr?.message || getErr || "");
+        if(msg.includes("GET 401")){
+          existing = await githubFetchMatchStateFromRepo(false, GH_SYNC_SHARED_CONFIG_PATH).catch(()=>({exists:false, sha:"", obj:null}));
+        } else {
+          throw getErr;
+        }
+      }
+
+      const headers = {
+        "Accept":"application/vnd.github+json",
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${ghSync.token}`
+      };
+      const body = {
+        message: `sync github config (${reason}) ${nowIso()}`,
+        content: b64EncodeUtf8(JSON.stringify(buildSharedGhSyncConfigJson(), null, 2)),
+        branch: ghSync.branch
+      };
+      if(existing.exists && existing.sha) body.sha = existing.sha;
+
+      const res = await fetch(url, {method:"PUT", headers, body:JSON.stringify(body)});
+      if(!res.ok){
+        const errTxt = await res.text();
+        throw new Error(`GitHub PUT ${res.status}: ${errTxt.slice(0, 160)}`);
+      }
+
+      return true;
+    }catch(e){
+      console.error(e);
+      if(reason === "manual"){
+        setGhSyncStatus(`Config sync push erreur: ${e.message}`);
+      }
+      return false;
+    }
+  }
+
+  function scheduleGithubSharedConfigPush(reason="config"){
+    if(!isGhSyncWritable()) return;
+    clearTimeout(ghSync.configPushTimer);
+    ghSync.configPushTimer = setTimeout(()=>{
+      githubPushSharedSyncConfig(reason);
+    }, 300);
+  }
+
   async function githubPullMatchState(manual=false){
     if(!isGhSyncReadable()){
       if(manual) setGhSyncStatus("Sync GitHub non configurée.");
@@ -1174,7 +1301,21 @@
 
     ghSync.pulling = true;
     try{
-      const remote = await githubFetchMatchStateFromRepo(!!ghSync.token);
+      let remote;
+      try{
+        const useAuth = !!ghSync.token && ghSync.readAuthAllowed !== false;
+        remote = await githubFetchMatchStateFromRepo(useAuth);
+      }catch(readErr){
+        const msg = String(readErr?.message || readErr || "");
+        const authRejected = msg.includes("GET 401") || msg.includes("GET 403");
+        if(authRejected && ghSync.token){
+          ghSync.readAuthAllowed = false;
+          remote = await githubFetchMatchStateFromRepo(false);
+          if(manual) setGhSyncStatus("Token lecture refusé, fallback lecture publique activé.");
+        } else {
+          throw readErr;
+        }
+      }
       if(!remote.exists){
         if(manual) setGhSyncStatus("Aucun JSON distant trouvé.");
         return false;
@@ -2767,6 +2908,7 @@
     }
 
     Object.assign(ghSync, readGhSyncForm());
+    ghSync.readAuthAllowed = !!ghSync.token;
     saveGhSyncConfig();
     writeGhSyncForm();
     startGhSyncPolling();
@@ -2778,6 +2920,7 @@
       githubPullMatchState(false);
     }
     if(isGhSyncWritable() && isAdmin()){
+      scheduleGithubSharedConfigPush(manual ? "manual" : "auto");
       scheduleGithubPush("config");
     }
 
@@ -2836,6 +2979,11 @@
   ========================= */
   async function initApp(){
     loadGhSyncConfig();
+
+    if(isGhSyncReadable()){
+      await githubPullSharedSyncConfig(false);
+    }
+
     writeGhSyncForm();
     startGhSyncPolling();
 
