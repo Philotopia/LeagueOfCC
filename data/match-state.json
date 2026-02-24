@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T11:04:36.211Z"
+    "savedAt": "2026-02-24T11:22:21.784Z"
   },
   "state": {
     "meta": {
@@ -413,11 +413,11 @@
       "m_p2_p9": {
         "streamUrl": "",
         "tkA": "",
-        "pkA": "",
+        "pkA": "1",
         "tkB": "",
-        "pkB": "",
-        "updatedAt": "",
-        "updatedBy": ""
+        "pkB": "0",
+        "updatedAt": "2026-02-24T11:22:20.157Z",
+        "updatedBy": "p2"
       },
       "m_p3_p8": {
         "streamUrl": "",
@@ -830,7 +830,33 @@
         "payout": 0
       }
     },
-    "audit": [],
-    "undoStack": []
+    "audit": [
+      {
+        "at": "2026-02-24T11:22:20.157Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p9",
+          "metric": "pk",
+          "side": "A"
+        }
+      }
+    ],
+    "undoStack": [
+      {
+        "at": "2026-02-24T11:22:20.157Z",
+        "by": "p2",
+        "matchId": "m_p2_p9",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": ""
+        }
+      }
+    ]
   }
 }
