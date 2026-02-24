@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T12:11:21.006Z"
+    "savedAt": "2026-02-24T12:11:30.237Z"
   },
   "state": {
     "meta": {
@@ -781,6 +781,15 @@
           "win": false,
           "placedAt": "2026-02-24T11:44:59.882Z",
           "settledAt": ""
+        },
+        "p2": {
+          "pick": "A",
+          "amount": 50,
+          "settled": false,
+          "payout": 0,
+          "win": false,
+          "placedAt": "2026-02-24T12:11:29.560Z",
+          "settledAt": ""
         }
       }
     },
@@ -792,7 +801,7 @@
         "balance": 100
       },
       "p2": {
-        "balance": 100
+        "balance": 50
       },
       "p3": {
         "balance": 100
@@ -879,6 +888,17 @@
       }
     },
     "audit": [
+      {
+        "at": "2026-02-24T12:11:29.560Z",
+        "by": "p2",
+        "action": "bet_place",
+        "payload": {
+          "matchId": "m_p3_p8",
+          "pid": "p2",
+          "pick": "A",
+          "amount": 50
+        }
+      },
       {
         "at": "2026-02-24T11:44:59.882Z",
         "by": "pub",
