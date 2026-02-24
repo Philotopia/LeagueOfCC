@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-24T12:11:30.237Z"
+    "savedAt": "2026-02-24T12:15:53.929Z"
   },
   "state": {
     "meta": {
@@ -422,12 +422,12 @@
       },
       "m_p3_p8": {
         "streamUrl": "",
-        "tkA": "",
-        "pkA": "",
-        "tkB": "",
-        "pkB": "",
-        "updatedAt": "",
-        "updatedBy": "",
+        "tkA": "0",
+        "pkA": "0",
+        "tkB": "1",
+        "pkB": "1",
+        "updatedAt": "2026-02-24T12:15:53.784Z",
+        "updatedBy": "p2",
         "committed": false
       },
       "m_p4_p7": {
@@ -889,6 +889,26 @@
     },
     "audit": [
       {
+        "at": "2026-02-24T12:15:53.784Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p8",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-24T12:15:53.258Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p8",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
         "at": "2026-02-24T12:11:29.560Z",
         "by": "p2",
         "action": "bet_place",
@@ -940,6 +960,36 @@
       }
     ],
     "undoStack": [
+      {
+        "at": "2026-02-24T12:15:53.784Z",
+        "by": "p2",
+        "matchId": "m_p3_p8",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "0",
+          "tkB": "",
+          "pkB": "1",
+          "updatedAt": "2026-02-24T12:15:53.258Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-24T12:15:53.258Z",
+        "by": "p2",
+        "matchId": "m_p3_p8",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
       {
         "at": "2026-02-24T11:24:35.752Z",
         "by": "p2",
