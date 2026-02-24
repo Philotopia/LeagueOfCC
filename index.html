@@ -696,7 +696,7 @@
             <div class="row-tools">
               <input id="ghSyncBranch" class="input" placeholder="Branch (main)" style="width:min(180px,100%)" />
               <input id="ghSyncPath" class="input" placeholder="Path JSON (ex: data/match-state.json)" style="width:min(320px,100%)" />
-              <input id="ghSyncPollSec" class="input" type="number" min="5" max="300" step="1" placeholder="Poll(s)" style="width:min(120px,100%)" />
+              <input id="ghSyncPollSec" class="input" type="number" min="2" max="120" step="1" placeholder="Poll(s)" style="width:min(120px,100%)" />
             </div>
             <div style="height:8px"></div>
             <input id="ghSyncToken" class="input" type="password" placeholder="Token GitHub (stocké localement dans ton navigateur)" />
@@ -790,7 +790,8 @@
     return list.some(p=>p.id===pid) ? pid : null;
   }
 
-  const LS_KEY = "league_planner_v2_complete";
+  const LS_KEY = "league_planner_v2_complete"; // legacy local full cache
+  const LS_SESSION_KEY = "league_planner_v2_session";
   const LS_MATCH_STATE_KEY = "league_planner_v2_match_state";
   const LS_GH_SYNC_KEY = "league_planner_v2_github_sync";
 
@@ -799,7 +800,7 @@
     repo: "QuentinFauquembergue/lan-chat-overlay",
     branch: "main",
     path: "data/match-state.json",
-    pollSec: 15,
+    pollSec: 3,
     token: "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"
   });
 
@@ -857,7 +858,8 @@
       tkB:"",
       pkB:"",
       updatedAt:"",
-      updatedBy:""
+      updatedBy:"",
+      committed:false
     };
     if(!raw || typeof raw !== "object") return out;
     out.streamUrl = String(raw.streamUrl ?? "").trim();
@@ -867,6 +869,22 @@
     out.pkB = String(raw.pkB ?? "").trim();
     out.updatedAt = String(raw.updatedAt ?? "").trim();
     out.updatedBy = String(raw.updatedBy ?? "").trim();
+    if(Object.prototype.hasOwnProperty.call(raw, "committed")){
+      out.committed = !!raw.committed;
+    } else {
+      const aOk = isIntStr(out.tkA) && isIntStr(out.pkA);
+      const bOk = isIntStr(out.tkB) && isIntStr(out.pkB);
+      let winner = null;
+      if(aOk && bOk){
+        const pkA = +out.pkA, pkB = +out.pkB;
+        const tkA = +out.tkA, tkB = +out.tkB;
+        if(pkA > pkB) winner = "A";
+        else if(pkB > pkA) winner = "B";
+        else if(tkA > tkB) winner = "A";
+        else if(tkB > tkA) winner = "B";
+      }
+      out.committed = !!(out.streamUrl && winner);
+    }
     return out;
   }
 
@@ -977,7 +995,7 @@
 
     let pollSec = Number(src.pollSec);
     if(!Number.isFinite(pollSec)) pollSec = GH_SYNC_DEFAULT.pollSec;
-    pollSec = Math.max(5, Math.min(300, Math.round(pollSec)));
+    pollSec = Math.max(2, Math.min(120, Math.round(pollSec)));
 
     return {
       enabled: !!src.enabled,
@@ -1121,6 +1139,16 @@
 
     const res = await fetch(url, {headers, cache:"no-store"});
     if(res.status === 404) return {exists:false, sha:"", obj:null};
+    if(res.status === 401){
+      throw new Error(useAuth
+        ? "GitHub GET 401: token invalide ou révoqué."
+        : "GitHub GET 401.");
+    }
+    if(res.status === 403){
+      throw new Error(useAuth
+        ? "GitHub GET 403: token sans droits Contents ou SSO non autorisé."
+        : "GitHub GET 403.");
+    }
     if(!res.ok) throw new Error(`GitHub GET ${res.status}`);
 
     const data = await res.json();
@@ -1146,23 +1174,17 @@
 
     ghSync.pulling = true;
     try{
-      const rawUrl = buildGhRawUrl();
-      if(!rawUrl) throw new Error("Configuration repo GitHub invalide.");
-
-      const rawRes = await fetch(`${rawUrl}?t=${Date.now()}`, {cache:"no-store"});
-      if(rawRes.status === 404){
+      const remote = await githubFetchMatchStateFromRepo(!!ghSync.token);
+      if(!remote.exists){
         if(manual) setGhSyncStatus("Aucun JSON distant trouvé.");
         return false;
       }
-      if(!rawRes.ok) throw new Error(`GitHub RAW GET ${rawRes.status}`);
-
-      const txt = await rawRes.text();
-      if(!txt.trim()){
+      if(!remote.obj || typeof remote.obj !== "object"){
         if(manual) setGhSyncStatus("JSON distant vide.");
         return false;
       }
 
-      const remoteObj = JSON.parse(txt);
+      const remoteObj = remote.obj;
       const localSig = sharedStateSignature();
       const legacyMode = isLegacyResultsOnlyPayload(remoteObj);
 
@@ -1215,7 +1237,19 @@
         return false;
       }
 
-      const existing = await githubFetchMatchStateFromRepo(true);
+      let existing = {exists:false, sha:"", obj:null};
+      try{
+        existing = await githubFetchMatchStateFromRepo(true);
+      }catch(getErr){
+        const m = String(getErr?.message || getErr || "");
+        if(m.includes("GET 401")){
+          // Repo public: on récupère le SHA sans auth pour continuer et obtenir
+          // une erreur PUT plus explicite si le token est invalide.
+          existing = await githubFetchMatchStateFromRepo(false).catch(()=>({exists:false, sha:"", obj:null}));
+        } else {
+          throw getErr;
+        }
+      }
       const url = buildGhContentsApiUrl();
       const headers = {
         "Accept":"application/vnd.github+json",
@@ -1230,6 +1264,15 @@
       if(existing.exists && existing.sha) body.sha = existing.sha;
 
       const res = await fetch(url, {method:"PUT", headers, body:JSON.stringify(body)});
+      if(res.status === 401){
+        throw new Error("GitHub PUT 401: token invalide ou révoqué.");
+      }
+      if(res.status === 403){
+        throw new Error("GitHub PUT 403: droits Contents:write manquants ou SSO non autorisé.");
+      }
+      if(res.status === 404){
+        throw new Error("GitHub PUT 404: repo/path introuvable ou accès repo refusé.");
+      }
       if(!res.ok){
         const errTxt = await res.text();
         throw new Error(`GitHub PUT ${res.status}: ${errTxt.slice(0, 160)}`);
@@ -1254,11 +1297,45 @@
     clearTimeout(ghSync.pushTimer);
     ghSync.pushTimer = setTimeout(()=>{
       githubPushMatchState(reason);
-    }, 1200);
+    }, 300);
+  }
+
+  function saveSessionCache(){
+    try{
+      localStorage.setItem(LS_SESSION_KEY, JSON.stringify({
+        session: {profileId: state.session?.profileId ?? null}
+      }));
+    }catch(e){
+      console.error("save session cache error", e);
+    }
+  }
+
+  function loadSessionCache(){
+    const raw = localStorage.getItem(LS_SESSION_KEY);
+    if(!raw) return false;
+    try{
+      const obj = JSON.parse(raw);
+      const pid = normalizedId(obj?.session?.profileId) || null;
+      state.session = {profileId: pid};
+      return true;
+    }catch(e){
+      console.error("load session cache error", e);
+      return false;
+    }
+  }
+
+  function shouldPreferGithubBootstrap(){
+    try{
+      const raw = localStorage.getItem(LS_GH_SYNC_KEY);
+      const cfg = raw ? sanitizeGhSyncConfig(JSON.parse(raw)) : sanitizeGhSyncConfig(null);
+      return !!(cfg.enabled && parseGhRepoParts(cfg.repo) && cfg.branch && cfg.path);
+    }catch(e){
+      return false;
+    }
   }
 
   function save(){
-    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    saveSessionCache();
     saveMatchStateJson();
     scheduleGithubPush("auto");
   }
@@ -1274,7 +1351,14 @@
     state.players = normalizePlayers(state.players);
     state.profiles = normalizeProfiles(state.profiles);
     state.session = {profileId: normalizeSessionProfileId(state.session?.profileId, state.profiles)};
-    if(!state.results) state.results = {};
+    const sanitizedResults = {};
+    const rawResults = (state.results && typeof state.results === "object" && !Array.isArray(state.results)) ? state.results : {};
+    for(const [mid, rec] of Object.entries(rawResults)){
+      const key = String(mid || "").trim();
+      if(!key) continue;
+      sanitizedResults[key] = sanitizeMatchResultRecord(rec);
+    }
+    state.results = sanitizedResults;
     if(!state.bets) state.bets = {};
     if(!state.credits) state.credits = {};
     if(!state.betStats) state.betStats = {};
@@ -1307,12 +1391,14 @@
   }
 
   (function bootstrapShareOrLoad(){
+    loadSessionCache();
     const u = new URL(location.href);
     const share = u.searchParams.get("s");
     if(share){
       if(decodeShare(share)) save();
       else if(!load()) loadMatchStateJson();
     } else {
+      if(shouldPreferGithubBootstrap()) return;
       if(!load()) loadMatchStateJson();
     }
   })();
@@ -1349,7 +1435,8 @@
         tkA:"", pkA:"",
         tkB:"", pkB:"",
         updatedAt:"",
-        updatedBy:""
+        updatedBy:"",
+        committed:false
       };
     }
     return state.results[mid];
@@ -1444,18 +1531,22 @@
     const bOk = isIntStr(res.tkB) && isIntStr(res.pkB);
     if(!aOk || !bOk) return {cls:"pending", label:"A venir", valid:false, winner:null};
 
-    const pkA = +res.pkA, pkB = +res.pkB;
-    const tkA = +res.tkA, tkB = +res.tkB;
-    let winner = null;
-
-    if(pkA > pkB) winner = "A";
-    else if(pkB > pkA) winner = "B";
-    else if(tkA > tkB) winner = "A";
-    else if(tkB > tkA) winner = "B";
+    const winner = resolveWinnerFromScores(res);
 
     if(!res.streamUrl?.trim()) return {cls:"invalid", label:"Stream manquant", valid:false, winner};
     if(!winner) return {cls:"invalid", label:"Egalite", valid:false, winner:null};
+    if(!res.committed) return {cls:"pending", label:"A valider", valid:false, winner};
     return {cls:"done", label:"Fini", valid:true, winner};
+  }
+
+  function resolveWinnerFromScores(res){
+    const pkA = +res.pkA, pkB = +res.pkB;
+    const tkA = +res.tkA, tkB = +res.tkB;
+    if(pkA > pkB) return "A";
+    if(pkB > pkA) return "B";
+    if(tkA > tkB) return "A";
+    if(tkB > tkA) return "B";
+    return null;
   }
 
   function canEditMatch(m){
@@ -1859,7 +1950,7 @@
 
     state.session.profileId = validPid;
     $("#loginPass").value = "";
-    save();
+    saveSessionCache();
     $("#loginModal").classList.add("hide");
     renderAll();
   }
@@ -1878,7 +1969,7 @@
 
   $("#btnLogout").addEventListener("click", ()=>{
     state.session.profileId = null;
-    save();
+    saveSessionCache();
     renderLoginOptions();
     $("#loginModal").classList.remove("hide");
     renderSidebarKPIs();
@@ -1896,6 +1987,7 @@
   $("#btnReset").addEventListener("click", ()=>{
     if(!requireAdminAction()) return;
     if(!confirm("Reset complet (résultats + paris + crédits + historique) ?")) return;
+    localStorage.removeItem(LS_SESSION_KEY);
     localStorage.removeItem(LS_KEY);
     localStorage.removeItem(LS_MATCH_STATE_KEY);
     location.href = location.origin + location.pathname;
@@ -2290,14 +2382,20 @@
       const r = ensureResult(mid);
       const nextValue = value.trim();
       if(r.streamUrl === nextValue) return;
+      const wasCommitted = !!r.committed;
       pushUndoSnapshot(m);
       r.streamUrl = nextValue;
+      r.committed = false;
       r.updatedAt = nowIso();
       r.updatedBy = sessionPid() || "";
       addAudit("edit_stream", {matchId:mid});
-      save();
-      recalcAllEconomyAndStats();
-      renderAll();
+      if(wasCommitted){
+        recalcAllEconomyAndStats();
+        renderAll();
+      } else {
+        save();
+        renderAll();
+      }
     }, {debounce:true});
 
     // Bind score switches (A/B winners for TK and PK)
@@ -2324,15 +2422,21 @@
       const nextB = isSameSelection ? "" : onB;
       if(r[keyA] === nextA && r[keyB] === nextB) return;
 
+      const wasCommitted = !!r.committed;
       pushUndoSnapshot(m);
       r[keyA] = nextA;
       r[keyB] = nextB;
+      r.committed = false;
       r.updatedAt = nowIso();
       r.updatedBy = sessionPid() || "";
       addAudit("edit_score_switch", {matchId:mid, metric, side: isSameSelection ? "" : side});
-      save();
-      recalcAllEconomyAndStats();
-      renderAll();
+      if(wasCommitted){
+        recalcAllEconomyAndStats();
+        renderAll();
+      } else {
+        save();
+        renderAll();
+      }
     }
 
     // Explicit commit step so users know when a result is validated
@@ -2352,19 +2456,20 @@
           return;
         }
 
-        const st = matchStatus(m, r);
-        if(!st.valid){
+        const winner = resolveWinnerFromScores(r);
+        if(!winner){
           alert("Résultat invalide (égalité).");
           return;
         }
 
+        r.committed = true;
         r.updatedAt = nowIso();
         r.updatedBy = sessionPid() || "";
-        addAudit("commit_result", {matchId:mid, winner:st.winner});
+        addAudit("commit_result", {matchId:mid, winner});
         save();
         recalcAllEconomyAndStats();
         renderAll();
-        alert(`Résultat validé: ${st.winner==="A" ? pName(m.a) : pName(m.b)}.`);
+        alert(`Résultat validé: ${winner==="A" ? pName(m.a) : pName(m.b)}.`);
       });
     });
 
@@ -2399,6 +2504,7 @@
           streamUrl:"",
           tkA:"", pkA:"",
           tkB:"", pkB:"",
+          committed:false,
           updatedAt: nowIso(),
           updatedBy: sessionPid()
         };
@@ -2728,31 +2834,41 @@
   /* =========================
      INIT
   ========================= */
-  const normalizedSessionPid = normalizeSessionProfileId(state.session.profileId, state.profiles);
-  if(state.session.profileId !== normalizedSessionPid){
-    state.session.profileId = normalizedSessionPid;
-    save();
+  async function initApp(){
+    loadGhSyncConfig();
+    writeGhSyncForm();
+    startGhSyncPolling();
+
+    if(isGhSyncReadable()){
+      await githubPullMatchState(false);
+    }
+
+    const normalizedSessionPid = normalizeSessionProfileId(state.session.profileId, state.profiles);
+    if(state.session.profileId !== normalizedSessionPid){
+      state.session.profileId = normalizedSessionPid;
+      saveSessionCache();
+    }
+
+    renderLoginOptions();
+
+    if(!state.session.profileId){
+      $("#loginModal").classList.remove("hide");
+      renderSidebarKPIs();
+    } else {
+      $("#loginModal").classList.add("hide");
+      renderAll();
+    }
+
+    setTab("dashboard");
   }
 
-  loadGhSyncConfig();
-  writeGhSyncForm();
-  startGhSyncPolling();
-
-  renderLoginOptions();
-
-  if(!state.session.profileId){
+  initApp().catch(err=>{
+    console.error("init app error", err);
+    renderLoginOptions();
     $("#loginModal").classList.remove("hide");
     renderSidebarKPIs();
-  } else {
-    $("#loginModal").classList.add("hide");
-    renderAll();
-  }
-
-  if(isGhSyncReadable()){
-    githubPullMatchState(false);
-  }
-
-  setTab("dashboard");
+    setTab("dashboard");
+  });
 })();
 </script>
 </body>
