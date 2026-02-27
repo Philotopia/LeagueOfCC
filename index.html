@@ -696,14 +696,14 @@
             <div class="row-tools">
               <input id="ghSyncBranch" class="input" placeholder="Branch (main)" style="width:min(180px,100%)" />
               <input id="ghSyncPath" class="input" placeholder="Path JSON (ex: data/match-state.json)" style="width:min(320px,100%)" />
-              <input id="ghSyncPollSec" class="input" type="number" min="2" max="120" step="1" placeholder="Poll(s)" style="width:min(120px,100%)" />
+              <input id="ghSyncPollSec" class="input" type="number" min="1" max="120" step="1" placeholder="Poll(s)" style="width:min(120px,100%)" />
             </div>
             <div style="height:8px"></div>
             <input id="ghSyncToken" class="input" type="password" placeholder="Token GitHub (stocké localement dans ton navigateur)" />
             <div style="height:8px"></div>
             <div class="row-tools">
-              <label class="pill"><input id="ghSyncEnabled" type="checkbox" style="margin-right:6px" />Sync active</label>
-              <span class="tiny">Mode 100% auto: synchro appliquée dès que tu modifies ces champs.</span>
+              <label class="pill"><input id="ghSyncEnabled" type="checkbox" style="margin-right:6px" checked disabled />Sync active (forcée)</label>
+              <span class="tiny">Mode temps réel: push immédiat à chaque changement + pull fréquent sur toutes les sessions.</span>
             </div>
             <div class="tiny" id="ghSyncStatus" style="margin-top:8px"></div>
           </div>
@@ -801,7 +801,7 @@
     repo: "QuentinFauquembergue/lan-chat-overlay",
     branch: "main",
     path: "data/match-state.json",
-    pollSec: 3,
+    pollSec: 1,
     token: "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"
   });
 
@@ -812,6 +812,7 @@
     configPushTimer: null,
     pulling: false,
     pushing: false,
+    pendingPushReason: "",
     readAuthAllowed: true,
     lastStatus: "Sync GitHub inactif."
   };
@@ -998,10 +999,10 @@
 
     let pollSec = Number(src.pollSec);
     if(!Number.isFinite(pollSec)) pollSec = GH_SYNC_DEFAULT.pollSec;
-    pollSec = Math.max(2, Math.min(120, Math.round(pollSec)));
+    pollSec = Math.max(1, Math.min(120, Math.round(pollSec)));
 
     return {
-      enabled: !!src.enabled,
+      enabled: true,
       repo,
       branch,
       path,
@@ -1129,7 +1130,7 @@
 
   function readGhSyncForm(){
     return sanitizeGhSyncConfig({
-      enabled: !!$("#ghSyncEnabled")?.checked,
+      enabled: true,
       repo: $("#ghSyncRepo")?.value || "",
       branch: $("#ghSyncBranch")?.value || "",
       path: $("#ghSyncPath")?.value || "",
@@ -1368,7 +1369,10 @@
       if(reason !== "auto") setGhSyncStatus("Push impossible: profil non connecté.");
       return false;
     }
-    if(ghSync.pushing) return false;
+    if(ghSync.pushing){
+      ghSync.pendingPushReason = ghSync.pendingPushReason || reason;
+      return false;
+    }
 
     ghSync.pushing = true;
     try{
@@ -1428,6 +1432,11 @@
       return false;
     }finally{
       ghSync.pushing = false;
+      if(ghSync.pendingPushReason){
+        const pendingReason = ghSync.pendingPushReason;
+        ghSync.pendingPushReason = "";
+        githubPushMatchState(pendingReason || "auto");
+      }
     }
   }
 
@@ -1435,10 +1444,7 @@
     if(githubPushSuppressed) return;
     if(!isGhSyncWritable()) return;
     if(!isLogged()) return;
-    clearTimeout(ghSync.pushTimer);
-    ghSync.pushTimer = setTimeout(()=>{
-      githubPushMatchState(reason);
-    }, 300);
+    githubPushMatchState(reason);
   }
 
   function saveSessionCache(){
@@ -2908,6 +2914,7 @@
     }
 
     Object.assign(ghSync, readGhSyncForm());
+    ghSync.enabled = true;
     ghSync.readAuthAllowed = !!ghSync.token;
     saveGhSyncConfig();
     writeGhSyncForm();
@@ -2933,7 +2940,7 @@
     clearTimeout(ghSyncConfigApplyTimer);
     ghSyncConfigApplyTimer = setTimeout(()=>{
       commitGhSyncConfigFromForm({manual:false, pullNow:true});
-    }, 350);
+    }, 100);
   }
 
   if($("#btnGhSyncSave")) $("#btnGhSyncSave").addEventListener("click", ()=>{
