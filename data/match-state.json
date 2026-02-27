@@ -1,1 +1,896 @@
-
+{
+  "meta": {
+    "version": 2,
+    "app": "league_planner_shared_state",
+    "savedAt": "2026-02-27T04:35:31.404Z"
+  },
+  "state": {
+    "meta": {
+      "version": 3,
+      "app": "league_planner_v2_complete"
+    },
+    "players": [
+      {
+        "id": "p1",
+        "name": "Clément"
+      },
+      {
+        "id": "p2",
+        "name": "Quentin"
+      },
+      {
+        "id": "p3",
+        "name": "Mathieu"
+      },
+      {
+        "id": "p4",
+        "name": "Benjamin"
+      },
+      {
+        "id": "p5",
+        "name": "Chris"
+      },
+      {
+        "id": "p6",
+        "name": "Heifara"
+      },
+      {
+        "id": "p7",
+        "name": "Goat"
+      },
+      {
+        "id": "p8",
+        "name": "Rémi"
+      },
+      {
+        "id": "p9",
+        "name": "Thomas"
+      }
+    ],
+    "profiles": [
+      {
+        "id": "pub",
+        "name": "Public"
+      },
+      {
+        "id": "p1",
+        "name": "Clément"
+      },
+      {
+        "id": "p2",
+        "name": "Quentin"
+      },
+      {
+        "id": "p3",
+        "name": "Mathieu"
+      },
+      {
+        "id": "p4",
+        "name": "Benjamin"
+      },
+      {
+        "id": "p5",
+        "name": "Chris"
+      },
+      {
+        "id": "p6",
+        "name": "Heifara"
+      },
+      {
+        "id": "p7",
+        "name": "Goat"
+      },
+      {
+        "id": "p8",
+        "name": "Rémi"
+      },
+      {
+        "id": "p9",
+        "name": "Thomas"
+      }
+    ],
+    "session": {
+      "profileId": null
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "pairs": [
+          {
+            "id": "bye_0_p1",
+            "a": "p1",
+            "b": "BYE",
+            "round": 1
+          },
+          {
+            "id": "m_p2_p9",
+            "a": "p2",
+            "b": "p9",
+            "round": 1
+          },
+          {
+            "id": "m_p3_p8",
+            "a": "p3",
+            "b": "p8",
+            "round": 1
+          },
+          {
+            "id": "m_p4_p7",
+            "a": "p4",
+            "b": "p7",
+            "round": 1
+          },
+          {
+            "id": "m_p5_p6",
+            "a": "p5",
+            "b": "p6",
+            "round": 1
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "pairs": [
+          {
+            "id": "m_p1_p9",
+            "a": "p1",
+            "b": "p9",
+            "round": 2
+          },
+          {
+            "id": "bye_1_p8",
+            "a": "p8",
+            "b": "BYE",
+            "round": 2
+          },
+          {
+            "id": "m_p2_p7",
+            "a": "p2",
+            "b": "p7",
+            "round": 2
+          },
+          {
+            "id": "m_p3_p6",
+            "a": "p3",
+            "b": "p6",
+            "round": 2
+          },
+          {
+            "id": "m_p4_p5",
+            "a": "p4",
+            "b": "p5",
+            "round": 2
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "pairs": [
+          {
+            "id": "m_p1_p8",
+            "a": "p1",
+            "b": "p8",
+            "round": 3
+          },
+          {
+            "id": "m_p7_p9",
+            "a": "p9",
+            "b": "p7",
+            "round": 3
+          },
+          {
+            "id": "bye_2_p6",
+            "a": "p6",
+            "b": "BYE",
+            "round": 3
+          },
+          {
+            "id": "m_p2_p5",
+            "a": "p2",
+            "b": "p5",
+            "round": 3
+          },
+          {
+            "id": "m_p3_p4",
+            "a": "p3",
+            "b": "p4",
+            "round": 3
+          }
+        ]
+      },
+      {
+        "round": 4,
+        "pairs": [
+          {
+            "id": "m_p1_p7",
+            "a": "p1",
+            "b": "p7",
+            "round": 4
+          },
+          {
+            "id": "m_p6_p8",
+            "a": "p8",
+            "b": "p6",
+            "round": 4
+          },
+          {
+            "id": "m_p5_p9",
+            "a": "p9",
+            "b": "p5",
+            "round": 4
+          },
+          {
+            "id": "bye_3_p4",
+            "a": "p4",
+            "b": "BYE",
+            "round": 4
+          },
+          {
+            "id": "m_p2_p3",
+            "a": "p2",
+            "b": "p3",
+            "round": 4
+          }
+        ]
+      },
+      {
+        "round": 5,
+        "pairs": [
+          {
+            "id": "m_p1_p6",
+            "a": "p1",
+            "b": "p6",
+            "round": 5
+          },
+          {
+            "id": "m_p5_p7",
+            "a": "p7",
+            "b": "p5",
+            "round": 5
+          },
+          {
+            "id": "m_p4_p8",
+            "a": "p8",
+            "b": "p4",
+            "round": 5
+          },
+          {
+            "id": "m_p3_p9",
+            "a": "p9",
+            "b": "p3",
+            "round": 5
+          },
+          {
+            "id": "bye_4_p2",
+            "a": "p2",
+            "b": "BYE",
+            "round": 5
+          }
+        ]
+      },
+      {
+        "round": 6,
+        "pairs": [
+          {
+            "id": "m_p1_p5",
+            "a": "p1",
+            "b": "p5",
+            "round": 6
+          },
+          {
+            "id": "m_p4_p6",
+            "a": "p6",
+            "b": "p4",
+            "round": 6
+          },
+          {
+            "id": "m_p3_p7",
+            "a": "p7",
+            "b": "p3",
+            "round": 6
+          },
+          {
+            "id": "m_p2_p8",
+            "a": "p8",
+            "b": "p2",
+            "round": 6
+          },
+          {
+            "id": "bye_5_p9",
+            "a": "p9",
+            "b": "BYE",
+            "round": 6
+          }
+        ]
+      },
+      {
+        "round": 7,
+        "pairs": [
+          {
+            "id": "m_p1_p4",
+            "a": "p1",
+            "b": "p4",
+            "round": 7
+          },
+          {
+            "id": "m_p3_p5",
+            "a": "p5",
+            "b": "p3",
+            "round": 7
+          },
+          {
+            "id": "m_p2_p6",
+            "a": "p6",
+            "b": "p2",
+            "round": 7
+          },
+          {
+            "id": "bye_6_p7",
+            "a": "p7",
+            "b": "BYE",
+            "round": 7
+          },
+          {
+            "id": "m_p8_p9",
+            "a": "p8",
+            "b": "p9",
+            "round": 7
+          }
+        ]
+      },
+      {
+        "round": 8,
+        "pairs": [
+          {
+            "id": "m_p1_p3",
+            "a": "p1",
+            "b": "p3",
+            "round": 8
+          },
+          {
+            "id": "m_p2_p4",
+            "a": "p4",
+            "b": "p2",
+            "round": 8
+          },
+          {
+            "id": "bye_7_p5",
+            "a": "p5",
+            "b": "BYE",
+            "round": 8
+          },
+          {
+            "id": "m_p6_p9",
+            "a": "p6",
+            "b": "p9",
+            "round": 8
+          },
+          {
+            "id": "m_p7_p8",
+            "a": "p7",
+            "b": "p8",
+            "round": 8
+          }
+        ]
+      },
+      {
+        "round": 9,
+        "pairs": [
+          {
+            "id": "m_p1_p2",
+            "a": "p1",
+            "b": "p2",
+            "round": 9
+          },
+          {
+            "id": "bye_8_p3",
+            "a": "p3",
+            "b": "BYE",
+            "round": 9
+          },
+          {
+            "id": "m_p4_p9",
+            "a": "p4",
+            "b": "p9",
+            "round": 9
+          },
+          {
+            "id": "m_p5_p8",
+            "a": "p5",
+            "b": "p8",
+            "round": 9
+          },
+          {
+            "id": "m_p6_p7",
+            "a": "p6",
+            "b": "p7",
+            "round": 9
+          }
+        ]
+      }
+    ],
+    "results": {
+      "m_p2_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p4_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p5_p6": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p6": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p4_p5": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p5": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p4": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p7_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p3": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p5_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p6_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p6": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p4_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p5_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p5": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p4_p6": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p4": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p6": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p3_p5": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p8_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p3": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p2_p4": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p6_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p7_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p1_p2": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p4_p9": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p5_p8": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      },
+      "m_p6_p7": {
+        "streamUrl": "",
+        "tkA": "",
+        "pkA": "",
+        "tkB": "",
+        "pkB": "",
+        "updatedAt": "",
+        "updatedBy": "",
+        "committed": false
+      }
+    },
+    "bets": {
+      "m_p5_p7": {
+        "p2": {
+          "pick": "B",
+          "amount": 60,
+          "settled": false,
+          "payout": 0,
+          "win": false,
+          "placedAt": "2026-02-27T04:35:30.823Z",
+          "settledAt": ""
+        }
+      }
+    },
+    "credits": {
+      "pub": {
+        "balance": 100
+      },
+      "p1": {
+        "balance": 100
+      },
+      "p2": {
+        "balance": 40
+      },
+      "p3": {
+        "balance": 100
+      },
+      "p4": {
+        "balance": 100
+      },
+      "p5": {
+        "balance": 100
+      },
+      "p6": {
+        "balance": 100
+      },
+      "p7": {
+        "balance": 100
+      },
+      "p8": {
+        "balance": 100
+      },
+      "p9": {
+        "balance": 100
+      }
+    },
+    "betStats": {
+      "pub": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p1": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p2": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p3": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p4": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p5": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p6": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p7": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p8": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      },
+      "p9": {
+        "bets": 0,
+        "wins": 0,
+        "staked": 0,
+        "payout": 0
+      }
+    },
+    "audit": [
+      {
+        "at": "2026-02-27T04:35:30.823Z",
+        "by": "p2",
+        "action": "bet_place",
+        "payload": {
+          "matchId": "m_p5_p7",
+          "pid": "p2",
+          "pick": "B",
+          "amount": 60
+        }
+      }
+    ],
+    "undoStack": []
+  }
+}
