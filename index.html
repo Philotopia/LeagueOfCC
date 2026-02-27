@@ -639,8 +639,8 @@
               <tbody id="standBets"></tbody>
             </table>
             <div class="small" style="margin-top:10px">
-              Distribution des gains : cagnotte d'un match redistribuée aux gagnants <b>au prorata</b> des mises (parimutuel).
-              Si aucun gagnant, remboursement des mises.
+              Distribution des gains : un pari gagnant paie <b>minimum x2</b> (mise rendue + gain égal à la mise).
+              En plus, les mises perdantes sont redistribuées <b>au prorata</b> entre les gagnants. Si aucun gagnant, toutes les mises sont perdues.
             </div>
           </div>
         </div>
@@ -1728,35 +1728,34 @@
     if(!anyUnsettled) return;
 
     const actual = st.winner;
-    let pot = 0, winnersPool = 0;
+    let winnersPool = 0;
+    let losersPool = 0;
 
     for(const b of Object.values(book)){
       const amt = +b.amount || 0;
       if(amt<=0) continue;
-      pot += amt;
       if(b.pick===actual) winnersPool += amt;
+      else losersPool += amt;
     }
 
-    if(pot<=0){
+    if((winnersPool + losersPool) <= 0){
       for(const b of Object.values(book)) b.settled = true;
       save();
       return;
     }
 
     if(winnersPool<=0){
-      // remboursement
+      // aucun gagnant: toutes les mises sont perdues
       for(const [pid,b] of Object.entries(book)){
         const amt = +b.amount || 0;
         if(amt>0 && !b.settled){
-          ensureCredits(pid).balance = round2(ensureCredits(pid).balance + amt);
-          b.payout = amt;
+          b.payout = 0;
           b.win = false;
           b.settled = true;
           b.settledAt = nowIso();
 
           state.betStats[pid].bets += 1;
           state.betStats[pid].staked = round2((state.betStats[pid].staked||0) + amt);
-          state.betStats[pid].payout = round2((state.betStats[pid].payout||0) + amt);
         }
       }
       save();
@@ -1772,7 +1771,8 @@
       state.betStats[pid].staked = round2((state.betStats[pid].staked||0) + amt);
 
       if(b.pick===actual){
-        const payout = round2(pot * (amt / winnersPool));
+        const shareLosers = losersPool>0 ? losersPool * (amt / winnersPool) : 0;
+        const payout = round2((2 * amt) + shareLosers);
         ensureCredits(pid).balance = round2(ensureCredits(pid).balance + payout);
         b.payout = payout;
         b.win = true;
