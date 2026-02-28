@@ -423,7 +423,7 @@
     <div class="muted">
       Choisis ton profil. Les profils joueurs ont un mot de passe (6 caractères max).
       <b>Public</b> n'a pas de mot de passe et démarre aussi avec 100 crédits.
-      <br><span class="tiny">V2 : rôle admin/arbitre = profil <b>Quentin</b> (peut éditer tous les résultats).</span>
+      <br><span class="tiny">V2 : tous les profils connectés ont les droits admin/arbitre (édition complète).</span>
     </div>
 
     <div class="row">
@@ -653,7 +653,7 @@
         <div class="card">
           <div class="ch">
             <h3>Administration tournoi</h3>
-            <span class="pill"><b>Arbitre</b> = Quentin</span>
+            <span class="pill"><b>Arbitre</b> = Tous les profils</span>
           </div>
           <div class="body">
             <div class="notice" id="adminNotice"></div>
@@ -722,7 +722,7 @@
     winPts: 3,
     losePts: 0,
     startCredits: 100,
-    adminProfileId: "p2" // Quentin
+    adminProfileId: "*" // Tous les profils connectés sont admins
   };
 
   const PLAYERS = [
@@ -1299,6 +1299,10 @@
       return false;
     }
     if(ghSync.pulling) return false;
+    if(ghSync.localDirty){
+      if(manual) setGhSyncStatus("Pull ignoré: changements locaux en attente de push.");
+      return false;
+    }
 
     ghSync.pulling = true;
     try{
@@ -1348,6 +1352,7 @@
       }
 
       ghSync.lastPushedSignature = sharedStateSignature();
+      ghSync.localDirty = false;
       renderAll();
       setGhSyncStatus("Etat distant appliqué.");
       return true;
@@ -1424,6 +1429,7 @@
       }
 
       ghSync.lastPushedSignature = signature;
+      ghSync.localDirty = false;
       setGhSyncStatus(`Push OK (${reason}).`);
       return true;
     }catch(e){
@@ -1484,6 +1490,7 @@
   function save(){
     saveSessionCache();
     saveMatchStateJson();
+    ghSync.localDirty = true;
     scheduleGithubPush("auto");
   }
 
@@ -1562,7 +1569,9 @@
   function sessionPid(){ return state.session.profileId; }
   function isLogged(){ return !!sessionPid(); }
   function isPlayerProfile(pid){ return pid && pid!=="pub" && !!state.players.find(p=>p.id===pid); }
-  function isAdmin(pid=sessionPid()){ return pid === RULES.adminProfileId; }
+  function isAdmin(pid=sessionPid()){
+    return !!normalizeSessionProfileId(pid, state.profiles);
+  }
 
   function ensureCredits(pid){
     if(!state.credits[pid]) state.credits[pid] = {balance: RULES.startCredits};
@@ -1699,9 +1708,8 @@
   function canEditMatch(m){
     const pid = sessionPid();
     if(!pid) return false;
-    if(isAdmin(pid)) return true;            // arbitre/admin
-    if(pid === "pub") return false;          // public ne peut pas modifier
-    return (m.a === pid || m.b === pid);     // joueur concerné peut éditer son match
+    if(isAdmin(pid)) return true;            // tous les profils connectés sont admins
+    return (m.a === pid || m.b === pid);
   }
 
   function matchPot(mid){
@@ -2124,7 +2132,7 @@
 
   function requireAdminAction(){
     if(isAdmin()) return true;
-    alert("Action réservée à l'arbitre (profil Quentin).");
+    alert("Action réservée à un profil connecté.");
     return false;
   }
 
