@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-28T04:56:23.095Z"
+    "savedAt": "2026-02-28T04:56:25.944Z"
   },
   "state": {
     "meta": {
@@ -506,9 +506,9 @@
         "pkA": "1",
         "tkB": "0",
         "pkB": "0",
-        "updatedAt": "2026-02-28T04:56:22.724Z",
+        "updatedAt": "2026-02-28T04:56:24.226Z",
         "updatedBy": "p2",
-        "committed": false
+        "committed": true
       },
       "m_p3_p4": {
         "streamUrl": "",
@@ -879,6 +879,15 @@
       }
     },
     "audit": [
+      {
+        "at": "2026-02-28T04:56:24.227Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "winner": "A"
+        }
+      },
       {
         "at": "2026-02-28T04:56:22.724Z",
         "by": "p2",
