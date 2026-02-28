@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-28T04:57:07.930Z"
+    "savedAt": "2026-02-28T04:57:08.786Z"
   },
   "state": {
     "meta": {
@@ -732,11 +732,11 @@
       },
       "m_p1_p2": {
         "streamUrl": "",
-        "tkA": "",
+        "tkA": "0",
         "pkA": "0",
-        "tkB": "",
+        "tkB": "1",
         "pkB": "1",
-        "updatedAt": "2026-02-28T04:57:07.654Z",
+        "updatedAt": "2026-02-28T04:57:08.501Z",
         "updatedBy": "p2",
         "committed": false
       },
@@ -880,6 +880,16 @@
     },
     "audit": [
       {
+        "at": "2026-02-28T04:57:08.501Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p1_p2",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
         "at": "2026-02-28T04:57:07.654Z",
         "by": "p2",
         "action": "edit_score_switch",
@@ -996,6 +1006,21 @@
       }
     ],
     "undoStack": [
+      {
+        "at": "2026-02-28T04:57:08.501Z",
+        "by": "p2",
+        "matchId": "m_p1_p2",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "0",
+          "tkB": "",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:57:07.654Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
       {
         "at": "2026-02-28T04:57:07.654Z",
         "by": "p2",
