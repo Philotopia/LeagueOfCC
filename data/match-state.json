@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-28T04:55:32.579Z"
+    "savedAt": "2026-02-28T04:55:40.523Z"
   },
   "state": {
     "meta": {
@@ -501,13 +501,13 @@
         "committed": false
       },
       "m_p2_p5": {
-        "streamUrl": "",
+        "streamUrl": "OK",
         "tkA": "",
         "pkA": "",
         "tkB": "",
         "pkB": "",
-        "updatedAt": "",
-        "updatedBy": "",
+        "updatedAt": "2026-02-28T04:55:40.254Z",
+        "updatedBy": "p2",
         "committed": false
       },
       "m_p3_p4": {
@@ -880,6 +880,14 @@
     },
     "audit": [
       {
+        "at": "2026-02-28T04:55:40.254Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p2_p5"
+        }
+      },
+      {
         "at": "2026-02-27T04:35:30.823Z",
         "by": "p2",
         "action": "bet_place",
@@ -891,6 +899,22 @@
         }
       }
     ],
-    "undoStack": []
+    "undoStack": [
+      {
+        "at": "2026-02-28T04:55:40.254Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      }
+    ]
   }
 }
