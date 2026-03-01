@@ -2,7 +2,7 @@
   "meta": {
     "version": 2,
     "app": "league_planner_shared_state",
-    "savedAt": "2026-02-28T05:10:30.000Z"
+    "savedAt": "2026-02-28T05:01:24.521Z"
   },
   "state": {
     "meta": {
@@ -501,12 +501,12 @@
         "committed": false
       },
       "m_p2_p5": {
-        "streamUrl": "https://twitch.tv/m_p2_p5",
+        "streamUrl": "OK",
         "tkA": "1",
         "pkA": "1",
         "tkB": "0",
         "pkB": "0",
-        "updatedAt": "2026-02-28T05:10:00.000Z",
+        "updatedAt": "2026-02-28T04:56:24.226Z",
         "updatedBy": "p2",
         "committed": true
       },
@@ -541,12 +541,12 @@
         "committed": false
       },
       "m_p2_p3": {
-        "streamUrl": "https://twitch.tv/m_p2_p3",
+        "streamUrl": "OK",
         "tkA": "0",
         "pkA": "0",
         "tkB": "1",
         "pkB": "1",
-        "updatedAt": "2026-02-28T05:10:00.000Z",
+        "updatedAt": "2026-02-28T04:56:53.337Z",
         "updatedBy": "p2",
         "committed": true
       },
@@ -581,14 +581,14 @@
         "committed": true
       },
       "m_p3_p9": {
-        "streamUrl": "",
-        "tkA": "",
-        "pkA": "",
-        "tkB": "",
-        "pkB": "",
-        "updatedAt": "",
-        "updatedBy": "",
-        "committed": false
+        "streamUrl": "OK",
+        "tkA": "0",
+        "pkA": "0",
+        "tkB": "1",
+        "pkB": "1",
+        "updatedAt": "2026-02-28T04:59:28.320Z",
+        "updatedBy": "p2",
+        "committed": true
       },
       "m_p4_p8": {
         "streamUrl": "",
@@ -611,14 +611,14 @@
         "committed": false
       },
       "m_p1_p5": {
-        "streamUrl": "",
-        "tkA": "",
-        "pkA": "",
-        "tkB": "",
-        "pkB": "",
-        "updatedAt": "",
-        "updatedBy": "",
-        "committed": false
+        "streamUrl": "OK",
+        "tkA": "0",
+        "pkA": "0",
+        "tkB": "1",
+        "pkB": "1",
+        "updatedAt": "2026-02-28T04:58:14.382Z",
+        "updatedBy": "p2",
+        "committed": true
       },
       "m_p2_p8": {
         "streamUrl": "",
@@ -671,12 +671,12 @@
         "committed": false
       },
       "m_p3_p5": {
-        "streamUrl": "https://twitch.tv/m_p3_p5",
+        "streamUrl": "OK",
         "tkA": "0",
         "pkA": "0",
         "tkB": "1",
         "pkB": "1",
-        "updatedAt": "2026-02-28T05:10:00.000Z",
+        "updatedAt": "2026-02-28T04:58:42.620Z",
         "updatedBy": "p2",
         "committed": true
       },
@@ -731,12 +731,12 @@
         "committed": false
       },
       "m_p1_p2": {
-        "streamUrl": "https://twitch.tv/m_p1_p2",
+        "streamUrl": "OK",
         "tkA": "0",
         "pkA": "0",
         "tkB": "1",
         "pkB": "1",
-        "updatedAt": "2026-02-28T05:10:00.000Z",
+        "updatedAt": "2026-02-28T04:57:18.425Z",
         "updatedBy": "p2",
         "committed": true
       },
@@ -771,7 +771,19 @@
         "committed": false
       }
     },
-    "bets": {},
+    "bets": {
+      "m_p5_p7": {
+        "p2": {
+          "pick": "A",
+          "amount": 0,
+          "settled": false,
+          "payout": 0,
+          "win": false,
+          "placedAt": "",
+          "settledAt": ""
+        }
+      }
+    },
     "credits": {
       "pub": {
         "balance": 100
@@ -866,7 +878,571 @@
         "payout": 0
       }
     },
-    "audit": [],
-    "undoStack": []
+    "audit": [
+      {
+        "at": "2026-02-28T05:01:24.175Z",
+        "by": "p2",
+        "action": "bet_clear",
+        "payload": {
+          "matchId": "m_p5_p7",
+          "pid": "p2"
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:28.320Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p3_p9",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:20.253Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p3_p9"
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:17.899Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p9",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:17.245Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p9",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:42.620Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p3_p5",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:30.347Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p3_p5"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:26.282Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p5",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:25.432Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p3_p5",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:14.382Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p1_p5",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:03.019Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p1_p5"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:59.936Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p1_p5",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:59.283Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p1_p5",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:18.425Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p1_p2",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:10.549Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p1_p2"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:08.501Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p1_p2",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:07.654Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p1_p2",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:53.337Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p2_p3",
+          "winner": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:44.002Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p2_p3"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:40.728Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p3",
+          "metric": "pk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:39.653Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p3",
+          "metric": "tk",
+          "side": "B"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:24.227Z",
+        "by": "p2",
+        "action": "commit_result",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "winner": "A"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:22.724Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "metric": "tk",
+          "side": "A"
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:04.058Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "metric": "tk",
+          "side": ""
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:00.258Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "metric": "pk",
+          "side": "A"
+        }
+      },
+      {
+        "at": "2026-02-28T04:55:57.268Z",
+        "by": "p2",
+        "action": "edit_score_switch",
+        "payload": {
+          "matchId": "m_p2_p5",
+          "metric": "tk",
+          "side": "A"
+        }
+      },
+      {
+        "at": "2026-02-28T04:55:40.254Z",
+        "by": "p2",
+        "action": "edit_stream",
+        "payload": {
+          "matchId": "m_p2_p5"
+        }
+      },
+      {
+        "at": "2026-02-27T04:35:30.823Z",
+        "by": "p2",
+        "action": "bet_place",
+        "payload": {
+          "matchId": "m_p5_p7",
+          "pid": "p2",
+          "pick": "B",
+          "amount": 60
+        }
+      }
+    ],
+    "undoStack": [
+      {
+        "at": "2026-02-28T04:59:20.253Z",
+        "by": "p2",
+        "matchId": "m_p3_p9",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:59:17.899Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:17.899Z",
+        "by": "p2",
+        "matchId": "m_p3_p9",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "",
+          "tkB": "1",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:59:17.245Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:59:17.245Z",
+        "by": "p2",
+        "matchId": "m_p3_p9",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:30.347Z",
+        "by": "p2",
+        "matchId": "m_p3_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:58:26.282Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:26.282Z",
+        "by": "p2",
+        "matchId": "m_p3_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "",
+          "tkB": "1",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:58:25.432Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:25.432Z",
+        "by": "p2",
+        "matchId": "m_p3_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:58:03.019Z",
+        "by": "p2",
+        "matchId": "m_p1_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:57:59.936Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:59.935Z",
+        "by": "p2",
+        "matchId": "m_p1_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "",
+          "tkB": "1",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:57:59.283Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:59.283Z",
+        "by": "p2",
+        "matchId": "m_p1_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:10.549Z",
+        "by": "p2",
+        "matchId": "m_p1_p2",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:57:08.501Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:08.501Z",
+        "by": "p2",
+        "matchId": "m_p1_p2",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "0",
+          "tkB": "",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:57:07.654Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:57:07.654Z",
+        "by": "p2",
+        "matchId": "m_p1_p2",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:44.002Z",
+        "by": "p2",
+        "matchId": "m_p2_p3",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "0",
+          "tkB": "1",
+          "pkB": "1",
+          "updatedAt": "2026-02-28T04:56:40.728Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:40.728Z",
+        "by": "p2",
+        "matchId": "m_p2_p3",
+        "before": {
+          "streamUrl": "",
+          "tkA": "0",
+          "pkA": "",
+          "tkB": "1",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:56:39.653Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:39.652Z",
+        "by": "p2",
+        "matchId": "m_p2_p3",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:22.724Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "OK",
+          "tkA": "",
+          "pkA": "1",
+          "tkB": "",
+          "pkB": "0",
+          "updatedAt": "2026-02-28T04:56:04.058Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:04.058Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "OK",
+          "tkA": "1",
+          "pkA": "1",
+          "tkB": "0",
+          "pkB": "0",
+          "updatedAt": "2026-02-28T04:56:00.258Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:56:00.258Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "OK",
+          "tkA": "1",
+          "pkA": "",
+          "tkB": "0",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:55:57.268Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:55:57.268Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "OK",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "2026-02-28T04:55:40.254Z",
+          "updatedBy": "p2",
+          "committed": false
+        }
+      },
+      {
+        "at": "2026-02-28T04:55:40.254Z",
+        "by": "p2",
+        "matchId": "m_p2_p5",
+        "before": {
+          "streamUrl": "",
+          "tkA": "",
+          "pkA": "",
+          "tkB": "",
+          "pkB": "",
+          "updatedAt": "",
+          "updatedBy": "",
+          "committed": false
+        }
+      }
+    ]
   }
 }
