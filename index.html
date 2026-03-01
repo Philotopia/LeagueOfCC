@@ -1,2318 +1,2276 @@
 ﻿<!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tournoi 1v1 - League Planner V2</title>
   <style>
-    :root{
-      --bg0:#05070c;
-      --bg1:#0a1324;
-      --panel: rgba(10,16,30,.72);
-      --line: rgba(214,181,106,.18);
-      --gold:#d6b56a;
-      --gold2:#f3d38a;
-      --text:#e7eefc;
-      --muted:#9fb0d4;
-      --good:#3af7a2;
-      --bad:#ff5576;
-      --warn:#ffd86b;
-      --shadow: 0 18px 55px rgba(0,0,0,.55);
+    :root {
+      --bg0: #05070c;
+      --bg1: #0a1324;
+      --panel: rgba(10, 16, 30, .72);
+      --line: rgba(214, 181, 106, .18);
+      --gold: #d6b56a;
+      --gold2: #f3d38a;
+      --text: #e7eefc;
+      --muted: #9fb0d4;
+      --good: #3af7a2;
+      --bad: #ff5576;
+      --warn: #ffd86b;
+      --shadow: 0 18px 55px rgba(0, 0, 0, .55);
       --r: 18px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      color:var(--text);
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--text);
       background:
-        radial-gradient(1100px 650px at 65% 8%, rgba(214,181,106,.11), transparent 60%),
-        radial-gradient(900px 600px at 18% 92%, rgba(90,140,255,.12), transparent 55%),
+        radial-gradient(1100px 650px at 65% 8%, rgba(214, 181, 106, .11), transparent 60%),
+        radial-gradient(900px 600px at 18% 92%, rgba(90, 140, 255, .12), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
+      overflow-x: hidden;
     }
 
-    .frame{
-      pointer-events:none; position:fixed; inset:0; opacity:.95;
+    .frame {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: .95;
       background:
-        radial-gradient(700px 200px at 50% 0%, rgba(214,181,106,.18), transparent 70%),
-        radial-gradient(700px 200px at 50% 100%, rgba(214,181,106,.10), transparent 70%);
-      mask: linear-gradient(180deg, rgba(0,0,0,1), rgba(0,0,0,.45) 45%, rgba(0,0,0,1));
+        radial-gradient(700px 200px at 50% 0%, rgba(214, 181, 106, .18), transparent 70%),
+        radial-gradient(700px 200px at 50% 100%, rgba(214, 181, 106, .10), transparent 70%);
+      mask: linear-gradient(180deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, .45) 45%, rgba(0, 0, 0, 1));
     }
-    .frame:before,.frame:after{
-      content:""; position:absolute; left:2vw; right:2vw; height:1px;
-      background: linear-gradient(90deg, transparent, rgba(214,181,106,.65), transparent);
-      filter: drop-shadow(0 0 14px rgba(214,181,106,.22));
-    }
-    .frame:before{top:16px}
-    .frame:after{bottom:16px; opacity:.55}
 
-    .app{
-      min-height:100%;
-      display:grid;
+    .frame:before,
+    .frame:after {
+      content: "";
+      position: absolute;
+      left: 2vw;
+      right: 2vw;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(214, 181, 106, .65), transparent);
+      filter: drop-shadow(0 0 14px rgba(214, 181, 106, .22));
+    }
+
+    .frame:before {
+      top: 16px
+    }
+
+    .frame:after {
+      bottom: 16px;
+      opacity: .55
+    }
+
+    .app {
+      min-height: 100%;
+      display: grid;
       grid-template-columns: 270px 1fr;
     }
-    @media (max-width: 980px){
-      .app{grid-template-columns:1fr}
-      .sidebar{position:sticky; top:0; z-index:6}
+
+    @media (max-width: 980px) {
+      .app {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        z-index: 6
+      }
     }
 
-    .sidebar{
-      border-right:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(7,10,18,.92), rgba(8,12,22,.78));
-      padding:14px 12px;
-      box-shadow: 20px 0 45px rgba(0,0,0,.25);
-    }
-    .brand{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px 10px 12px;
-      border:1px solid rgba(214,181,106,.16);
-      border-radius:16px;
-      background: radial-gradient(400px 140px at 20% 0%, rgba(214,181,106,.16), transparent 60%), rgba(0,0,0,.18);
-    }
-    .brand h1{margin:0; font-size:14px; letter-spacing:.9px; text-transform:uppercase; color:var(--gold2)}
-    .brand .sub{font-size:12px; color:var(--muted); margin-top:4px}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid rgba(214,181,106,.20);
-      border-radius:999px; padding:7px 10px;
-      background: rgba(0,0,0,.25); color:var(--muted); font-size:12px;
-      white-space:nowrap;
-    }
-    .dot{width:8px;height:8px;border-radius:99px;background:rgba(58,247,162,.9); box-shadow:0 0 0 4px rgba(58,247,162,.12)}
-    .sep{height:1px; background: var(--line); margin:12px 0}
-
-    .nav{display:flex; flex-direction:column; gap:6px; padding: 0 6px}
-    .navbtn{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:10px 10px; border-radius:14px;
-      border:1px solid rgba(214,181,106,.12);
-      background: rgba(0,0,0,.12);
-      color:var(--muted); font-weight:800; cursor:pointer;
-      transition:.16s ease;
-    }
-    .navbtn:hover{border-color: rgba(243,211,138,.38); background: rgba(0,0,0,.16); color:var(--text)}
-    .navbtn.active{
-      border-color: rgba(243,211,138,.60);
-      background: linear-gradient(180deg, rgba(214,181,106,.14), rgba(214,181,106,.06));
-      color:var(--text);
-    }
-    .navbtn small{color:var(--gold2)}
-
-    .sidefoot{
-      margin-top:12px; padding:10px;
-      border:1px solid rgba(214,181,106,.14);
-      border-radius:16px; background: rgba(0,0,0,.12);
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(7, 10, 18, .92), rgba(8, 12, 22, .78));
+      padding: 14px 12px;
+      box-shadow: 20px 0 45px rgba(0, 0, 0, .25);
     }
 
-    .kpis{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:7px 10px;
-      font-size:12px;
-      color:var(--muted);
-      background: rgba(0,0,0,.18);
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px 12px;
+      border: 1px solid rgba(214, 181, 106, .16);
+      border-radius: 16px;
+      background: radial-gradient(400px 140px at 20% 0%, rgba(214, 181, 106, .16), transparent 60%), rgba(0, 0, 0, .18);
     }
-    .pill b{color:var(--text)}
-    .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1;}
 
-    .content{padding:18px clamp(14px,2.5vw,28px) 48px}
-    .toprow{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;
-      margin-bottom:12px;
+    .brand h1 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      color: var(--gold2)
     }
-    .title h2{margin:0; font-size:20px; text-shadow: 0 14px 45px rgba(0,0,0,.55)}
-    .title .muted{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.35}
-    .actions{display:flex; gap:10px; flex-wrap:wrap}
 
-    .btn{
-      border:1px solid rgba(214,181,106,.35);
-      background: linear-gradient(180deg, rgba(214,181,106,.18), rgba(214,181,106,.06));
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      font-weight:900;
-      font-size:13px;
-      cursor:pointer;
+    .brand .sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(214, 181, 106, .20);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: rgba(0, 0, 0, .25);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(58, 247, 162, .9);
+      box-shadow: 0 0 0 4px rgba(58, 247, 162, .12)
+    }
+
+    .sep {
+      height: 1px;
+      background: var(--line);
+      margin: 12px 0
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 6px
+    }
+
+    .navbtn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(214, 181, 106, .12);
+      background: rgba(0, 0, 0, .12);
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      transition: .16s ease;
+    }
+
+    .navbtn:hover {
+      border-color: rgba(243, 211, 138, .38);
+      background: rgba(0, 0, 0, .16);
+      color: var(--text)
+    }
+
+    .navbtn.active {
+      border-color: rgba(243, 211, 138, .60);
+      background: linear-gradient(180deg, rgba(214, 181, 106, .14), rgba(214, 181, 106, .06));
+      color: var(--text);
+    }
+
+    .navbtn small {
+      color: var(--gold2)
+    }
+
+    .sidefoot {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid rgba(214, 181, 106, .14);
+      border-radius: 16px;
+      background: rgba(0, 0, 0, .12);
+    }
+
+    .kpis {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .pill b {
+      color: var(--text)
+    }
+
+    .mono {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .content {
+      padding: 18px clamp(14px, 2.5vw, 28px) 48px
+    }
+
+    .toprow {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .title h2 {
+      margin: 0;
+      font-size: 20px;
+      text-shadow: 0 14px 45px rgba(0, 0, 0, .55)
+    }
+
+    .title .muted {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      line-height: 1.35
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      border: 1px solid rgba(214, 181, 106, .35);
+      background: linear-gradient(180deg, rgba(214, 181, 106, .18), rgba(214, 181, 106, .06));
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
       transition: transform .08s ease, border-color .18s ease, opacity .18s ease;
     }
-    .btn:hover{border-color: rgba(243,211,138,.65)}
-    .btn:active{transform: translateY(1px)}
-    .btn:disabled{opacity:.55; cursor:not-allowed}
-    .btn.secondary{
-      border-color: rgba(169,181,212,.22);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+
+    .btn:hover {
+      border-color: rgba(243, 211, 138, .65)
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    .btn.secondary {
+      border-color: rgba(169, 181, 212, .22);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .03));
       color: var(--muted);
     }
-    .btn.danger{
-      border-color: rgba(255,85,118,.32);
-      background: linear-gradient(180deg, rgba(255,85,118,.14), rgba(255,85,118,.05));
+
+    .btn.danger {
+      border-color: rgba(255, 85, 118, .32);
+      background: linear-gradient(180deg, rgba(255, 85, 118, .14), rgba(255, 85, 118, .05));
       color: #ffd1da;
     }
-    .btn.good{
-      border-color: rgba(58,247,162,.32);
-      background: linear-gradient(180deg, rgba(58,247,162,.14), rgba(58,247,162,.05));
-      color:#c7ffe8;
+
+    .btn.good {
+      border-color: rgba(58, 247, 162, .32);
+      background: linear-gradient(180deg, rgba(58, 247, 162, .14), rgba(58, 247, 162, .05));
+      color: #c7ffe8;
     }
 
-    .grid{display:grid; grid-template-columns: 1.05fr .95fr; gap:14px; align-items:start}
-    @media (max-width:1100px){ .grid{grid-template-columns:1fr} }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 14px;
+      align-items: start
+    }
 
-    .card{
-      border:1px solid var(--line);
+    @media (max-width:1100px) {
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .card {
+      border: 1px solid var(--line);
       border-radius: var(--r);
-      background: linear-gradient(180deg, rgba(12,18,32,.82), rgba(10,14,26,.72));
+      background: linear-gradient(180deg, rgba(12, 18, 32, .82), rgba(10, 14, 26, .72));
       box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
+      overflow: hidden;
+      position: relative;
     }
-    .card .ch{
-      padding:12px 14px; border-bottom:1px solid var(--line);
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; flex-wrap:wrap;
-    }
-    .card .ch h3{
-      margin:0; font-size:12px; letter-spacing:.9px; text-transform:uppercase; color:var(--gold2);
-    }
-    .card .body{padding:14px}
 
-    .input, select, textarea{
-      width:100%;
-      border:1px solid rgba(169,181,212,.2);
-      background: rgba(0,0,0,.22);
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      outline:none;
+    .card .ch {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card .ch h3 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      color: var(--gold2);
+    }
+
+    .card .body {
+      padding: 14px
+    }
+
+    .input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(169, 181, 212, .2);
+      background: rgba(0, 0, 0, .22);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
       transition: border-color .18s ease;
-      font-weight:850;
+      font-weight: 850;
     }
-    .input:focus, select:focus, textarea:focus{border-color: rgba(243,211,138,.55)}
-    .small{font-size:12px; color:var(--muted); line-height:1.45}
-    .tiny{font-size:11px; color:var(--muted)}
 
-    .match{
-      border:1px solid rgba(169,181,212,.14);
-      border-radius:16px;
-      padding:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.12));
-      display:grid;
+    .input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(243, 211, 138, .55)
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45
+    }
+
+    .tiny {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .match {
+      border: 1px solid rgba(169, 181, 212, .14);
+      border-radius: 16px;
+      padding: 12px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(0, 0, 0, .12));
+      display: grid;
       grid-template-columns: 1fr 1.2fr 1fr;
-      gap:10px;
-      align-items:center;
-      margin-bottom:10px;
-    }
-    @media (max-width: 980px){ .match{grid-template-columns:1fr} }
-
-    .pcol{display:flex; align-items:center; gap:10px}
-    .pcol.right{justify-content:flex-end}
-    .tag{
-      width:10px;height:10px;border-radius:99px;
-      background: rgba(214,181,106,.75);
-      box-shadow: 0 0 0 4px rgba(214,181,106,.10);
-      flex:0 0 auto;
-    }
-    .tag.b{background: rgba(90,140,255,.75); box-shadow:0 0 0 4px rgba(90,140,255,.10)}
-    .pname{display:flex; flex-direction:column; gap:2px; line-height:1.15}
-    .pname b{font-size:13px}
-    .pname span{font-size:12px; color:var(--muted)}
-
-    .center{display:flex; flex-direction:column; gap:10px; align-items:center}
-    .state{
-      padding:5px 9px; border-radius:999px;
-      border:1px solid rgba(169,181,212,.18);
-      background: rgba(0,0,0,.18);
-      font-weight:900; font-size:12px; color:var(--muted);
-    }
-    .state.done{border-color: rgba(58,247,162,.32); background: rgba(58,247,162,.08); color:#bfffe3}
-    .state.pending{border-color: rgba(255,216,107,.22); background: rgba(255,216,107,.06); color:#ffe8a4}
-    .state.invalid{border-color: rgba(255,85,118,.30); background: rgba(255,85,118,.08); color:#ffd1da}
-    .winner{color:var(--good); font-weight:1000}
-
-    .row2{width:100%; display:grid; grid-template-columns: 1fr 140px; gap:8px; align-items:center}
-    @media (max-width:700px){ .row2{grid-template-columns:1fr} }
-
-    .scoregrid{width:100%; display:grid; grid-template-columns: 1fr 1fr; gap:8px}
-    @media (max-width:700px){ .scoregrid{grid-template-columns:1fr} }
-
-    .scorebox{
-      border:1px solid rgba(169,181,212,.18);
-      border-radius:12px;
-      padding:8px;
-      background: rgba(0,0,0,.18);
-    }
-    .lbl{font-size:11px; color:var(--muted); margin-bottom:6px}
-    .vals{display:flex; gap:6px}
-    .vals input{
-      width:100%; padding:8px 10px; border-radius:10px;
-      border:1px solid rgba(169,181,212,.18);
-      background: rgba(255,255,255,.05);
-      color:var(--text);
-      outline:none;
-      font-weight:1000;
-      text-align:center;
-    }
-    .vals input:focus{border-color: rgba(243,211,138,.45)}
-    .switchvals{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-    }
-    .switchbtn{
-      padding:9px 10px;
-      border-radius:10px;
-      border:1px solid rgba(169,181,212,.20);
-      background: rgba(255,255,255,.04);
-      color:var(--muted);
-      font-weight:1000;
-      cursor:pointer;
-      transition:border-color .18s ease, background .18s ease, color .18s ease;
-    }
-    .switchbtn:hover{border-color: rgba(243,211,138,.45); color:var(--text)}
-    .switchbtn.active{
-      border-color: rgba(58,247,162,.45);
-      background: rgba(58,247,162,.12);
-      color:#c7ffe8;
-    }
-    .switchbtn:disabled{
-      cursor:not-allowed;
-      opacity:.55;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
-    .betbar{
-      width:100%;
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center;
-      padding:10px; border-radius:14px;
-      border:1px solid rgba(214,181,106,.14);
-      background: rgba(0,0,0,.12);
-    }
-    .mini{
-      padding:9px 10px;
-      border-radius:12px;
-      border:1px solid rgba(169,181,212,.18);
-      background: rgba(255,255,255,.05);
-      color:var(--text);
-      font-weight:950;
-      outline:none;
-    }
-    .mini:focus{border-color: rgba(243,211,138,.45)}
-    .betamt{width:100px; text-align:center}
-    .betpick{min-width:180px}
-    .chip{
-      font-size:11px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(243,211,138,.35);
-      color:var(--gold2);
-      background: rgba(214,181,106,.08);
-      margin-left:8px;
-      white-space:nowrap;
+    @media (max-width: 980px) {
+      .match {
+        grid-template-columns: 1fr
+      }
     }
 
-    .row-tools{
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    .pcol {
+      display: flex;
+      align-items: center;
+      gap: 10px
     }
 
-    table{width:100%; border-collapse:separate; border-spacing:0 10px}
-    thead th{
-      text-align:left; font-size:11px; letter-spacing:.9px; text-transform:uppercase;
-      color: var(--muted); padding:0 10px 4px;
-    }
-    tbody td{
-      padding:12px 10px;
-      border-top:1px solid rgba(214,181,106,.14);
-      border-bottom:1px solid rgba(214,181,106,.14);
-      font-size:13px;
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.12));
-      vertical-align:middle;
-    }
-    tbody td:first-child{
-      border-left:1px solid rgba(214,181,106,.14);
-      border-top-left-radius:14px;
-      border-bottom-left-radius:14px;
-      font-weight:1000; color:var(--gold2); width:44px;
-    }
-    tbody td:last-child{
-      border-right:1px solid rgba(214,181,106,.14);
-      border-top-right-radius:14px;
-      border-bottom-right-radius:14px;
+    .pcol.right {
+      justify-content: flex-end
     }
 
-    .progressWrap{
-      width:100%;
-      height:10px;
-      border-radius:999px;
-      border:1px solid rgba(214,181,106,.15);
-      background: rgba(0,0,0,.25);
-      overflow:hidden;
+    .tag {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: rgba(214, 181, 106, .75);
+      box-shadow: 0 0 0 4px rgba(214, 181, 106, .10);
+      flex: 0 0 auto;
     }
-    .progressBar{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(214,181,106,.55), rgba(243,211,138,.85));
-      box-shadow: 0 0 14px rgba(214,181,106,.2);
+
+    .tag.b {
+      background: rgba(90, 140, 255, .75);
+      box-shadow: 0 0 0 4px rgba(90, 140, 255, .10)
+    }
+
+    .pname {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      line-height: 1.15
+    }
+
+    .pname b {
+      font-size: 13px
+    }
+
+    .pname span {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .center {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center
+    }
+
+    .state {
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(169, 181, 212, .18);
+      background: rgba(0, 0, 0, .18);
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .state.done {
+      border-color: rgba(58, 247, 162, .32);
+      background: rgba(58, 247, 162, .08);
+      color: #bfffe3
+    }
+
+    .state.pending {
+      border-color: rgba(255, 216, 107, .22);
+      background: rgba(255, 216, 107, .06);
+      color: #ffe8a4
+    }
+
+    .state.invalid {
+      border-color: rgba(255, 85, 118, .30);
+      background: rgba(255, 85, 118, .08);
+      color: #ffd1da
+    }
+
+    .winner {
+      color: var(--good);
+      font-weight: 1000
+    }
+
+    .row2 {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 8px;
+      align-items: center
+    }
+
+    @media (max-width:700px) {
+      .row2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .scoregrid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px
+    }
+
+    @media (max-width:700px) {
+      .scoregrid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .scorebox {
+      border: 1px solid rgba(169, 181, 212, .18);
+      border-radius: 12px;
+      padding: 8px;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px
+    }
+
+    .vals {
+      display: flex;
+      gap: 6px
+    }
+
+    .vals input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(169, 181, 212, .18);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      outline: none;
+      font-weight: 1000;
+      text-align: center;
+    }
+
+    .vals input:focus {
+      border-color: rgba(243, 211, 138, .45)
+    }
+
+    .switchvals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .switchbtn {
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(169, 181, 212, .20);
+      background: rgba(255, 255, 255, .04);
+      color: var(--muted);
+      font-weight: 1000;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, color .18s ease;
+    }
+
+    .switchbtn:hover {
+      border-color: rgba(243, 211, 138, .45);
+      color: var(--text)
+    }
+
+    .switchbtn.active {
+      border-color: rgba(58, 247, 162, .45);
+      background: rgba(58, 247, 162, .12);
+      color: #c7ffe8;
+    }
+
+    .switchbtn:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .betbar {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(214, 181, 106, .14);
+      background: rgba(0, 0, 0, .12);
+    }
+
+    .mini {
+      padding: 9px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(169, 181, 212, .18);
+      background: rgba(255, 255, 255, .05);
+      color: var(--text);
+      font-weight: 950;
+      outline: none;
+    }
+
+    .mini:focus {
+      border-color: rgba(243, 211, 138, .45)
+    }
+
+    .betamt {
+      width: 100px;
+      text-align: center
+    }
+
+    .betpick {
+      min-width: 180px
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(243, 211, 138, .35);
+      color: var(--gold2);
+      background: rgba(214, 181, 106, .08);
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    .row-tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 10px 4px;
+    }
+
+    tbody td {
+      padding: 12px 10px;
+      border-top: 1px solid rgba(214, 181, 106, .14);
+      border-bottom: 1px solid rgba(214, 181, 106, .14);
+      font-size: 13px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(0, 0, 0, .12));
+      vertical-align: middle;
+    }
+
+    tbody td:first-child {
+      border-left: 1px solid rgba(214, 181, 106, .14);
+      border-top-left-radius: 14px;
+      border-bottom-left-radius: 14px;
+      font-weight: 1000;
+      color: var(--gold2);
+      width: 44px;
+    }
+
+    tbody td:last-child {
+      border-right: 1px solid rgba(214, 181, 106, .14);
+      border-top-right-radius: 14px;
+      border-bottom-right-radius: 14px;
+    }
+
+    .progressWrap {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(214, 181, 106, .15);
+      background: rgba(0, 0, 0, .25);
+      overflow: hidden;
+    }
+
+    .progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(214, 181, 106, .55), rgba(243, 211, 138, .85));
+      box-shadow: 0 0 14px rgba(214, 181, 106, .2);
       transition: width .22s ease;
     }
 
-    .notice{
-      border:1px solid rgba(214,181,106,.14);
-      border-radius:14px;
-      padding:10px;
-      background: rgba(0,0,0,.12);
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
+    .notice {
+      border: 1px solid rgba(214, 181, 106, .14);
+      border-radius: 14px;
+      padding: 10px;
+      background: rgba(0, 0, 0, .12);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
-    .modal{
-      position:fixed; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      padding:16px;
-      background: rgba(0,0,0,.72);
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, .72);
       backdrop-filter: blur(10px);
-      z-index:9999;
-    }
-    .modal.hide{display:none}
-    .modal .login-box{
-      width:min(560px, 100%);
-      border:1px solid rgba(243,211,138,.28);
-      border-radius:18px;
-      background: linear-gradient(180deg, rgba(12,18,32,.92), rgba(8,12,22,.90));
-      box-shadow: 0 24px 80px rgba(0,0,0,.65);
-      padding:16px;
-    }
-    .modal h2{margin:0 0 6px; font-size:18px; color:var(--gold2)}
-    .modal .muted{color:var(--muted); font-size:13px; line-height:1.4}
-    .modal .row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
-    @media (max-width:520px){ .modal .row{grid-template-columns:1fr} }
-    .modal .foot{
-      display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .hint{
-      border:1px solid rgba(214,181,106,.18);
-      border-radius:14px;
-      background: rgba(0,0,0,.18);
-      padding:10px;
-      margin-top:12px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.5;
-      max-height:160px;
-      overflow:auto;
+      z-index: 9999;
     }
 
-    .hidden{display:none !important;}
-    .w100{width:100%}
-    .ta{min-height:100px; resize:vertical}
-    .rightalign{text-align:right}
-    .dangerText{color:#ffd1da}
-    .goodText{color:#bfffe3}
+    .modal.hide {
+      display: none
+    }
+
+    .modal .login-box {
+      width: min(560px, 100%);
+      border: 1px solid rgba(243, 211, 138, .28);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(12, 18, 32, .92), rgba(8, 12, 22, .90));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .65);
+      padding: 16px;
+    }
+
+    .modal h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      color: var(--gold2)
+    }
+
+    .modal .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4
+    }
+
+    .modal .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    @media (max-width:520px) {
+      .modal .row {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .modal .foot {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .hint {
+      border: 1px solid rgba(214, 181, 106, .18);
+      border-radius: 14px;
+      background: rgba(0, 0, 0, .18);
+      padding: 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      max-height: 160px;
+      overflow: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .w100 {
+      width: 100%
+    }
+
+    .ta {
+      min-height: 100px;
+      resize: vertical
+    }
+
+    .rightalign {
+      text-align: right
+    }
+
+    .dangerText {
+      color: #ffd1da
+    }
+
+    .goodText {
+      color: #bfffe3
+    }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
 </head>
+
 <body>
-<div class="frame"></div>
+  <div class="frame"></div>
 
-<!-- LOGIN -->
-<div class="modal" id="loginModal">
-  <div class="login-box">
-    <h2>Connexion</h2>
-    <div class="muted">
-      Choisis ton profil. Les profils joueurs ont un mot de passe (6 caractères max).
-      <b>Public</b> n'a pas de mot de passe et démarre aussi avec 100 crédits.
-      <br><span class="tiny">V2 : tous les profils connectés ont les droits admin/arbitre (édition complète).</span>
-    </div>
-
-    <div class="row">
-      <div>
-        <div class="small">Profil</div>
-        <select id="loginProfile"></select>
+  <!-- LOGIN -->
+  <div class="modal" id="loginModal">
+    <div class="login-box">
+      <h2>Connexion</h2>
+      <div class="muted">
+        Choisis ton profil. Les profils joueurs ont un mot de passe (6 caractères max).
+        <b>Public</b> n'a pas de mot de passe et démarre aussi avec 100 crédits.
+        <br><span class="tiny">V2 : tous les profils connectés ont les droits admin/arbitre (édition complète).</span>
       </div>
-      <div>
-        <div class="small">Mot de passe</div>
-        <input class="input" id="loginPass" type="password" placeholder="(vide pour Public)" maxlength="6" />
-      </div>
-    </div>
 
-    <div class="foot">
-      <span class="pill"><b>Crédits init</b> <span class="mono">100</span></span>
-      <div class="row-tools">
-        <button class="btn secondary" id="btnTogglePasswords">Afficher MDP</button>
-        <button class="btn" id="btnLogin">Entrer</button>
+      <div class="row">
+        <div>
+          <div class="small">Profil</div>
+          <select id="loginProfile"></select>
+        </div>
+        <div>
+          <div class="small">Mot de passe</div>
+          <input class="input" id="loginPass" type="password" placeholder="(vide pour Public)" maxlength="6" />
+        </div>
       </div>
-    </div>
 
-    <div class="hint" id="passwordHint"></div>
+      <div class="foot">
+        <span class="pill"><b>Crédits init</b> <span class="mono">100</span></span>
+        <div class="row-tools">
+          <button class="btn secondary" id="btnTogglePasswords">Afficher MDP</button>
+          <button class="btn" id="btnLogin">Entrer</button>
+        </div>
+      </div>
+
+      <div class="hint" id="passwordHint"></div>
+    </div>
   </div>
-</div>
 
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <div>
-        <h1>League Planner</h1>
-        <div class="sub">Round-robin • 9 joueurs • Paris • V2</div>
-      </div>
-      <span class="badge"><span class="dot"></span><span>Local</span></span>
-    </div>
-
-    <div class="sep"></div>
-
-    <div class="nav">
-      <div class="navbtn active" data-tab="dashboard">Dashboard <small>D</small></div>
-      <div class="navbtn" data-tab="matches">Matchs <small>M</small></div>
-      <div class="navbtn" data-tab="history">Historique <small>H</small></div>
-      <div class="navbtn" data-tab="standings">Classements <small>C</small></div>
-      <div class="navbtn" data-tab="admin">Admin <small>A</small></div>
-    </div>
-
-    <div class="sep"></div>
-
-    <div class="sidefoot">
-      <div class="small" style="margin-bottom:8px">Connecté :</div>
-      <div class="kpis">
-        <span class="pill"><b id="who">-</b></span>
-        <span class="pill"><b>Rôle</b> <span id="roleLabel">-</span></span>
-        <span class="pill"><b>Crédits</b> <span class="mono" id="credits">0</span></span>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div>
+          <h1>League Planner</h1>
+          <div class="sub">Round-robin • 9 joueurs • Paris • V2</div>
+        </div>
+        <span class="badge"><span class="dot"></span><span>Local</span></span>
       </div>
 
       <div class="sep"></div>
 
-      <div class="small" style="margin-bottom:6px">Progression tournoi</div>
-      <div class="progressWrap"><div class="progressBar" id="progressBar"></div></div>
-      <div class="kpis" style="margin-top:8px">
-        <span class="pill"><b id="prog">0</b> / 36 validés</span>
-        <span class="pill"><b id="progPct">0%</b></span>
+      <div class="nav">
+        <div class="navbtn active" data-tab="dashboard">Dashboard <small>D</small></div>
+        <div class="navbtn" data-tab="matches">Matchs <small>M</small></div>
+        <div class="navbtn" data-tab="history">Historique <small>H</small></div>
+        <div class="navbtn" data-tab="standings">Classements <small>C</small></div>
+        <div class="navbtn" data-tab="admin">Admin <small>A</small></div>
       </div>
 
       <div class="sep"></div>
 
-      <div class="row-tools">
-        <button class="btn secondary" id="btnCopyShare">Copier lien</button>
-        <button class="btn secondary" id="btnExportCSV">CSV</button>
-        <button class="btn secondary" id="btnExportJSON">JSON</button>
-        <button class="btn secondary" id="btnExportMatchStateJSON">Etat JSON</button>
-        <button class="btn secondary" id="btnImportMatchStateJSON">Charger etat</button>
-        <button class="btn secondary" id="btnLogout">Déconnexion</button>
-        <button class="btn danger" id="btnReset">Reset</button>
-      </div>
-      <input id="jsonImportInput" type="file" accept="application/json" class="hidden" />
-      <input id="matchStateImportInput" type="file" accept="application/json" class="hidden" />
-    </div>
-  </aside>
-
-  <main class="content">
-    <div class="toprow">
-      <div class="title">
-        <h2 id="pageTitle">Dashboard</h2>
-        <div class="muted" id="pageSub">Vue rapide : matchs à venir, derniers résultats, classement et top parieurs.</div>
-      </div>
-      <div class="actions">
-        <button class="btn secondary" id="btnUndoLast">Undo dernier résultat</button>
-        <button class="btn secondary" id="btnImportJSON">Importer JSON</button>
-      </div>
-    </div>
-
-    <!-- DASHBOARD -->
-    <section id="tab_dashboard">
-      <div class="grid">
-        <div class="card">
-          <div class="ch">
-            <h3>A venir</h3>
-            <span class="pill"><b id="upCount">0</b> matchs</span>
-          </div>
-          <div class="body" id="upcoming"></div>
+      <div class="sidefoot">
+        <div class="small" style="margin-bottom:8px">Connecté :</div>
+        <div class="kpis">
+          <span class="pill"><b id="who">-</b></span>
+          <span class="pill"><b>Rôle</b> <span id="roleLabel">-</span></span>
+          <span class="pill"><b>Crédits</b> <span class="mono" id="credits">0</span></span>
         </div>
 
-        <div class="card">
-          <div class="ch">
-            <h3>Derniers résultats</h3>
-            <span class="pill"><b id="finCount">0</b> finis</span>
-          </div>
-          <div class="body" id="recent"></div>
+        <div class="sep"></div>
+
+        <div class="small" style="margin-bottom:6px">Progression tournoi</div>
+        <div class="progressWrap">
+          <div class="progressBar" id="progressBar"></div>
+        </div>
+        <div class="kpis" style="margin-top:8px">
+          <span class="pill"><b id="prog">0</b> / 36 validés</span>
+          <span class="pill"><b id="progPct">0%</b></span>
         </div>
 
-        <div class="card" style="grid-column:1/-1">
-          <div class="ch">
-            <h3>Classements rapides</h3>
-            <span class="pill"><b>Victoires</b> | <b>Paris</b></span>
+        <div class="sep"></div>
+
+        <div class="row-tools">
+          <button class="btn secondary" id="btnCopyShare">Copier lien</button>
+          <button class="btn secondary" id="btnExportCSV">CSV</button>
+          <button class="btn secondary" id="btnExportJSON">JSON</button>
+          <button class="btn secondary" id="btnExportMatchStateJSON">Etat JSON</button>
+          <button class="btn secondary" id="btnImportMatchStateJSON">Charger etat</button>
+          <button class="btn secondary" id="btnLogout">Déconnexion</button>
+          <button class="btn danger" id="btnReset">Reset</button>
+        </div>
+        <input id="jsonImportInput" type="file" accept="application/json" class="hidden" />
+        <input id="matchStateImportInput" type="file" accept="application/json" class="hidden" />
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="toprow">
+        <div class="title">
+          <h2 id="pageTitle">Dashboard</h2>
+          <div class="muted" id="pageSub">Vue rapide : matchs à venir, derniers résultats, classement et top parieurs.
           </div>
-          <div class="body" style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
-            <div>
-              <div class="small" style="margin-bottom:8px">Top joueurs (victoires)</div>
-              <div id="dashWins"></div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="btnUndoLast">Undo dernier résultat</button>
+          <button class="btn secondary" id="btnImportJSON">Importer JSON</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <section id="tab_dashboard">
+        <div class="grid">
+          <div class="card">
+            <div class="ch">
+              <h3>A venir</h3>
+              <span class="pill"><b id="upCount">0</b> matchs</span>
             </div>
-            <div>
-              <div class="small" style="margin-bottom:8px">Top parieurs (crédits)</div>
-              <div id="dashBets"></div>
+            <div class="body" id="upcoming"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <h3>Derniers résultats</h3>
+              <span class="pill"><b id="finCount">0</b> finis</span>
             </div>
+            <div class="body" id="recent"></div>
           </div>
-        </div>
 
-        <div class="card" style="grid-column:1/-1">
-          <div class="ch">
-            <h3>Scénarios qualification (top 4)</h3>
-            <span class="pill"><b id="remainingMatchesCount">0</b> matchs restants</span>
-          </div>
-          <div class="body" id="scenarioBox"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MATCHES -->
-    <section id="tab_matches" class="hidden">
-      <div class="card">
-        <div class="ch">
-          <h3>Matchs</h3>
-          <div class="row-tools">
-            <input class="input" id="q" placeholder="Rechercher (joueur)..." style="width:min(260px,100%)" />
-            <select id="viewMode" style="width:min(220px,100%)">
-              <option value="all">Voir: tous les matchs</option>
-              <option value="mine">Voir: mes matchs</option>
-              <option value="open">Voir: non terminés</option>
-              <option value="done">Voir: terminés</option>
-            </select>
-            <select id="roundFilter" style="width:min(170px,100%)">
-              <option value="all">Tous les rounds</option>
-            </select>
-          </div>
-        </div>
-        <div class="body" id="matches"></div>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section id="tab_history" class="hidden">
-      <div class="grid">
-        <div class="card">
-          <div class="ch">
-            <h3>Parties finies</h3>
-            <span class="pill"><b id="histFin">0</b></span>
-          </div>
-          <div class="body" id="historyFinished"></div>
-        </div>
-        <div class="card">
-          <div class="ch">
-            <h3>Parties à venir</h3>
-            <span class="pill"><b id="histUp">0</b></span>
-          </div>
-          <div class="body" id="historyUpcoming"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STANDINGS -->
-    <section id="tab_standings" class="hidden">
-      <div class="grid">
-        <div class="card">
-          <div class="ch">
-            <h3>Classement victoires</h3>
-            <span class="pill"><b>Points</b> -> Delta PK -> PK -> TK</span>
-          </div>
-          <div class="body" style="overflow:auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th><th>Joueur</th><th class="mono">Pts</th><th class="mono">W</th><th class="mono">L</th><th class="mono">TK</th><th class="mono">PK</th><th class="mono">Delta PK</th><th>Statut</th>
-                </tr>
-              </thead>
-              <tbody id="standWins"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="ch">
-            <h3>Classement paris</h3>
-            <span class="pill"><b>Crédits</b> (plus haut = meilleur)</span>
-          </div>
-          <div class="body" style="overflow:auto">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th><th>Profil</th><th class="mono">Crédits</th><th class="mono">Profit</th><th class="mono">Bets</th><th class="mono">Win%</th><th class="mono">ROI</th>
-                </tr>
-              </thead>
-              <tbody id="standBets"></tbody>
-            </table>
-            <div class="small" style="margin-top:10px">
-              Distribution des gains : un pari gagnant paie <b>minimum x2</b> (mise rendue + gain égal à la mise).
-              En plus, les mises perdantes sont redistribuées <b>au prorata</b> entre les gagnants. Si aucun gagnant, toutes les mises sont perdues.
+          <div class="card" style="grid-column:1/-1">
+            <div class="ch">
+              <h3>Classements rapides</h3>
+              <span class="pill"><b>Victoires</b> | <b>Paris</b></span>
+            </div>
+            <div class="body" style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+              <div>
+                <div class="small" style="margin-bottom:8px">Top joueurs (victoires)</div>
+                <div id="dashWins"></div>
+              </div>
+              <div>
+                <div class="small" style="margin-bottom:8px">Top parieurs (crédits)</div>
+                <div id="dashBets"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ADMIN -->
-    <section id="tab_admin" class="hidden">
-      <div class="grid">
+          <div class="card" style="grid-column:1/-1">
+            <div class="ch">
+              <h3>Scénarios qualification (top 4)</h3>
+              <span class="pill"><b id="remainingMatchesCount">0</b> matchs restants</span>
+            </div>
+            <div class="body" id="scenarioBox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MATCHES -->
+      <section id="tab_matches" class="hidden">
         <div class="card">
           <div class="ch">
-            <h3>Administration tournoi</h3>
-            <span class="pill"><b>Arbitre</b> = Tous les profils</span>
-          </div>
-          <div class="body">
-            <div class="notice" id="adminNotice"></div>
-            <div class="sep"></div>
-
-            <div class="small" style="margin-bottom:6px">Journal des actions (undo résultats)</div>
-            <div id="auditLogBox"></div>
-
-            <div class="sep"></div>
-
+            <h3>Matchs</h3>
             <div class="row-tools">
-              <button class="btn secondary" id="btnRecalc">Recalculer crédits/statistiques</button>
-              <button class="btn danger" id="btnPurgeAudit">Vider journal</button>
+              <input class="input" id="q" placeholder="Rechercher (joueur)..." style="width:min(260px,100%)" />
+              <select id="viewMode" style="width:min(220px,100%)">
+                <option value="all">Voir: tous les matchs</option>
+                <option value="mine">Voir: mes matchs</option>
+                <option value="open">Voir: non terminés</option>
+                <option value="done">Voir: terminés</option>
+              </select>
+              <select id="roundFilter" style="width:min(170px,100%)">
+                <option value="all">Tous les rounds</option>
+              </select>
+            </div>
+          </div>
+          <div class="body" id="matches"></div>
+        </div>
+      </section>
+
+      <!-- HISTORY -->
+      <section id="tab_history" class="hidden">
+        <div class="grid">
+          <div class="card">
+            <div class="ch">
+              <h3>Parties finies</h3>
+              <span class="pill"><b id="histFin">0</b></span>
+            </div>
+            <div class="body" id="historyFinished"></div>
+          </div>
+          <div class="card">
+            <div class="ch">
+              <h3>Parties à venir</h3>
+              <span class="pill"><b id="histUp">0</b></span>
+            </div>
+            <div class="body" id="historyUpcoming"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STANDINGS -->
+      <section id="tab_standings" class="hidden">
+        <div class="grid">
+          <div class="card">
+            <div class="ch">
+              <h3>Classement victoires</h3>
+              <span class="pill"><b>Points</b> -> Delta PK -> PK -> TK</span>
+            </div>
+            <div class="body" style="overflow:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Joueur</th>
+                    <th class="mono">Pts</th>
+                    <th class="mono">W</th>
+                    <th class="mono">L</th>
+                    <th class="mono">TK</th>
+                    <th class="mono">PK</th>
+                    <th class="mono">Delta PK</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody id="standWins"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <h3>Classement paris</h3>
+              <span class="pill"><b>Crédits</b> (plus haut = meilleur)</span>
+            </div>
+            <div class="body" style="overflow:auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Profil</th>
+                    <th class="mono">Crédits</th>
+                    <th class="mono">Profit</th>
+                    <th class="mono">Bets</th>
+                    <th class="mono">Win%</th>
+                    <th class="mono">ROI</th>
+                  </tr>
+                </thead>
+                <tbody id="standBets"></tbody>
+              </table>
+              <div class="small" style="margin-top:10px">
+                Distribution des gains : un pari gagnant paie <b>minimum x2</b> (mise rendue + gain égal à la mise).
+                En plus, les mises perdantes sont redistribuées <b>au prorata</b> entre les gagnants. Si aucun gagnant,
+                toutes les mises sont perdues.
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div class="card">
-          <div class="ch">
-            <h3>Import / Export JSON</h3>
-            <span class="pill"><b>Backup local</b></span>
+      <!-- ADMIN -->
+      <section id="tab_admin" class="hidden">
+        <div class="grid">
+          <div class="card">
+            <div class="ch">
+              <h3>Administration tournoi</h3>
+              <span class="pill"><b>Arbitre</b> = Tous les profils</span>
+            </div>
+            <div class="body">
+              <div class="notice" id="adminNotice"></div>
+              <div class="sep"></div>
+
+              <div class="small" style="margin-bottom:6px">Journal des actions (undo résultats)</div>
+              <div id="auditLogBox"></div>
+
+              <div class="sep"></div>
+
+              <div class="row-tools">
+                <button class="btn secondary" id="btnRecalc">Recalculer crédits/statistiques</button>
+                <button class="btn danger" id="btnPurgeAudit">Vider journal</button>
+              </div>
+            </div>
           </div>
-          <div class="body">
-            <div class="small">Export JSON (complet) / import via fichier. Tu peux aussi coller du JSON ci-dessous.</div>
-            <div style="height:8px"></div>
-            <textarea id="jsonPaste" class="input ta" placeholder='{"meta":...}'></textarea>
-            <div style="height:8px"></div>
-            <div class="row-tools">
-              <button class="btn secondary" id="btnPasteImport">Importer JSON collé</button>
-              <button class="btn secondary" id="btnFillJson">Charger JSON courant</button>
-              <button class="btn secondary" id="btnClearJson">Vider zone</button>
-            </div>
 
-            <div class="sep"></div>
+          <div class="card">
+            <div class="ch">
+              <h3>Import / Export JSON</h3>
+              <span class="pill"><b>Backup local</b></span>
+            </div>
+            <div class="body">
+              <div class="small">Export JSON (complet) / import via fichier. Tu peux aussi coller du JSON ci-dessous.
+              </div>
+              <div style="height:8px"></div>
+              <textarea id="jsonPaste" class="input ta" placeholder='{"meta":...}'></textarea>
+              <div style="height:8px"></div>
+              <div class="row-tools">
+                <button class="btn secondary" id="btnPasteImport">Importer JSON collé</button>
+                <button class="btn secondary" id="btnFillJson">Charger JSON courant</button>
+                <button class="btn secondary" id="btnClearJson">Vider zone</button>
+              </div>
 
-            <div class="small">Sync GitHub (sans serveur): état global auto (matchs, paris, soldes), session utilisateur gardée locale.</div>
-            <div style="height:8px"></div>
-            <input id="ghSyncRepo" class="input" placeholder="owner/repo (ex: QuentinFauquembergue/lan-chat-overlay)" />
-            <div style="height:8px"></div>
-            <div class="row-tools">
-              <input id="ghSyncBranch" class="input" placeholder="Branch (main)" style="width:min(180px,100%)" />
-              <input id="ghSyncPath" class="input" placeholder="Path JSON (ex: data/match-state.json)" style="width:min(320px,100%)" />
-              <input id="ghSyncPollSec" class="input" type="number" min="1" max="120" step="1" placeholder="Poll(s)" style="width:min(120px,100%)" />
+              <div class="sep"></div>
+
+              <div class="small">Backend Firebase Temps Réel</div>
+              <div style="height:8px"></div>
+              <textarea id="fbConfigJson" class="input ta"
+                placeholder='{"apiKey": "...", "authDomain": "...", "databaseURL": "...", "projectId": "..."}'></textarea>
+              <div style="height:8px"></div>
+              <div class="row-tools">
+                <button class="btn good" id="btnFbConnect">Connecter Firebase</button>
+              </div>
+              <div class="tiny" id="fbStatus" style="margin-top:8px">Status: Non connecté</div>
             </div>
-            <div style="height:8px"></div>
-            <input id="ghSyncToken" class="input" type="password" placeholder="Token GitHub (stocké localement dans ton navigateur)" />
-            <div style="height:8px"></div>
-            <div class="row-tools">
-              <label class="pill"><input id="ghSyncEnabled" type="checkbox" style="margin-right:6px" checked disabled />Sync active (forcée)</label>
-              <span class="tiny">Mode temps réel: push immédiat à chaque changement + pull fréquent sur toutes les sessions.</span>
-            </div>
-            <div class="tiny" id="ghSyncStatus" style="margin-top:8px"></div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
-</div>
+      </section>
+    </main>
+  </div>
 
-<script>
-(() => {
-  /* =========================
-     CONFIG / DONNEES
-  ========================= */
-  const RULES = {
-    winPts: 3,
-    losePts: 0,
-    startCredits: 100,
-    adminProfileId: "*" // Tous les profils connectés sont admins
-  };
+  <script>
+    (() => {
+      /* =========================
+         CONFIG / DONNEES
+      ========================= */
+      const RULES = {
+        winPts: 3,
+        losePts: 0,
+        startCredits: 100,
+        adminProfileId: "*" // Tous les profils connectés sont admins
+      };
 
-  const PLAYERS = [
-    {id:"p1", name:"Clément",  pass:"CLEM1"},
-    {id:"p2", name:"Quentin",  pass:"QUEN1"},
-    {id:"p3", name:"Mathieu",  pass:"MATH1"},
-    {id:"p4", name:"Benjamin", pass:"BENJ1"},
-    {id:"p5", name:"Chris",    pass:"CHRI1"},
-    {id:"p6", name:"Heifara",  pass:"HEIF1"},
-    {id:"p7", name:"Goat",     pass:"GOAT1"},
-    {id:"p8", name:"Rémi",     pass:"REMI1"},
-    {id:"p9", name:"Thomas",   pass:"THOM1"},
-  ];
-  const PUBLIC = {id:"pub", name:"Public", pass:""};
-  const PLAYER_PASS_BY_ID = Object.fromEntries(PLAYERS.map(p => [p.id, p.pass]));
-  const DEFAULT_PLAYERS = PLAYERS.map(p => ({id:p.id, name:p.name}));
-  const DEFAULT_PROFILES = [PUBLIC, ...PLAYERS].map(p => ({id:p.id, name:p.name}));
+      const PLAYERS = [
+        { id: "p1", name: "Clément", pass: "CLEM1" },
+        { id: "p2", name: "Quentin", pass: "QUEN1" },
+        { id: "p3", name: "Mathieu", pass: "MATH1" },
+        { id: "p4", name: "Benjamin", pass: "BENJ1" },
+        { id: "p5", name: "Chris", pass: "CHRI1" },
+        { id: "p6", name: "Heifara", pass: "HEIF1" },
+        { id: "p7", name: "Goat", pass: "GOAT1" },
+        { id: "p8", name: "Rémi", pass: "REMI1" },
+        { id: "p9", name: "Thomas", pass: "THOM1" },
+      ];
+      const PUBLIC = { id: "pub", name: "Public", pass: "" };
+      const PLAYER_PASS_BY_ID = Object.fromEntries(PLAYERS.map(p => [p.id, p.pass]));
+      const DEFAULT_PLAYERS = PLAYERS.map(p => ({ id: p.id, name: p.name }));
+      const DEFAULT_PROFILES = [PUBLIC, ...PLAYERS].map(p => ({ id: p.id, name: p.name }));
 
-  function normalizedId(value){
-    return String(value ?? "").trim();
-  }
-
-  function normalizePlayers(rawPlayers){
-    const byId = new Map();
-    if(Array.isArray(rawPlayers)){
-      rawPlayers.forEach(p=>{
-        const id = normalizedId(p?.id);
-        if(!id) return;
-        const name = String(p?.name ?? id).trim() || id;
-        byId.set(id, {id, name});
-      });
-    }
-    return DEFAULT_PLAYERS.map(p=>{
-      const loaded = byId.get(p.id);
-      return {id:p.id, name: loaded?.name || p.name};
-    });
-  }
-
-  function normalizeProfiles(rawProfiles){
-    const byId = new Map();
-    if(Array.isArray(rawProfiles)){
-      rawProfiles.forEach(p=>{
-        const id = normalizedId(p?.id);
-        if(!id) return;
-        const name = String(p?.name ?? id).trim() || id;
-        byId.set(id, {id, name});
-      });
-    }
-
-    const out = DEFAULT_PROFILES.map(p=>{
-      const loaded = byId.get(p.id);
-      byId.delete(p.id);
-      return {id:p.id, name: loaded?.name || p.name};
-    });
-
-    for(const extra of byId.values()) out.push(extra);
-    if(!out.some(p=>p.id==="pub")) out.unshift({id:"pub", name:"Public"});
-    return out;
-  }
-
-  function normalizeSessionProfileId(profileId, profiles){
-    const pid = normalizedId(profileId);
-    if(!pid) return null;
-    const list = Array.isArray(profiles) ? profiles : [];
-    return list.some(p=>p.id===pid) ? pid : null;
-  }
-
-  const LS_KEY = "league_planner_v2_complete"; // legacy local full cache
-  const LS_SESSION_KEY = "league_planner_v2_session";
-  const LS_MATCH_STATE_KEY = "league_planner_v2_match_state";
-  const LS_GH_SYNC_KEY = "league_planner_v2_github_sync";
-  const GH_SYNC_SHARED_CONFIG_PATH = "data/sync-config.json";
-
-  const GH_SYNC_DEFAULT = Object.freeze({
-    enabled: true,
-    repo: "QuentinFauquembergue/lan-chat-overlay",
-    branch: "main",
-    path: "data/match-state.json",
-    pollSec: 1,
-    token: "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"
-  });
-
-  const ghSync = {
-    ...GH_SYNC_DEFAULT,
-    timer: null,
-    pushTimer: null,
-    configPushTimer: null,
-    pulling: false,
-    pushing: false,
-    pendingPushReason: "",
-    readAuthAllowed: true,
-    lastStatus: "Sync GitHub inactif."
-  };
-
-  let githubPushSuppressed = false;
-  let ghSyncConfigApplyTimer = null;
-
-  const $ = (s,r=document)=>r.querySelector(s);
-  const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
-  const esc = (s)=>String(s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-  const escAttr = (s)=>String(s ?? "").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;");
-  const round2 = (x)=>Math.round((x + Number.EPSILON) * 100)/100;
-  const isIntStr = (v)=>v!=="" && /^[0-9]+$/.test(String(v));
-  const nowIso = ()=>new Date().toISOString();
-
-  function detectGithubRepoFromLocation(){
-    const host = String(location.hostname || "").toLowerCase();
-    if(!host.endsWith(".github.io")) return "";
-    const owner = host.slice(0, -".github.io".length).trim();
-    const firstPath = String(location.pathname || "").split("/").filter(Boolean)[0] || "";
-    if(!owner || !firstPath) return "";
-    return `${owner}/${firstPath}`;
-  }
-
-  const state = {
-    meta: {version:3, app:"league_planner_v2_complete"},
-    players: DEFAULT_PLAYERS.map(p=>({id:p.id, name:p.name})),
-    profiles: DEFAULT_PROFILES.map(p=>({id:p.id, name:p.name})),
-    session: { profileId: null }, // cache local navigateur (non synchronisé GitHub)
-    rounds: [],
-    results: {}, // matchId -> {streamUrl, tkA, pkA, tkB, pkB, updatedAt, updatedBy}
-    bets: {},    // matchId -> { profileId -> bet }
-    credits: {}, // profileId -> {balance:number}
-    betStats: {},// profileId -> {bets,wins,staked,payout}
-    audit: [],   // actions admin / undo
-    undoStack: []// snapshots for result changes
-  };
-
-  /* =========================
-     PERSISTENCE
-  ========================= */
-  function sanitizeMatchResultRecord(raw){
-    const out = {
-      streamUrl:"",
-      tkA:"",
-      pkA:"",
-      tkB:"",
-      pkB:"",
-      updatedAt:"",
-      updatedBy:"",
-      committed:false
-    };
-    if(!raw || typeof raw !== "object") return out;
-    out.streamUrl = String(raw.streamUrl ?? "").trim();
-    out.tkA = String(raw.tkA ?? "").trim();
-    out.pkA = String(raw.pkA ?? "").trim();
-    out.tkB = String(raw.tkB ?? "").trim();
-    out.pkB = String(raw.pkB ?? "").trim();
-    out.updatedAt = String(raw.updatedAt ?? "").trim();
-    out.updatedBy = String(raw.updatedBy ?? "").trim();
-    if(Object.prototype.hasOwnProperty.call(raw, "committed")){
-      out.committed = !!raw.committed;
-    } else {
-      const aOk = isIntStr(out.tkA) && isIntStr(out.pkA);
-      const bOk = isIntStr(out.tkB) && isIntStr(out.pkB);
-      let winner = null;
-      if(aOk && bOk){
-        const pkA = +out.pkA, pkB = +out.pkB;
-        const tkA = +out.tkA, tkB = +out.tkB;
-        if(pkA > pkB) winner = "A";
-        else if(pkB > pkA) winner = "B";
-        else if(tkA > tkB) winner = "A";
-        else if(tkB > tkA) winner = "B";
-      }
-      out.committed = !!(out.streamUrl && winner);
-    }
-    return out;
-  }
-
-  function buildSharedStateData(){
-    return {
-      meta: {version:3, app:"league_planner_v2_complete"},
-      players: deepClone(state.players || []),
-      profiles: deepClone(state.profiles || []),
-      session: {profileId: null},
-      rounds: deepClone(state.rounds || []),
-      results: deepClone(state.results || {}),
-      bets: deepClone(state.bets || {}),
-      credits: deepClone(state.credits || {}),
-      betStats: deepClone(state.betStats || {}),
-      audit: deepClone(state.audit || []),
-      undoStack: deepClone(state.undoStack || [])
-    };
-  }
-
-  function buildMatchStateJson(){
-    return {
-      meta: {version:2, app:"league_planner_shared_state", savedAt: nowIso()},
-      state: buildSharedStateData()
-    };
-  }
-
-  function sharedStateSignature(){
-    return JSON.stringify(buildSharedStateData());
-  }
-
-  function isLegacyResultsOnlyPayload(obj){
-    if(!obj || typeof obj !== "object") return false;
-    if(obj.state && typeof obj.state === "object") return false;
-    if(Array.isArray(obj.players) && Array.isArray(obj.profiles)) return false;
-    return !!(obj.results && typeof obj.results === "object" && !Array.isArray(obj.results));
-  }
-
-  function applyLegacyResultsOnlyJson(obj){
-    if(!obj || typeof obj !== "object") return false;
-    if(!obj.results || typeof obj.results !== "object" || Array.isArray(obj.results)) return false;
-    const clean = {};
-    for(const [mid, rec] of Object.entries(obj.results)){
-      const key = String(mid || "").trim();
-      if(!key) continue;
-      clean[key] = sanitizeMatchResultRecord(rec);
-    }
-    state.results = clean;
-    return true;
-  }
-
-  function applyMatchStateJson(obj, opts={}){
-    const preserveSession = opts.preserveSession !== false;
-    if(!obj || typeof obj !== "object") return false;
-
-    const currentSessionId = preserveSession ? (state.session?.profileId ?? null) : null;
-    let incoming = null;
-
-    if(obj.state && typeof obj.state === "object" && !Array.isArray(obj.state)){
-      incoming = deepClone(obj.state);
-    } else {
-      const metaVersion = Number(obj?.meta?.version);
-      const isCompleteState = !!(obj.meta && (metaVersion===2 || metaVersion===3) && Array.isArray(obj.players) && Array.isArray(obj.profiles));
-      if(isCompleteState) incoming = deepClone(obj);
-    }
-
-    if(incoming){
-      if(!incoming.meta || (incoming.meta.version!==2 && incoming.meta.version!==3)){
-        incoming.meta = {version:3, app:"league_planner_v2_complete"};
-      }
-      incoming.session = {profileId: currentSessionId};
-      if(!sanitizeLoaded(incoming)) return false;
-      state.rounds = generateRounds();
-      ensureAllCredits();
-      return true;
-    }
-
-    return applyLegacyResultsOnlyJson(obj);
-  }
-
-  function saveMatchStateJson(){
-    try{
-      localStorage.setItem(LS_MATCH_STATE_KEY, JSON.stringify(buildMatchStateJson()));
-    }catch(e){
-      console.error("save match state json error", e);
-    }
-  }
-
-  function loadMatchStateJson(){
-    const raw = localStorage.getItem(LS_MATCH_STATE_KEY);
-    if(!raw) return false;
-    try{
-      return applyMatchStateJson(JSON.parse(raw));
-    }catch(e){
-      console.error("load match state json error", e);
-      return false;
-    }
-  }
-
-  function sanitizeGhSyncConfig(raw){
-    const src = (raw && typeof raw === "object") ? raw : {};
-    let repo = String(src.repo || "").trim();
-    repo = repo.replace(/^https?:\/\/github\.com\//i, "").replace(/\.git$/i, "").replace(/^\/+|\/+$/g, "");
-    if(!repo) repo = detectGithubRepoFromLocation() || GH_SYNC_DEFAULT.repo;
-
-    const branch = String(src.branch || GH_SYNC_DEFAULT.branch).trim() || GH_SYNC_DEFAULT.branch;
-    const path = String(src.path || GH_SYNC_DEFAULT.path).trim().replace(/^\/+/, "") || GH_SYNC_DEFAULT.path;
-    const token = String(src.token || GH_SYNC_DEFAULT.token).trim();
-
-    let pollSec = Number(src.pollSec);
-    if(!Number.isFinite(pollSec)) pollSec = GH_SYNC_DEFAULT.pollSec;
-    pollSec = Math.max(1, Math.min(120, Math.round(pollSec)));
-
-    return {
-      enabled: true,
-      repo,
-      branch,
-      path,
-      pollSec,
-      token
-    };
-  }
-
-  function ghSyncPersistable(){
-    return {
-      enabled: ghSync.enabled,
-      repo: ghSync.repo,
-      branch: ghSync.branch,
-      path: ghSync.path,
-      pollSec: ghSync.pollSec,
-      token: ghSync.token
-    };
-  }
-
-  function buildSharedGhSyncConfigJson(){
-    return {
-      meta: {version:1, app:"league_planner_sync_config", savedAt: nowIso()},
-      config: ghSyncPersistable()
-    };
-  }
-
-  function sanitizeSharedGhSyncConfigPayload(obj){
-    if(!obj || typeof obj !== "object") return null;
-    const src = (obj.config && typeof obj.config === "object") ? obj.config : obj;
-    if(!src || typeof src !== "object") return null;
-    const keys = ["enabled","repo","branch","path","pollSec","token"];
-    const hasKnown = keys.some(k=>Object.prototype.hasOwnProperty.call(src, k));
-    if(!hasKnown) return null;
-    return sanitizeGhSyncConfig(src);
-  }
-
-  function loadGhSyncConfig(){
-    const raw = localStorage.getItem(LS_GH_SYNC_KEY);
-    if(raw){
-      try{
-        Object.assign(ghSync, sanitizeGhSyncConfig(JSON.parse(raw)));
-      }catch(e){
-        console.error("load gh sync config error", e);
-        Object.assign(ghSync, sanitizeGhSyncConfig(null));
-      }
-    } else {
-      Object.assign(ghSync, sanitizeGhSyncConfig(null));
-      saveGhSyncConfig();
-    }
-    ghSync.readAuthAllowed = !!ghSync.token;
-    ghSync.lastStatus = isGhSyncReadable()
-      ? "Sync GitHub prête (lecture)."
-      : "Sync GitHub inactif.";
-  }
-
-  function saveGhSyncConfig(){
-    localStorage.setItem(LS_GH_SYNC_KEY, JSON.stringify(ghSyncPersistable()));
-  }
-
-  function parseGhRepoParts(repo){
-    const clean = String(repo || "").trim();
-    const parts = clean.split("/");
-    if(parts.length !== 2 || !parts[0] || !parts[1]) return null;
-    return {owner: parts[0], name: parts[1]};
-  }
-
-  function encodePathForGitHubApi(path){
-    return String(path || "").split("/").filter(Boolean).map(encodeURIComponent).join("/");
-  }
-
-  function buildGhContentsApiUrl(pathOverride=""){
-    const rp = parseGhRepoParts(ghSync.repo);
-    if(!rp) return "";
-    const targetPath = String(pathOverride || ghSync.path || "").trim().replace(/^\/+/, "");
-    const encodedPath = encodePathForGitHubApi(targetPath);
-    if(!encodedPath) return "";
-    return `https://api.github.com/repos/${encodeURIComponent(rp.owner)}/${encodeURIComponent(rp.name)}/contents/${encodedPath}?ref=${encodeURIComponent(ghSync.branch)}`;
-  }
-
-  function buildGhRawUrl(pathOverride=""){
-    const rp = parseGhRepoParts(ghSync.repo);
-    if(!rp) return "";
-    const targetPath = String(pathOverride || ghSync.path || "").trim().replace(/^\/+/, "");
-    const encodedPath = encodePathForGitHubApi(targetPath);
-    if(!encodedPath) return "";
-    return `https://raw.githubusercontent.com/${encodeURIComponent(rp.owner)}/${encodeURIComponent(rp.name)}/${encodeURIComponent(ghSync.branch)}/${encodedPath}`;
-  }
-
-  function b64EncodeUtf8(s){
-    return btoa(unescape(encodeURIComponent(String(s))));
-  }
-
-  function b64DecodeUtf8(b64){
-    try{
-      return decodeURIComponent(escape(atob(String(b64))));
-    }catch(e){
-      return atob(String(b64));
-    }
-  }
-
-  function isGhSyncReadable(){
-    return !!(ghSync.enabled && parseGhRepoParts(ghSync.repo) && ghSync.branch && ghSync.path);
-  }
-
-  function isGhSyncWritable(){
-    return !!(isGhSyncReadable() && ghSync.token);
-  }
-
-  function setGhSyncStatus(msg){
-    const stamp = new Date().toLocaleTimeString();
-    ghSync.lastStatus = `[${stamp}] ${msg}`;
-    const el = $("#ghSyncStatus");
-    if(el) el.textContent = ghSync.lastStatus;
-  }
-
-  function writeGhSyncForm(){
-    if($("#ghSyncRepo")) $("#ghSyncRepo").value = ghSync.repo;
-    if($("#ghSyncBranch")) $("#ghSyncBranch").value = ghSync.branch;
-    if($("#ghSyncPath")) $("#ghSyncPath").value = ghSync.path;
-    if($("#ghSyncPollSec")) $("#ghSyncPollSec").value = String(ghSync.pollSec);
-    if($("#ghSyncToken")) $("#ghSyncToken").value = ghSync.token;
-    if($("#ghSyncEnabled")) $("#ghSyncEnabled").checked = !!ghSync.enabled;
-    if($("#ghSyncStatus")) $("#ghSyncStatus").textContent = ghSync.lastStatus;
-  }
-
-  function readGhSyncForm(){
-    return sanitizeGhSyncConfig({
-      enabled: true,
-      repo: $("#ghSyncRepo")?.value || "",
-      branch: $("#ghSyncBranch")?.value || "",
-      path: $("#ghSyncPath")?.value || "",
-      pollSec: $("#ghSyncPollSec")?.value || "",
-      token: $("#ghSyncToken")?.value || ""
-    });
-  }
-
-  function stopGhSyncPolling(){
-    if(ghSync.timer){
-      clearInterval(ghSync.timer);
-      ghSync.timer = null;
-    }
-  }
-
-  function startGhSyncPolling(){
-    stopGhSyncPolling();
-    if(!isGhSyncReadable()) return;
-    ghSync.timer = setInterval(()=>{
-      githubPullMatchState(false);
-    }, ghSync.pollSec * 1000);
-  }
-
-  async function githubFetchMatchStateFromRepo(useAuth=false, pathOverride=""){
-    const url = buildGhContentsApiUrl(pathOverride);
-    if(!url) throw new Error("Configuration repo GitHub invalide.");
-
-    const headers = {"Accept":"application/vnd.github+json"};
-    if(useAuth && ghSync.token) headers.Authorization = `Bearer ${ghSync.token}`;
-
-    const res = await fetch(url, {headers, cache:"no-store"});
-    if(res.status === 404) return {exists:false, sha:"", obj:null};
-    if(res.status === 401){
-      throw new Error(useAuth
-        ? "GitHub GET 401: token invalide ou révoqué."
-        : "GitHub GET 401.");
-    }
-    if(res.status === 403){
-      throw new Error(useAuth
-        ? "GitHub GET 403: token sans droits Contents ou SSO non autorisé."
-        : "GitHub GET 403.");
-    }
-    if(!res.ok) throw new Error(`GitHub GET ${res.status}`);
-
-    const data = await res.json();
-    let text = "";
-    if(typeof data.content === "string" && data.content){
-      text = b64DecodeUtf8(data.content.replace(/\n/g, ""));
-    } else if(data.download_url){
-      const rawRes = await fetch(`${data.download_url}?t=${Date.now()}`, {cache:"no-store"});
-      if(!rawRes.ok) throw new Error(`GitHub RAW GET ${rawRes.status}`);
-      text = await rawRes.text();
-    }
-
-    const obj = text.trim() ? JSON.parse(text) : null;
-    return {exists:true, sha:String(data.sha || ""), obj};
-  }
-
-  async function githubPullSharedSyncConfig(manual=false){
-    const rp = parseGhRepoParts(ghSync.repo);
-    if(!rp || !ghSync.branch){
-      if(manual) setGhSyncStatus("Config sync partagée non configurée.");
-      return false;
-    }
-
-    try{
-      const rawUrl = buildGhRawUrl(GH_SYNC_SHARED_CONFIG_PATH);
-      if(!rawUrl) throw new Error("URL config sync partagée invalide.");
-
-      const res = await fetch(`${rawUrl}?t=${Date.now()}`, {cache:"no-store"});
-      if(res.status === 404){
-        if(manual) setGhSyncStatus("Aucune config sync partagée trouvée.");
-        return false;
-      }
-      if(!res.ok) throw new Error(`GitHub RAW GET ${res.status}`);
-
-      const txt = await res.text();
-      if(!txt.trim()){
-        if(manual) setGhSyncStatus("Config sync partagée vide.");
-        return false;
+      function normalizedId(value) {
+        return String(value ?? "").trim();
       }
 
-      const parsed = JSON.parse(txt);
-      const cfg = sanitizeSharedGhSyncConfigPayload(parsed);
-      if(!cfg) throw new Error("JSON config sync partagée invalide.");
-
-      const before = JSON.stringify(ghSyncPersistable());
-      Object.assign(ghSync, cfg);
-      ghSync.readAuthAllowed = !!ghSync.token;
-      saveGhSyncConfig();
-      writeGhSyncForm();
-      startGhSyncPolling();
-
-      const after = JSON.stringify(ghSyncPersistable());
-      if(before === after){
-        if(manual) setGhSyncStatus("Config sync partagée déjà à jour.");
-        return false;
+      function normalizePlayers(rawPlayers) {
+        const byId = new Map();
+        if (Array.isArray(rawPlayers)) {
+          rawPlayers.forEach(p => {
+            const id = normalizedId(p?.id);
+            if (!id) return;
+            const name = String(p?.name ?? id).trim() || id;
+            byId.set(id, { id, name });
+          });
+        }
+        return DEFAULT_PLAYERS.map(p => {
+          const loaded = byId.get(p.id);
+          return { id: p.id, name: loaded?.name || p.name };
+        });
       }
-      if(manual) setGhSyncStatus("Config sync partagée appliquée.");
-      return true;
-    }catch(e){
-      console.error(e);
-      if(manual) setGhSyncStatus(`Config sync pull erreur: ${e.message}`);
-      return false;
-    }
-  }
 
-  async function githubPushSharedSyncConfig(reason="config"){
-    if(!isGhSyncWritable()) return false;
+      function normalizeProfiles(rawProfiles) {
+        const byId = new Map();
+        if (Array.isArray(rawProfiles)) {
+          rawProfiles.forEach(p => {
+            const id = normalizedId(p?.id);
+            if (!id) return;
+            const name = String(p?.name ?? id).trim() || id;
+            byId.set(id, { id, name });
+          });
+        }
 
-    const url = buildGhContentsApiUrl(GH_SYNC_SHARED_CONFIG_PATH);
-    if(!url) return false;
+        const out = DEFAULT_PROFILES.map(p => {
+          const loaded = byId.get(p.id);
+          byId.delete(p.id);
+          return { id: p.id, name: loaded?.name || p.name };
+        });
 
-    try{
-      let existing = {exists:false, sha:"", obj:null};
-      try{
-        existing = await githubFetchMatchStateFromRepo(true, GH_SYNC_SHARED_CONFIG_PATH);
-      }catch(getErr){
-        const msg = String(getErr?.message || getErr || "");
-        if(msg.includes("GET 401")){
-          existing = await githubFetchMatchStateFromRepo(false, GH_SYNC_SHARED_CONFIG_PATH).catch(()=>({exists:false, sha:"", obj:null}));
+        for (const extra of byId.values()) out.push(extra);
+        if (!out.some(p => p.id === "pub")) out.unshift({ id: "pub", name: "Public" });
+        return out;
+      }
+
+      function normalizeSessionProfileId(profileId, profiles) {
+        const pid = normalizedId(profileId);
+        if (!pid) return null;
+        const list = Array.isArray(profiles) ? profiles : [];
+        return list.some(p => p.id === pid) ? pid : null;
+      }
+
+      const LS_KEY = "league_planner_v2_complete"; // legacy local full cache
+      const LS_SESSION_KEY = "league_planner_v2_session";
+      const LS_MATCH_STATE_KEY = "league_planner_v2_match_state";
+      const LS_FB_CONFIG_KEY = "league_planner_v2_firebase_config";
+
+      let firebaseApp = null;
+      let firebaseDb = null;
+      let firebasePushSuppressed = false;
+
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      const esc = (s) => String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const escAttr = (s) => String(s ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+      const round2 = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
+      const isIntStr = (v) => v !== "" && /^[0-9]+$/.test(String(v));
+      const nowIso = () => new Date().toISOString();
+
+      function detectGithubRepoFromLocation() {
+        const host = String(location.hostname || "").toLowerCase();
+        if (!host.endsWith(".github.io")) return "";
+        const owner = host.slice(0, -".github.io".length).trim();
+        const firstPath = String(location.pathname || "").split("/").filter(Boolean)[0] || "";
+        if (!owner || !firstPath) return "";
+        return `${owner}/${firstPath}`;
+      }
+
+      const state = {
+        meta: { version: 3, app: "league_planner_v2_complete" },
+        players: DEFAULT_PLAYERS.map(p => ({ id: p.id, name: p.name })),
+        profiles: DEFAULT_PROFILES.map(p => ({ id: p.id, name: p.name })),
+        session: { profileId: null }, // cache local navigateur (non synchronisé GitHub)
+        rounds: [],
+        results: {}, // matchId -> {streamUrl, tkA, pkA, tkB, pkB, updatedAt, updatedBy}
+        bets: {},    // matchId -> { profileId -> bet }
+        credits: {}, // profileId -> {balance:number}
+        betStats: {},// profileId -> {bets,wins,staked,payout}
+        audit: [],   // actions admin / undo
+        undoStack: []// snapshots for result changes
+      };
+
+      /* =========================
+         PERSISTENCE
+      ========================= */
+      function sanitizeMatchResultRecord(raw) {
+        const out = {
+          streamUrl: "",
+          tkA: "",
+          pkA: "",
+          tkB: "",
+          pkB: "",
+          updatedAt: "",
+          updatedBy: "",
+          committed: false
+        };
+        if (!raw || typeof raw !== "object") return out;
+        out.streamUrl = String(raw.streamUrl ?? "").trim();
+        out.tkA = String(raw.tkA ?? "").trim();
+        out.pkA = String(raw.pkA ?? "").trim();
+        out.tkB = String(raw.tkB ?? "").trim();
+        out.pkB = String(raw.pkB ?? "").trim();
+        out.updatedAt = String(raw.updatedAt ?? "").trim();
+        out.updatedBy = String(raw.updatedBy ?? "").trim();
+        if (Object.prototype.hasOwnProperty.call(raw, "committed")) {
+          out.committed = !!raw.committed;
         } else {
-          throw getErr;
+          const aOk = isIntStr(out.tkA) && isIntStr(out.pkA);
+          const bOk = isIntStr(out.tkB) && isIntStr(out.pkB);
+          let winner = null;
+          if (aOk && bOk) {
+            const pkA = +out.pkA, pkB = +out.pkB;
+            const tkA = +out.tkA, tkB = +out.tkB;
+            if (pkA > pkB) winner = "A";
+            else if (pkB > pkA) winner = "B";
+            else if (tkA > tkB) winner = "A";
+            else if (tkB > tkA) winner = "B";
+          }
+          out.committed = !!(out.streamUrl && winner);
+        }
+        return out;
+      }
+
+      function buildSharedStateData() {
+        return {
+          meta: { version: 3, app: "league_planner_v2_complete" },
+          players: deepClone(state.players || []),
+          profiles: deepClone(state.profiles || []),
+          session: { profileId: null },
+          rounds: deepClone(state.rounds || []),
+          results: deepClone(state.results || {}),
+          bets: deepClone(state.bets || {}),
+          credits: deepClone(state.credits || {}),
+          betStats: deepClone(state.betStats || {}),
+          audit: deepClone(state.audit || []),
+          undoStack: deepClone(state.undoStack || [])
+        };
+      }
+
+      function buildMatchStateJson() {
+        return {
+          meta: { version: 2, app: "league_planner_shared_state", savedAt: nowIso() },
+          state: buildSharedStateData()
+        };
+      }
+
+      function sharedStateSignature() {
+        return JSON.stringify(buildSharedStateData());
+      }
+
+      function isLegacyResultsOnlyPayload(obj) {
+        if (!obj || typeof obj !== "object") return false;
+        if (obj.state && typeof obj.state === "object") return false;
+        if (Array.isArray(obj.players) && Array.isArray(obj.profiles)) return false;
+        return !!(obj.results && typeof obj.results === "object" && !Array.isArray(obj.results));
+      }
+
+      function applyLegacyResultsOnlyJson(obj) {
+        if (!obj || typeof obj !== "object") return false;
+        if (!obj.results || typeof obj.results !== "object" || Array.isArray(obj.results)) return false;
+        const clean = {};
+        for (const [mid, rec] of Object.entries(obj.results)) {
+          const key = String(mid || "").trim();
+          if (!key) continue;
+          clean[key] = sanitizeMatchResultRecord(rec);
+        }
+        state.results = clean;
+        return true;
+      }
+
+      function applyMatchStateJson(obj, opts = {}) {
+        const preserveSession = opts.preserveSession !== false;
+        if (!obj || typeof obj !== "object") return false;
+
+        const currentSessionId = preserveSession ? (state.session?.profileId ?? null) : null;
+        let incoming = null;
+
+        if (obj.state && typeof obj.state === "object" && !Array.isArray(obj.state)) {
+          incoming = deepClone(obj.state);
+        } else {
+          const metaVersion = Number(obj?.meta?.version);
+          const isCompleteState = !!(obj.meta && (metaVersion === 2 || metaVersion === 3) && Array.isArray(obj.players) && Array.isArray(obj.profiles));
+          if (isCompleteState) incoming = deepClone(obj);
+        }
+
+        if (incoming) {
+          if (!incoming.meta || (incoming.meta.version !== 2 && incoming.meta.version !== 3)) {
+            incoming.meta = { version: 3, app: "league_planner_v2_complete" };
+          }
+          incoming.session = { profileId: currentSessionId };
+          if (!sanitizeLoaded(incoming)) return false;
+          state.rounds = generateRounds();
+          ensureAllCredits();
+          return true;
+        }
+
+        return applyLegacyResultsOnlyJson(obj);
+      }
+
+      function saveMatchStateJson() {
+        try {
+          localStorage.setItem(LS_MATCH_STATE_KEY, JSON.stringify(buildMatchStateJson()));
+        } catch (e) {
+          console.error("save match state json error", e);
         }
       }
 
-      const headers = {
-        "Accept":"application/vnd.github+json",
-        "Content-Type":"application/json",
-        "Authorization":`Bearer ${ghSync.token}`
-      };
-      const body = {
-        message: `sync github config (${reason}) ${nowIso()}`,
-        content: b64EncodeUtf8(JSON.stringify(buildSharedGhSyncConfigJson(), null, 2)),
-        branch: ghSync.branch
-      };
-      if(existing.exists && existing.sha) body.sha = existing.sha;
-
-      const res = await fetch(url, {method:"PUT", headers, body:JSON.stringify(body)});
-      if(!res.ok){
-        const errTxt = await res.text();
-        throw new Error(`GitHub PUT ${res.status}: ${errTxt.slice(0, 160)}`);
-      }
-
-      return true;
-    }catch(e){
-      console.error(e);
-      if(reason === "manual"){
-        setGhSyncStatus(`Config sync push erreur: ${e.message}`);
-      }
-      return false;
-    }
-  }
-
-  function scheduleGithubSharedConfigPush(reason="config"){
-    if(!isGhSyncWritable()) return;
-    clearTimeout(ghSync.configPushTimer);
-    ghSync.configPushTimer = setTimeout(()=>{
-      githubPushSharedSyncConfig(reason);
-    }, 300);
-  }
-
-  async function githubPullMatchState(manual=false){
-    if(!isGhSyncReadable()){
-      if(manual) setGhSyncStatus("Sync GitHub non configurée.");
-      return false;
-    }
-    if(ghSync.pulling) return false;
-    if(ghSync.localDirty){
-      if(manual) setGhSyncStatus("Pull ignoré: changements locaux en attente de push.");
-      return false;
-    }
-
-    ghSync.pulling = true;
-    try{
-      let remote;
-      try{
-        const useAuth = !!ghSync.token && ghSync.readAuthAllowed !== false;
-        remote = await githubFetchMatchStateFromRepo(useAuth);
-      }catch(readErr){
-        const msg = String(readErr?.message || readErr || "");
-        const authRejected = msg.includes("GET 401") || msg.includes("GET 403");
-        if(authRejected && ghSync.token){
-          ghSync.readAuthAllowed = false;
-          remote = await githubFetchMatchStateFromRepo(false);
-          if(manual) setGhSyncStatus("Token lecture refusé, fallback lecture publique activé.");
-        } else {
-          throw readErr;
+      function loadMatchStateJson() {
+        const raw = localStorage.getItem(LS_MATCH_STATE_KEY);
+        if (!raw) return false;
+        try {
+          return applyMatchStateJson(JSON.parse(raw));
+        } catch (e) {
+          console.error("load match state json error", e);
+          return false;
         }
       }
-      if(!remote.exists){
-        if(manual) setGhSyncStatus("Aucun JSON distant trouvé.");
-        return false;
-      }
-      if(!remote.obj || typeof remote.obj !== "object"){
-        if(manual) setGhSyncStatus("JSON distant vide.");
-        return false;
+
+      function setFbStatus(msg) {
+        const stamp = new Date().toLocaleTimeString();
+        const el = document.getElementById("fbStatus");
+        if (el) el.textContent = `[${stamp}] ${msg}`;
       }
 
-      const remoteObj = remote.obj;
-      const localSig = sharedStateSignature();
-      const legacyMode = isLegacyResultsOnlyPayload(remoteObj);
-
-      if(!applyMatchStateJson(remoteObj, {preserveSession:true})) throw new Error("JSON distant invalide.");
-
-      const appliedSig = sharedStateSignature();
-      if(localSig === appliedSig){
-        if(manual) setGhSyncStatus("Déjà à jour.");
-        return false;
+      function loadFbConfig() {
+        const raw = localStorage.getItem(LS_FB_CONFIG_KEY);
+        if (raw) {
+          try { return JSON.parse(raw); } catch (e) { }
+        }
+        return null;
       }
 
-      if(legacyMode){
-        githubPushSuppressed = true;
-        try{
-          recalcAllEconomyAndStats();
+      function saveFbConfig(config) {
+        localStorage.setItem(LS_FB_CONFIG_KEY, JSON.stringify(config));
+      }
+
+      function writeFbForm() {
+        const cfg = loadFbConfig();
+        const el = document.getElementById("fbConfigJson");
+        if (el && cfg) el.value = JSON.stringify(cfg, null, 2);
+      }
+
+      function initFirebase(config, manual = false) {
+        if (!config || !config.databaseURL) {
+          if (manual) setFbStatus("Configuration Firebase invalide.");
+          return false;
+        }
+        try {
+          if (!firebaseApp) {
+            firebaseApp = firebase.initializeApp(config);
+          } else if (firebaseApp.options.databaseURL !== config.databaseURL) {
+            firebase.app().delete().then(() => {
+              firebaseApp = firebase.initializeApp(config);
+            });
+          }
+          firebaseDb = firebase.database();
+          listenFirebaseMatchState();
+          setFbStatus("Connecté à Firebase Realtime Database.");
+          saveFbConfig(config);
+          return true;
+        } catch (e) {
+          console.error(e);
+          setFbStatus(`Erreur Firebase: ${e.message}`);
+          return false;
+        }
+      }
+
+      function listenFirebaseMatchState() {
+        if (!firebaseDb) return;
+        const ref = firebaseDb.ref('matchState');
+        ref.on('value', (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            if (firebasePushSuppressed) return;
+            const localSig = sharedStateSignature();
+            const legacyMode = isLegacyResultsOnlyPayload(data);
+            if (!applyMatchStateJson(data, { preserveSession: true })) {
+              console.warn("Firebase payload invalide reçu");
+              return;
+            }
+            const appliedSig = sharedStateSignature();
+            if (localSig !== appliedSig) {
+              if (legacyMode) {
+                firebasePushSuppressed = true;
+                try { recalcAllEconomyAndStats(); } finally { firebasePushSuppressed = false; }
+              }
+              renderAll();
+              setFbStatus("Mis à jour de la BDD (temps réel).");
+            }
+          }
+        }, (error) => {
+          setFbStatus(`Erreur d'écoute Firebase: ${error.message}`);
+        });
+      }
+
+      function firebasePushMatchState() {
+        if (!firebaseDb || !isLogged()) return;
+
+        firebasePushSuppressed = true;
+        try {
+          const payload = buildMatchStateJson();
+          firebaseDb.ref('matchState').set(payload)
+            .then(() => { setFbStatus("Données envoyées et synchronisées."); })
+            .catch((err) => { setFbStatus(`Erreur de synchro: ${err.message}`); });
         } finally {
-          githubPushSuppressed = false;
+          setTimeout(() => { firebasePushSuppressed = false; }, 500);
         }
       }
 
-      ghSync.lastPushedSignature = sharedStateSignature();
-      ghSync.localDirty = false;
-      renderAll();
-      setGhSyncStatus("Etat distant appliqué.");
-      return true;
-    }catch(e){
-      console.error(e);
-      setGhSyncStatus(`Pull erreur: ${e.message}`);
-      return false;
-    }finally{
-      ghSync.pulling = false;
-    }
-  }
-
-  async function githubPushMatchState(reason="manual"){
-    if(!isGhSyncWritable()){
-      if(reason !== "auto") setGhSyncStatus("Push impossible: sync/token non configurés.");
-      return false;
-    }
-    if(!isLogged()){
-      if(reason !== "auto") setGhSyncStatus("Push impossible: profil non connecté.");
-      return false;
-    }
-    if(ghSync.pushing){
-      ghSync.pendingPushReason = ghSync.pendingPushReason || reason;
-      return false;
-    }
-
-    ghSync.pushing = true;
-    try{
-      const signature = sharedStateSignature();
-      if(signature === ghSync.lastPushedSignature){
-        if(reason !== "auto") setGhSyncStatus("Aucun changement à pousser.");
-        return false;
+      function shouldPreferFirebaseBootstrap() {
+        return !!loadFbConfig();
       }
 
-      let existing = {exists:false, sha:"", obj:null};
-      try{
-        existing = await githubFetchMatchStateFromRepo(true);
-      }catch(getErr){
-        const m = String(getErr?.message || getErr || "");
-        if(m.includes("GET 401")){
-          // Repo public: on récupère le SHA sans auth pour continuer et obtenir
-          // une erreur PUT plus explicite si le token est invalide.
-          existing = await githubFetchMatchStateFromRepo(false).catch(()=>({exists:false, sha:"", obj:null}));
+      function save() {
+        saveSessionCache();
+        saveMatchStateJson();
+        firebasePushMatchState();
+      }
+
+      function sanitizeLoaded(obj) {
+        if (!obj || !obj.meta) return false;
+        if (!(obj.meta.version === 2 || obj.meta.version === 3)) return false;
+
+        Object.assign(state, obj);
+
+        // migration / complétion
+        state.meta = { version: 3, app: "league_planner_v2_complete" };
+        state.players = normalizePlayers(state.players);
+        state.profiles = normalizeProfiles(state.profiles);
+        state.session = { profileId: normalizeSessionProfileId(state.session?.profileId, state.profiles) };
+        const sanitizedResults = {};
+        const rawResults = (state.results && typeof state.results === "object" && !Array.isArray(state.results)) ? state.results : {};
+        for (const [mid, rec] of Object.entries(rawResults)) {
+          const key = String(mid || "").trim();
+          if (!key) continue;
+          sanitizedResults[key] = sanitizeMatchResultRecord(rec);
+        }
+        state.results = sanitizedResults;
+        if (!state.bets) state.bets = {};
+        if (!state.credits) state.credits = {};
+        if (!state.betStats) state.betStats = {};
+        if (!Array.isArray(state.audit)) state.audit = [];
+        if (!Array.isArray(state.undoStack)) state.undoStack = [];
+
+        return true;
+      }
+
+      function load() {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        try { return sanitizeLoaded(JSON.parse(raw)); }
+        catch (e) { console.error(e); return false; }
+      }
+
+      function encodeShare() {
+        const s = JSON.stringify(state);
+        return btoa(unescape(encodeURIComponent(s)));
+      }
+
+      function decodeShare(b64) {
+        try {
+          const s = decodeURIComponent(escape(atob(b64)));
+          return sanitizeLoaded(JSON.parse(s));
+        } catch (e) {
+          console.error("decode share error", e);
+          return false;
+        }
+      }
+
+      (function bootstrapShareOrLoad() {
+        loadSessionCache();
+        const u = new URL(location.href);
+        const share = u.searchParams.get("s");
+        if (share) {
+          if (decodeShare(share)) save();
+          else if (!load()) loadMatchStateJson();
         } else {
-          throw getErr;
+          if (shouldPreferFirebaseBootstrap()) return;
+          if (!load()) loadMatchStateJson();
         }
-      }
-      const url = buildGhContentsApiUrl();
-      const headers = {
-        "Accept":"application/vnd.github+json",
-        "Content-Type":"application/json",
-        "Authorization":`Bearer ${ghSync.token}`
-      };
-      const body = {
-        message: `sync tournament shared state (${reason}) ${nowIso()}`,
-        content: b64EncodeUtf8(JSON.stringify(buildMatchStateJson(), null, 2)),
-        branch: ghSync.branch
-      };
-      if(existing.exists && existing.sha) body.sha = existing.sha;
+      })();
 
-      const res = await fetch(url, {method:"PUT", headers, body:JSON.stringify(body)});
-      if(res.status === 401){
-        throw new Error("GitHub PUT 401: token invalide ou révoqué.");
+      /* =========================
+         HELPERS
+      ========================= */
+      function profileName(pid) {
+        return state.profiles.find(p => p.id === pid)?.name
+          ?? DEFAULT_PROFILES.find(p => p.id === pid)?.name
+          ?? pid;
       }
-      if(res.status === 403){
-        throw new Error("GitHub PUT 403: droits Contents:write manquants ou SSO non autorisé.");
-      }
-      if(res.status === 404){
-        throw new Error("GitHub PUT 404: repo/path introuvable ou accès repo refusé.");
-      }
-      if(!res.ok){
-        const errTxt = await res.text();
-        throw new Error(`GitHub PUT ${res.status}: ${errTxt.slice(0, 160)}`);
+      function pName(pid) { return state.players.find(p => p.id === pid)?.name ?? pid; }
+      function sessionPid() { return state.session.profileId; }
+      function isLogged() { return !!sessionPid(); }
+      function isPlayerProfile(pid) { return pid && pid !== "pub" && !!state.players.find(p => p.id === pid); }
+      function isAdmin(pid = sessionPid()) {
+        return !!normalizeSessionProfileId(pid, state.profiles);
       }
 
-      ghSync.lastPushedSignature = signature;
-      ghSync.localDirty = false;
-      setGhSyncStatus(`Push OK (${reason}).`);
-      return true;
-    }catch(e){
-      console.error(e);
-      setGhSyncStatus(`Push erreur: ${e.message}`);
-      return false;
-    }finally{
-      ghSync.pushing = false;
-      if(ghSync.pendingPushReason){
-        const pendingReason = ghSync.pendingPushReason;
-        ghSync.pendingPushReason = "";
-        githubPushMatchState(pendingReason || "auto");
+      function ensureCredits(pid) {
+        if (!state.credits[pid]) state.credits[pid] = { balance: RULES.startCredits };
+        if (!state.betStats[pid]) state.betStats[pid] = { bets: 0, wins: 0, staked: 0, payout: 0 };
+        return state.credits[pid];
       }
-    }
-  }
 
-  function scheduleGithubPush(reason="auto"){
-    if(githubPushSuppressed) return;
-    if(!isGhSyncWritable()) return;
-    if(!isLogged()) return;
-    githubPushMatchState(reason);
-  }
+      function ensureAllCredits() {
+        state.profiles.forEach(p => ensureCredits(p.id));
+      }
+      ensureAllCredits();
 
-  function saveSessionCache(){
-    try{
-      localStorage.setItem(LS_SESSION_KEY, JSON.stringify({
-        session: {profileId: state.session?.profileId ?? null}
-      }));
-    }catch(e){
-      console.error("save session cache error", e);
-    }
-  }
-
-  function loadSessionCache(){
-    const raw = localStorage.getItem(LS_SESSION_KEY);
-    if(!raw) return false;
-    try{
-      const obj = JSON.parse(raw);
-      const pid = normalizedId(obj?.session?.profileId) || null;
-      state.session = {profileId: pid};
-      return true;
-    }catch(e){
-      console.error("load session cache error", e);
-      return false;
-    }
-  }
-
-  function shouldPreferGithubBootstrap(){
-    try{
-      const raw = localStorage.getItem(LS_GH_SYNC_KEY);
-      const cfg = raw ? sanitizeGhSyncConfig(JSON.parse(raw)) : sanitizeGhSyncConfig(null);
-      return !!(cfg.enabled && parseGhRepoParts(cfg.repo) && cfg.branch && cfg.path);
-    }catch(e){
-      return false;
-    }
-  }
-
-  function save(){
-    saveSessionCache();
-    saveMatchStateJson();
-    ghSync.localDirty = true;
-    scheduleGithubPush("auto");
-  }
-
-  function sanitizeLoaded(obj){
-    if(!obj || !obj.meta) return false;
-    if(!(obj.meta.version===2 || obj.meta.version===3)) return false;
-
-    Object.assign(state, obj);
-
-    // migration / complétion
-    state.meta = {version:3, app:"league_planner_v2_complete"};
-    state.players = normalizePlayers(state.players);
-    state.profiles = normalizeProfiles(state.profiles);
-    state.session = {profileId: normalizeSessionProfileId(state.session?.profileId, state.profiles)};
-    const sanitizedResults = {};
-    const rawResults = (state.results && typeof state.results === "object" && !Array.isArray(state.results)) ? state.results : {};
-    for(const [mid, rec] of Object.entries(rawResults)){
-      const key = String(mid || "").trim();
-      if(!key) continue;
-      sanitizedResults[key] = sanitizeMatchResultRecord(rec);
-    }
-    state.results = sanitizedResults;
-    if(!state.bets) state.bets = {};
-    if(!state.credits) state.credits = {};
-    if(!state.betStats) state.betStats = {};
-    if(!Array.isArray(state.audit)) state.audit = [];
-    if(!Array.isArray(state.undoStack)) state.undoStack = [];
-
-    return true;
-  }
-
-  function load(){
-    const raw = localStorage.getItem(LS_KEY);
-    if(!raw) return false;
-    try { return sanitizeLoaded(JSON.parse(raw)); }
-    catch(e){ console.error(e); return false; }
-  }
-
-  function encodeShare(){
-    const s = JSON.stringify(state);
-    return btoa(unescape(encodeURIComponent(s)));
-  }
-
-  function decodeShare(b64){
-    try{
-      const s = decodeURIComponent(escape(atob(b64)));
-      return sanitizeLoaded(JSON.parse(s));
-    }catch(e){
-      console.error("decode share error", e);
-      return false;
-    }
-  }
-
-  (function bootstrapShareOrLoad(){
-    loadSessionCache();
-    const u = new URL(location.href);
-    const share = u.searchParams.get("s");
-    if(share){
-      if(decodeShare(share)) save();
-      else if(!load()) loadMatchStateJson();
-    } else {
-      if(shouldPreferGithubBootstrap()) return;
-      if(!load()) loadMatchStateJson();
-    }
-  })();
-
-  /* =========================
-     HELPERS
-  ========================= */
-  function profileName(pid){
-    return state.profiles.find(p=>p.id===pid)?.name
-      ?? DEFAULT_PROFILES.find(p=>p.id===pid)?.name
-      ?? pid;
-  }
-  function pName(pid){ return state.players.find(p=>p.id===pid)?.name ?? pid; }
-  function sessionPid(){ return state.session.profileId; }
-  function isLogged(){ return !!sessionPid(); }
-  function isPlayerProfile(pid){ return pid && pid!=="pub" && !!state.players.find(p=>p.id===pid); }
-  function isAdmin(pid=sessionPid()){
-    return !!normalizeSessionProfileId(pid, state.profiles);
-  }
-
-  function ensureCredits(pid){
-    if(!state.credits[pid]) state.credits[pid] = {balance: RULES.startCredits};
-    if(!state.betStats[pid]) state.betStats[pid] = {bets:0, wins:0, staked:0, payout:0};
-    return state.credits[pid];
-  }
-
-  function ensureAllCredits(){
-    state.profiles.forEach(p=>ensureCredits(p.id));
-  }
-  ensureAllCredits();
-
-  function ensureResult(mid){
-    if(!state.results[mid]){
-      state.results[mid] = {
-        streamUrl:"",
-        tkA:"", pkA:"",
-        tkB:"", pkB:"",
-        updatedAt:"",
-        updatedBy:"",
-        committed:false
-      };
-    }
-    return state.results[mid];
-  }
-
-  function ensureBet(mid, pid){
-    if(!state.bets[mid]) state.bets[mid] = {};
-    if(!state.bets[mid][pid]){
-      state.bets[mid][pid] = {
-        pick:"A",
-        amount:0,
-        settled:false,
-        payout:0,
-        win:false,
-        placedAt:"",
-        settledAt:""
-      };
-    }
-    return state.bets[mid][pid];
-  }
-
-  function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
-
-  function addAudit(action, payload={}){
-    state.audit.unshift({
-      at: nowIso(),
-      by: sessionPid() || "system",
-      action,
-      payload
-    });
-    state.audit = state.audit.slice(0, 200);
-  }
-
-  function csv(s){
-    const t = String(s ?? "");
-    return /[,"\n]/.test(t) ? `"${t.replaceAll('"','""')}"` : t;
-  }
-
-  /* =========================
-     ROUND ROBIN
-  ========================= */
-  function generateRounds(){
-    const ids = state.players.map(p=>p.id);
-    const list = ids.slice();
-    if(list.length % 2 === 1) list.push("BYE");
-    const m = list.length;
-    const rounds = m - 1;
-    let arr = list.slice();
-    const out=[];
-
-    for(let r=0;r<rounds;r++){
-      const pairs=[];
-      for(let i=0;i<m/2;i++){
-        const a=arr[i], b=arr[m-1-i];
-        if(a==="BYE"||b==="BYE"){
-          pairs.push({id:`bye_${r}_${a==="BYE"?b:a}`, a:a==="BYE"?b:a, b:"BYE", round:r+1});
-        } else {
-          const id = `m_${[a,b].sort().join("_")}`; // stable unique ID
-          pairs.push({id, a, b, round:r+1});
+      function ensureResult(mid) {
+        if (!state.results[mid]) {
+          state.results[mid] = {
+            streamUrl: "",
+            tkA: "", pkA: "",
+            tkB: "", pkB: "",
+            updatedAt: "",
+            updatedBy: "",
+            committed: false
+          };
         }
+        return state.results[mid];
       }
-      out.push({round:r+1, pairs});
-      const pivot = arr[0];
-      const rest = arr.slice(1);
-      rest.unshift(rest.pop());
-      arr = [pivot, ...rest];
-    }
-    return out;
-  }
-  state.rounds = generateRounds();
 
-  function allMatches(){
-    const map = new Map();
-    for(const r of state.rounds){
-      for(const p of r.pairs){
-        if(p.b==="BYE") continue;
-        map.set(p.id, {id:p.id, a:p.a, b:p.b, round:r.round});
+      function ensureBet(mid, pid) {
+        if (!state.bets[mid]) state.bets[mid] = {};
+        if (!state.bets[mid][pid]) {
+          state.bets[mid][pid] = {
+            pick: "A",
+            amount: 0,
+            settled: false,
+            payout: 0,
+            win: false,
+            placedAt: "",
+            settledAt: ""
+          };
+        }
+        return state.bets[mid][pid];
       }
-    }
-    return [...map.values()].sort((x,y)=>x.round-y.round || x.id.localeCompare(y.id));
-  }
 
-  function matchById(mid){
-    return allMatches().find(m=>m.id===mid) || null;
-  }
+      function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
-  /* =========================
-     LOGIQUE MATCH / PARIS
-  ========================= */
-  function matchStatus(m, res){
-    const aOk = isIntStr(res.tkA) && isIntStr(res.pkA);
-    const bOk = isIntStr(res.tkB) && isIntStr(res.pkB);
-    if(!aOk || !bOk) return {cls:"pending", label:"A venir", valid:false, winner:null};
+      function addAudit(action, payload = {}) {
+        state.audit.unshift({
+          at: nowIso(),
+          by: sessionPid() || "system",
+          action,
+          payload
+        });
+        state.audit = state.audit.slice(0, 200);
+      }
 
-    const winner = resolveWinnerFromScores(res);
+      function csv(s) {
+        const t = String(s ?? "");
+        return /[,"\n]/.test(t) ? `"${t.replaceAll('"', '""')}"` : t;
+      }
 
-    if(!res.streamUrl?.trim()) return {cls:"invalid", label:"Stream manquant", valid:false, winner};
-    if(!winner) return {cls:"invalid", label:"Egalite", valid:false, winner:null};
-    if(!res.committed) return {cls:"pending", label:"A valider", valid:false, winner};
-    return {cls:"done", label:"Fini", valid:true, winner};
-  }
+      /* =========================
+         ROUND ROBIN
+      ========================= */
+      function generateRounds() {
+        const ids = state.players.map(p => p.id);
+        const list = ids.slice();
+        if (list.length % 2 === 1) list.push("BYE");
+        const m = list.length;
+        const rounds = m - 1;
+        let arr = list.slice();
+        const out = [];
 
-  function resolveWinnerFromScores(res){
-    const pkA = +res.pkA, pkB = +res.pkB;
-    const tkA = +res.tkA, tkB = +res.tkB;
-    if(pkA > pkB) return "A";
-    if(pkB > pkA) return "B";
-    if(tkA > tkB) return "A";
-    if(tkB > tkA) return "B";
-    return null;
-  }
+        for (let r = 0; r < rounds; r++) {
+          const pairs = [];
+          for (let i = 0; i < m / 2; i++) {
+            const a = arr[i], b = arr[m - 1 - i];
+            if (a === "BYE" || b === "BYE") {
+              pairs.push({ id: `bye_${r}_${a === "BYE" ? b : a}`, a: a === "BYE" ? b : a, b: "BYE", round: r + 1 });
+            } else {
+              const id = `m_${[a, b].sort().join("_")}`; // stable unique ID
+              pairs.push({ id, a, b, round: r + 1 });
+            }
+          }
+          out.push({ round: r + 1, pairs });
+          const pivot = arr[0];
+          const rest = arr.slice(1);
+          rest.unshift(rest.pop());
+          arr = [pivot, ...rest];
+        }
+        return out;
+      }
+      state.rounds = generateRounds();
 
-  function canEditMatch(m){
-    const pid = sessionPid();
-    if(!pid) return false;
-    if(isAdmin(pid)) return true;            // tous les profils connectés sont admins
-    return (m.a === pid || m.b === pid);
-  }
+      function allMatches() {
+        const map = new Map();
+        for (const r of state.rounds) {
+          for (const p of r.pairs) {
+            if (p.b === "BYE") continue;
+            map.set(p.id, { id: p.id, a: p.a, b: p.b, round: r.round });
+          }
+        }
+        return [...map.values()].sort((x, y) => x.round - y.round || x.id.localeCompare(y.id));
+      }
 
-  function matchPot(mid){
-    const book = state.bets[mid] || {};
-    let pot=0, poolA=0, poolB=0;
-    for(const b of Object.values(book)){
-      const amt = +b.amount || 0;
-      if(amt<=0) continue;
-      pot += amt;
-      if(b.pick==="A") poolA += amt;
-      else poolB += amt;
-    }
-    return {pot:round2(pot), poolA:round2(poolA), poolB:round2(poolB)};
-  }
+      function matchById(mid) {
+        return allMatches().find(m => m.id === mid) || null;
+      }
 
-  function settleMatchIfNeeded(m){
-    const res = ensureResult(m.id);
-    const st = matchStatus(m,res);
-    if(!st.valid) return;
+      /* =========================
+         LOGIQUE MATCH / PARIS
+      ========================= */
+      function matchStatus(m, res) {
+        const aOk = isIntStr(res.tkA) && isIntStr(res.pkA);
+        const bOk = isIntStr(res.tkB) && isIntStr(res.pkB);
+        if (!aOk || !bOk) return { cls: "pending", label: "A venir", valid: false, winner: null };
 
-    const book = state.bets[m.id];
-    if(!book) return;
-    const anyUnsettled = Object.values(book).some(b => !b.settled && (+b.amount||0) > 0);
-    if(!anyUnsettled) return;
+        const winner = resolveWinnerFromScores(res);
 
-    const actual = st.winner;
-    let winnersPool = 0;
-    let losersPool = 0;
+        if (!res.streamUrl?.trim()) return { cls: "invalid", label: "Stream manquant", valid: false, winner };
+        if (!winner) return { cls: "invalid", label: "Egalite", valid: false, winner: null };
+        if (!res.committed) return { cls: "pending", label: "A valider", valid: false, winner };
+        return { cls: "done", label: "Fini", valid: true, winner };
+      }
 
-    for(const b of Object.values(book)){
-      const amt = +b.amount || 0;
-      if(amt<=0) continue;
-      if(b.pick===actual) winnersPool += amt;
-      else losersPool += amt;
-    }
+      function resolveWinnerFromScores(res) {
+        const pkA = +res.pkA, pkB = +res.pkB;
+        const tkA = +res.tkA, tkB = +res.tkB;
+        if (pkA > pkB) return "A";
+        if (pkB > pkA) return "B";
+        if (tkA > tkB) return "A";
+        if (tkB > tkA) return "B";
+        return null;
+      }
 
-    if((winnersPool + losersPool) <= 0){
-      for(const b of Object.values(book)) b.settled = true;
-      save();
-      return;
-    }
+      function canEditMatch(m) {
+        const pid = sessionPid();
+        if (!pid) return false;
+        if (isAdmin(pid)) return true;            // tous les profils connectés sont admins
+        return (m.a === pid || m.b === pid);
+      }
 
-    if(winnersPool<=0){
-      // aucun gagnant: toutes les mises sont perdues
-      for(const [pid,b] of Object.entries(book)){
-        const amt = +b.amount || 0;
-        if(amt>0 && !b.settled){
-          b.payout = 0;
-          b.win = false;
-          b.settled = true;
-          b.settledAt = nowIso();
+      function matchPot(mid) {
+        const book = state.bets[mid] || {};
+        let pot = 0, poolA = 0, poolB = 0;
+        for (const b of Object.values(book)) {
+          const amt = +b.amount || 0;
+          if (amt <= 0) continue;
+          pot += amt;
+          if (b.pick === "A") poolA += amt;
+          else poolB += amt;
+        }
+        return { pot: round2(pot), poolA: round2(poolA), poolB: round2(poolB) };
+      }
+
+      function settleMatchIfNeeded(m) {
+        const res = ensureResult(m.id);
+        const st = matchStatus(m, res);
+        if (!st.valid) return;
+
+        const book = state.bets[m.id];
+        if (!book) return;
+        const anyUnsettled = Object.values(book).some(b => !b.settled && (+b.amount || 0) > 0);
+        if (!anyUnsettled) return;
+
+        const actual = st.winner;
+        let winnersPool = 0;
+        let losersPool = 0;
+
+        for (const b of Object.values(book)) {
+          const amt = +b.amount || 0;
+          if (amt <= 0) continue;
+          if (b.pick === actual) winnersPool += amt;
+          else losersPool += amt;
+        }
+
+        if ((winnersPool + losersPool) <= 0) {
+          for (const b of Object.values(book)) b.settled = true;
+          save();
+          return;
+        }
+
+        if (winnersPool <= 0) {
+          // aucun gagnant: toutes les mises sont perdues
+          for (const [pid, b] of Object.entries(book)) {
+            const amt = +b.amount || 0;
+            if (amt > 0 && !b.settled) {
+              b.payout = 0;
+              b.win = false;
+              b.settled = true;
+              b.settledAt = nowIso();
+
+              state.betStats[pid].bets += 1;
+              state.betStats[pid].staked = round2((state.betStats[pid].staked || 0) + amt);
+            }
+          }
+          save();
+          return;
+        }
+
+        for (const [pid, b] of Object.entries(book)) {
+          const amt = +b.amount || 0;
+          if (amt <= 0) { b.settled = true; continue; }
+          if (b.settled) continue;
 
           state.betStats[pid].bets += 1;
-          state.betStats[pid].staked = round2((state.betStats[pid].staked||0) + amt);
+          state.betStats[pid].staked = round2((state.betStats[pid].staked || 0) + amt);
+
+          if (b.pick === actual) {
+            const shareLosers = losersPool > 0 ? losersPool * (amt / winnersPool) : 0;
+            const payout = round2((2 * amt) + shareLosers);
+            ensureCredits(pid).balance = round2(ensureCredits(pid).balance + payout);
+            b.payout = payout;
+            b.win = true;
+            state.betStats[pid].wins += 1;
+            state.betStats[pid].payout = round2((state.betStats[pid].payout || 0) + payout);
+          } else {
+            b.payout = 0;
+            b.win = false;
+          }
+
+          b.settled = true;
+          b.settledAt = nowIso();
         }
-      }
-      save();
-      return;
-    }
-
-    for(const [pid,b] of Object.entries(book)){
-      const amt = +b.amount || 0;
-      if(amt<=0){ b.settled = true; continue; }
-      if(b.settled) continue;
-
-      state.betStats[pid].bets += 1;
-      state.betStats[pid].staked = round2((state.betStats[pid].staked||0) + amt);
-
-      if(b.pick===actual){
-        const shareLosers = losersPool>0 ? losersPool * (amt / winnersPool) : 0;
-        const payout = round2((2 * amt) + shareLosers);
-        ensureCredits(pid).balance = round2(ensureCredits(pid).balance + payout);
-        b.payout = payout;
-        b.win = true;
-        state.betStats[pid].wins += 1;
-        state.betStats[pid].payout = round2((state.betStats[pid].payout||0) + payout);
-      } else {
-        b.payout = 0;
-        b.win = false;
+        save();
       }
 
-      b.settled = true;
-      b.settledAt = nowIso();
-    }
-    save();
-  }
-
-  function unSettleMatchAndRebuild(mid){
-    // méthode fiable : on reset stats/crédits puis on re-applique tous les règlements
-    recalcAllEconomyAndStats();
-  }
-
-  function recalcAllEconomyAndStats(){
-    // reset crédits/statistiques
-    for(const p of state.profiles){
-      state.credits[p.id] = {balance: RULES.startCredits};
-      state.betStats[p.id] = {bets:0,wins:0,staked:0,payout:0};
-    }
-
-    // remettre tous les bets à unsettled (mais conserver montants/picks)
-    for(const [mid,book] of Object.entries(state.bets)){
-      for(const b of Object.values(book)){
-        b.settled = false;
-        b.payout = 0;
-        b.win = false;
-        b.settledAt = "";
+      function unSettleMatchAndRebuild(mid) {
+        // méthode fiable : on reset stats/crédits puis on re-applique tous les règlements
+        recalcAllEconomyAndStats();
       }
-    }
 
-    // re-déduire toutes les mises ouvertes + fermées une seule fois à partir des paris présents
-    for(const [mid,book] of Object.entries(state.bets)){
-      for(const [pid,b] of Object.entries(book)){
-        const amt = +b.amount || 0;
-        if(amt>0){
-          ensureCredits(pid).balance = round2(ensureCredits(pid).balance - amt);
+      function recalcAllEconomyAndStats() {
+        // reset crédits/statistiques
+        for (const p of state.profiles) {
+          state.credits[p.id] = { balance: RULES.startCredits };
+          state.betStats[p.id] = { bets: 0, wins: 0, staked: 0, payout: 0 };
         }
+
+        // remettre tous les bets à unsettled (mais conserver montants/picks)
+        for (const [mid, book] of Object.entries(state.bets)) {
+          for (const b of Object.values(book)) {
+            b.settled = false;
+            b.payout = 0;
+            b.win = false;
+            b.settledAt = "";
+          }
+        }
+
+        // re-déduire toutes les mises ouvertes + fermées une seule fois à partir des paris présents
+        for (const [mid, book] of Object.entries(state.bets)) {
+          for (const [pid, b] of Object.entries(book)) {
+            const amt = +b.amount || 0;
+            if (amt > 0) {
+              ensureCredits(pid).balance = round2(ensureCredits(pid).balance - amt);
+            }
+          }
+        }
+
+        // re-régler les matchs validés
+        for (const m of allMatches()) {
+          settleMatchIfNeeded(m);
+        }
+        save();
       }
-    }
 
-    // re-régler les matchs validés
-    for(const m of allMatches()){
-      settleMatchIfNeeded(m);
-    }
-    save();
-  }
+      function computeStandingsWins() {
+        const stats = new Map();
+        state.players.forEach(p => {
+          stats.set(p.id, { id: p.id, name: p.name, pts: 0, w: 0, l: 0, tk: 0, pk: 0, pkFor: 0, pkAgainst: 0 });
+        });
 
-  function computeStandingsWins(){
-    const stats = new Map();
-    state.players.forEach(p=>{
-      stats.set(p.id, {id:p.id, name:p.name, pts:0,w:0,l:0, tk:0, pk:0, pkFor:0, pkAgainst:0});
-    });
+        const matches = allMatches();
+        let validCount = 0;
+        let openCount = 0;
 
-    const matches = allMatches();
-    let validCount=0;
-    let openCount=0;
+        for (const m of matches) {
+          const res = ensureResult(m.id);
+          const st = matchStatus(m, res);
+          if (!st.valid) { openCount++; continue; }
 
-    for(const m of matches){
-      const res = ensureResult(m.id);
-      const st = matchStatus(m,res);
-      if(!st.valid){ openCount++; continue; }
+          validCount++;
+          const A = stats.get(m.a), B = stats.get(m.b);
+          const tkA = +res.tkA, tkB = +res.tkB, pkA = +res.pkA, pkB = +res.pkB;
 
-      validCount++;
-      const A = stats.get(m.a), B = stats.get(m.b);
-      const tkA=+res.tkA, tkB=+res.tkB, pkA=+res.pkA, pkB=+res.pkB;
+          A.tk += tkA; B.tk += tkB;
+          A.pk += pkA; B.pk += pkB;
 
-      A.tk += tkA; B.tk += tkB;
-      A.pk += pkA; B.pk += pkB;
+          A.pkFor += pkA; A.pkAgainst += pkB;
+          B.pkFor += pkB; B.pkAgainst += pkA;
 
-      A.pkFor += pkA; A.pkAgainst += pkB;
-      B.pkFor += pkB; B.pkAgainst += pkA;
+          if (st.winner === "A") {
+            A.w++; B.l++;
+            A.pts += RULES.winPts;
+          } else {
+            B.w++; A.l++;
+            B.pts += RULES.winPts;
+          }
+        }
 
-      if(st.winner==="A"){
-        A.w++; B.l++;
-        A.pts += RULES.winPts;
-      } else {
-        B.w++; A.l++;
-        B.pts += RULES.winPts;
+        const list = [...stats.values()].map(s => ({ ...s, pkDiff: s.pkFor - s.pkAgainst }));
+        list.sort((x, y) => {
+          if (y.pts !== x.pts) return y.pts - x.pts;
+          if (y.pkDiff !== x.pkDiff) return y.pkDiff - x.pkDiff;
+          if (y.pk !== x.pk) return y.pk - x.pk;
+          if (y.tk !== x.tk) return y.tk - x.tk;
+          return x.name.localeCompare(y.name);
+        });
+
+        return { list, validCount, openCount, total: matches.length };
       }
-    }
 
-    const list = [...stats.values()].map(s=>({...s, pkDiff:s.pkFor - s.pkAgainst}));
-    list.sort((x,y)=>{
-      if(y.pts!==x.pts) return y.pts-x.pts;
-      if(y.pkDiff!==x.pkDiff) return y.pkDiff-x.pkDiff;
-      if(y.pk!==x.pk) return y.pk-x.pk;
-      if(y.tk!==x.tk) return y.tk-x.tk;
-      return x.name.localeCompare(y.name);
-    });
+      function computeStandingsBets() {
+        return state.profiles.map(p => {
+          const bal = ensureCredits(p.id).balance;
+          const bs = state.betStats[p.id] || { bets: 0, wins: 0, staked: 0, payout: 0 };
+          const profit = round2(bal - RULES.startCredits);
+          const winPct = bs.bets > 0 ? Math.round((bs.wins / bs.bets) * 100) : 0;
+          const roi = (bs.staked || 0) > 0 ? Math.round(((bs.payout - bs.staked) / bs.staked) * 100) : 0;
+          return {
+            id: p.id, name: p.name,
+            balance: round2(bal),
+            profit,
+            bets: bs.bets || 0,
+            winPct,
+            roi,
+            staked: round2(bs.staked || 0),
+            payout: round2(bs.payout || 0)
+          };
+        }).sort((a, b) => b.balance - a.balance || b.winPct - a.winPct || a.name.localeCompare(b.name));
+      }
 
-    return {list, validCount, openCount, total:matches.length};
-  }
+      /* =========================
+         UNDO RESULTAT
+      ========================= */
+      function pushUndoSnapshot(m) {
+        const res = ensureResult(m.id);
+        state.undoStack.unshift({
+          at: nowIso(),
+          by: sessionPid() || "system",
+          matchId: m.id,
+          before: deepClone(res)
+        });
+        state.undoStack = state.undoStack.slice(0, 100);
+      }
 
-  function computeStandingsBets(){
-    return state.profiles.map(p=>{
-      const bal = ensureCredits(p.id).balance;
-      const bs = state.betStats[p.id] || {bets:0,wins:0,staked:0,payout:0};
-      const profit = round2(bal - RULES.startCredits);
-      const winPct = bs.bets>0 ? Math.round((bs.wins/bs.bets)*100) : 0;
-      const roi = (bs.staked||0) > 0 ? Math.round(((bs.payout - bs.staked)/bs.staked)*100) : 0;
-      return {
-        id:p.id, name:p.name,
-        balance: round2(bal),
-        profit,
-        bets: bs.bets || 0,
-        winPct,
-        roi,
-        staked: round2(bs.staked || 0),
-        payout: round2(bs.payout || 0)
-      };
-    }).sort((a,b)=>b.balance-a.balance || b.winPct-a.winPct || a.name.localeCompare(b.name));
-  }
+      function undoLastResultChange() {
+        if (!isAdmin()) {
+          alert("Seul l'arbitre (Quentin) peut faire un undo.");
+          return;
+        }
+        const snap = state.undoStack.shift();
+        if (!snap) {
+          alert("Aucun undo disponible.");
+          return;
+        }
+        state.results[snap.matchId] = snap.before;
+        addAudit("undo_result", { matchId: snap.matchId });
+        unSettleMatchAndRebuild(snap.matchId);
+        save();
+        renderAll();
+      }
 
-  /* =========================
-     UNDO RESULTAT
-  ========================= */
-  function pushUndoSnapshot(m){
-    const res = ensureResult(m.id);
-    state.undoStack.unshift({
-      at: nowIso(),
-      by: sessionPid() || "system",
-      matchId: m.id,
-      before: deepClone(res)
-    });
-    state.undoStack = state.undoStack.slice(0, 100);
-  }
+      /* =========================
+         SCENARIOS TOP4 (simple et utile)
+      ========================= */
+      function renderQualificationScenarios() {
+        const { list, openCount } = computeStandingsWins();
+        $("#remainingMatchesCount").textContent = openCount;
 
-  function undoLastResultChange(){
-    if(!isAdmin()){
-      alert("Seul l'arbitre (Quentin) peut faire un undo.");
-      return;
-    }
-    const snap = state.undoStack.shift();
-    if(!snap){
-      alert("Aucun undo disponible.");
-      return;
-    }
-    state.results[snap.matchId] = snap.before;
-    addAudit("undo_result", {matchId:snap.matchId});
-    unSettleMatchAndRebuild(snap.matchId);
-    save();
-    renderAll();
-  }
-
-  /* =========================
-     SCENARIOS TOP4 (simple et utile)
-  ========================= */
-  function renderQualificationScenarios(){
-    const {list, openCount} = computeStandingsWins();
-    $("#remainingMatchesCount").textContent = openCount;
-
-    if(openCount === 0){
-      const top4 = list.slice(0,4).map(x=>x.name);
-      $("#scenarioBox").innerHTML = `
+        if (openCount === 0) {
+          const top4 = list.slice(0, 4).map(x => x.name);
+          $("#scenarioBox").innerHTML = `
         <div class="notice">
           Tournoi terminé. Top 4 qualifiés : <b>${top4.map(esc).join(", ")}</b>.
         </div>`;
-      return;
-    }
+          return;
+        }
 
-    // version "safe" / "alive" heuristique (sans simulation exhaustive)
-    // max points possibles = pts + 3 * matchs_restants_du_joueur
-    const remainByPlayer = new Map(state.players.map(p=>[p.id,0]));
-    for(const m of allMatches()){
-      const st = matchStatus(m, ensureResult(m.id));
-      if(!st.valid){
-        remainByPlayer.set(m.a, (remainByPlayer.get(m.a)||0)+1);
-        remainByPlayer.set(m.b, (remainByPlayer.get(m.b)||0)+1);
-      }
-    }
+        // version "safe" / "alive" heuristique (sans simulation exhaustive)
+        // max points possibles = pts + 3 * matchs_restants_du_joueur
+        const remainByPlayer = new Map(state.players.map(p => [p.id, 0]));
+        for (const m of allMatches()) {
+          const st = matchStatus(m, ensureResult(m.id));
+          if (!st.valid) {
+            remainByPlayer.set(m.a, (remainByPlayer.get(m.a) || 0) + 1);
+            remainByPlayer.set(m.b, (remainByPlayer.get(m.b) || 0) + 1);
+          }
+        }
 
-    const enriched = list.map((s, idx)=>({
-      ...s,
-      rank: idx+1,
-      remain: remainByPlayer.get(s.id)||0,
-      maxPts: s.pts + 3*(remainByPlayer.get(s.id)||0)
-    }));
+        const enriched = list.map((s, idx) => ({
+          ...s,
+          rank: idx + 1,
+          remain: remainByPlayer.get(s.id) || 0,
+          maxPts: s.pts + 3 * (remainByPlayer.get(s.id) || 0)
+        }));
 
-    const current4thPts = enriched[3]?.pts ?? 0;
-    const current5thPts = enriched[4]?.pts ?? 0;
+        const current4thPts = enriched[3]?.pts ?? 0;
+        const current5thPts = enriched[4]?.pts ?? 0;
 
-    const locked = enriched.filter(p=>{
-      // "quasi lock" heuristique : même si le 5e gagne tout, il ne dépasse pas
-      const challengers = enriched.filter(x=>x.id!==p.id);
-      const countCanBeat = challengers.filter(c => c.maxPts > p.pts).length;
-      return p.rank<=4 && countCanBeat < 4;
-    });
+        const locked = enriched.filter(p => {
+          // "quasi lock" heuristique : même si le 5e gagne tout, il ne dépasse pas
+          const challengers = enriched.filter(x => x.id !== p.id);
+          const countCanBeat = challengers.filter(c => c.maxPts > p.pts).length;
+          return p.rank <= 4 && countCanBeat < 4;
+        });
 
-    const alive = enriched.filter(p => p.maxPts >= current4thPts);
+        const alive = enriched.filter(p => p.maxPts >= current4thPts);
 
-    const rows = enriched.map(p=>{
-      let status = "En course";
-      let cls = "";
-      if(locked.some(x=>x.id===p.id)){ status = "Bien placé"; cls = "goodText"; }
-      if(!alive.some(x=>x.id===p.id)){ status = "Très compromis"; cls = "dangerText"; }
+        const rows = enriched.map(p => {
+          let status = "En course";
+          let cls = "";
+          if (locked.some(x => x.id === p.id)) { status = "Bien placé"; cls = "goodText"; }
+          if (!alive.some(x => x.id === p.id)) { status = "Très compromis"; cls = "dangerText"; }
 
-      return `
+          return `
         <div class="pill w100" style="justify-content:space-between">
           <span><b>#${p.rank}</b> ${esc(p.name)}</span>
           <span class="mono ${cls}">Pts ${p.pts} • Restants ${p.remain} • Max ${p.maxPts} • ${status}</span>
         </div>
       `;
-    }).join("");
+        }).join("");
 
-    $("#scenarioBox").innerHTML = `
+        $("#scenarioBox").innerHTML = `
       <div class="small" style="margin-bottom:8px">
         Estimation rapide (heuristique) des chances de top 4 via points max atteignables.
         Pour un "simulateur exhaustif" on peut l'ajouter ensuite.
       </div>
       ${rows}
     `;
-  }
+      }
 
-  /* =========================
-     UI / TABS
-  ========================= */
-  function setTab(tab){
-    const meta = {
-      dashboard:["Dashboard","Vue rapide : matchs à venir, derniers résultats, classement et top parieurs."],
-      matches:["Matchs","Résultats, stream, paris, filtres de round et vue mobile-friendly."],
-      history:["Historique","Parties finies et parties à venir."],
-      standings:["Classements","Classement victoires + classement des paris + ROI."],
-      admin:["Admin","Import/export JSON, journal d'actions et outils arbitre."]
-    };
-    $$(".navbtn").forEach(b=>b.classList.toggle("active", b.dataset.tab===tab));
-    ["dashboard","matches","history","standings","admin"].forEach(t=>{
-      $(`#tab_${t}`).classList.toggle("hidden", t!==tab);
-    });
-    $("#pageTitle").textContent = meta[tab][0];
-    $("#pageSub").textContent = meta[tab][1];
-  }
+      /* =========================
+         UI / TABS
+      ========================= */
+      function setTab(tab) {
+        const meta = {
+          dashboard: ["Dashboard", "Vue rapide : matchs à venir, derniers résultats, classement et top parieurs."],
+          matches: ["Matchs", "Résultats, stream, paris, filtres de round et vue mobile-friendly."],
+          history: ["Historique", "Parties finies et parties à venir."],
+          standings: ["Classements", "Classement victoires + classement des paris + ROI."],
+          admin: ["Admin", "Import/export JSON, journal d'actions et outils arbitre."]
+        };
+        $$(".navbtn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+        ["dashboard", "matches", "history", "standings", "admin"].forEach(t => {
+          $(`#tab_${t}`).classList.toggle("hidden", t !== tab);
+        });
+        $("#pageTitle").textContent = meta[tab][0];
+        $("#pageSub").textContent = meta[tab][1];
+      }
 
-  $$(".navbtn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      setTab(btn.dataset.tab);
-      renderAll();
-    });
-  });
+      $$(".navbtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          setTab(btn.dataset.tab);
+          renderAll();
+        });
+      });
 
-  /* =========================
-     LOGIN
-  ========================= */
-  // Revised login flow: robust profile validation + support for imported profiles.
-  function selectedLoginProfileId(){
-    return normalizedId($("#loginProfile").value);
-  }
+      /* =========================
+         LOGIN
+      ========================= */
+      // Revised login flow: robust profile validation + support for imported profiles.
+      function selectedLoginProfileId() {
+        return normalizedId($("#loginProfile").value);
+      }
 
-  function passwordForProfile(pid){
-    return PLAYER_PASS_BY_ID[pid] || "";
-  }
+      function passwordForProfile(pid) {
+        return PLAYER_PASS_BY_ID[pid] || "";
+      }
 
-  let loginPasswordsVisible = false;
+      let loginPasswordsVisible = false;
 
-  function maskPassword(pass){
-    const raw = String(pass || "");
-    return raw ? "•".repeat(raw.length) : "";
-  }
+      function maskPassword(pass) {
+        const raw = String(pass || "");
+        return raw ? "•".repeat(raw.length) : "";
+      }
 
-  function syncPasswordToggleLabel(){
-    const btn = $("#btnTogglePasswords");
-    if(!btn) return;
-    btn.textContent = loginPasswordsVisible ? "Masquer MDP" : "Afficher MDP";
-  }
+      function syncPasswordToggleLabel() {
+        const btn = $("#btnTogglePasswords");
+        if (!btn) return;
+        btn.textContent = loginPasswordsVisible ? "Masquer MDP" : "Afficher MDP";
+      }
 
-  function renderPasswordHint(pid){
-    const selected = pid || "pub";
-    const lines = [
-      "<b>Connexion profils</b>",
-      "Public : aucun mot de passe",
-      ...PLAYERS.map(p=>{
-        const shownPass = loginPasswordsVisible ? p.pass : maskPassword(p.pass);
-        return `${esc(p.name)} : <b>${esc(shownPass)}</b>`;
-      })
-    ];
-    if(selected !== "pub" && !PLAYER_PASS_BY_ID[selected]){
-      lines.push(`Profil sélectionné (${esc(profileName(selected))}) : <b>aucun mot de passe</b>.`);
-    }
-    $("#passwordHint").innerHTML = lines.join("<br/>");
-    syncPasswordToggleLabel();
-  }
+      function renderPasswordHint(pid) {
+        const selected = pid || "pub";
+        const lines = [
+          "<b>Connexion profils</b>",
+          "Public : aucun mot de passe",
+          ...PLAYERS.map(p => {
+            const shownPass = loginPasswordsVisible ? p.pass : maskPassword(p.pass);
+            return `${esc(p.name)} : <b>${esc(shownPass)}</b>`;
+          })
+        ];
+        if (selected !== "pub" && !PLAYER_PASS_BY_ID[selected]) {
+          lines.push(`Profil sélectionné (${esc(profileName(selected))}) : <b>aucun mot de passe</b>.`);
+        }
+        $("#passwordHint").innerHTML = lines.join("<br/>");
+        syncPasswordToggleLabel();
+      }
 
-  function renderLoginOptions(){
-    const sel = $("#loginProfile");
-    sel.innerHTML = state.profiles
-      .map(p=>`<option value="${escAttr(p.id)}">${esc(p.name)}</option>`)
-      .join("");
+      function renderLoginOptions() {
+        const sel = $("#loginProfile");
+        sel.innerHTML = state.profiles
+          .map(p => `<option value="${escAttr(p.id)}">${esc(p.name)}</option>`)
+          .join("");
 
-    const preferred = normalizeSessionProfileId(state.session.profileId, state.profiles) || "pub";
-    if(state.profiles.some(p=>p.id===preferred)){
-      sel.value = preferred;
-    } else if(sel.options.length > 0){
-      sel.selectedIndex = 0;
-    }
+        const preferred = normalizeSessionProfileId(state.session.profileId, state.profiles) || "pub";
+        if (state.profiles.some(p => p.id === preferred)) {
+          sel.value = preferred;
+        } else if (sel.options.length > 0) {
+          sel.selectedIndex = 0;
+        }
 
-    renderPasswordHint(selectedLoginProfileId());
-  }
+        renderPasswordHint(selectedLoginProfileId());
+      }
 
-  function doLogin(){
-    const pid = selectedLoginProfileId();
-    const pass = ($("#loginPass").value || "").trim().toUpperCase();
+      function doLogin() {
+        const pid = selectedLoginProfileId();
+        const pass = ($("#loginPass").value || "").trim().toUpperCase();
 
-    const validPid = normalizeSessionProfileId(pid, state.profiles);
-    if(!validPid){
-      alert("Profil invalide.");
-      renderLoginOptions();
-      return;
-    }
+        const validPid = normalizeSessionProfileId(pid, state.profiles);
+        if (!validPid) {
+          alert("Profil invalide.");
+          renderLoginOptions();
+          return;
+        }
 
-    const expectedPass = passwordForProfile(validPid);
-    if(expectedPass && pass !== expectedPass){
-      alert("Mot de passe incorrect.");
-      return;
-    }
+        const expectedPass = passwordForProfile(validPid);
+        if (expectedPass && pass !== expectedPass) {
+          alert("Mot de passe incorrect.");
+          return;
+        }
 
-    state.session.profileId = validPid;
-    $("#loginPass").value = "";
-    saveSessionCache();
-    $("#loginModal").classList.add("hide");
-    renderAll();
-  }
+        state.session.profileId = validPid;
+        $("#loginPass").value = "";
+        saveSessionCache();
+        $("#loginModal").classList.add("hide");
+        renderAll();
+      }
 
-  $("#btnLogin").addEventListener("click", doLogin);
-  $("#btnTogglePasswords").addEventListener("click", ()=>{
-    loginPasswordsVisible = !loginPasswordsVisible;
-    renderPasswordHint(selectedLoginProfileId());
-  });
-  $("#loginPass").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
-  $("#loginProfile").addEventListener("change", ()=>{
-    const pid = selectedLoginProfileId();
-    if(!passwordForProfile(pid)) $("#loginPass").value = "";
-    renderPasswordHint(pid);
-  });
+      $("#btnLogin").addEventListener("click", doLogin);
+      $("#btnTogglePasswords").addEventListener("click", () => {
+        loginPasswordsVisible = !loginPasswordsVisible;
+        renderPasswordHint(selectedLoginProfileId());
+      });
+      $("#loginPass").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+      $("#loginProfile").addEventListener("change", () => {
+        const pid = selectedLoginProfileId();
+        if (!passwordForProfile(pid)) $("#loginPass").value = "";
+        renderPasswordHint(pid);
+      });
 
-  $("#btnLogout").addEventListener("click", ()=>{
-    state.session.profileId = null;
-    saveSessionCache();
-    renderLoginOptions();
-    $("#loginModal").classList.remove("hide");
-    renderSidebarKPIs();
-  });
+      $("#btnLogout").addEventListener("click", () => {
+        state.session.profileId = null;
+        saveSessionCache();
+        renderLoginOptions();
+        $("#loginModal").classList.remove("hide");
+        renderSidebarKPIs();
+      });
 
-  function requireAdminAction(){
-    if(isAdmin()) return true;
-    alert("Action réservée à un profil connecté.");
-    return false;
-  }
+      function requireAdminAction() {
+        if (isAdmin()) return true;
+        alert("Action réservée à un profil connecté.");
+        return false;
+      }
 
-  /* =========================
-     ACTIONS GLOBALES
-  ========================= */
-  $("#btnReset").addEventListener("click", ()=>{
-    if(!requireAdminAction()) return;
-    if(!confirm("Reset complet (résultats + paris + crédits + historique) ?")) return;
-    localStorage.removeItem(LS_SESSION_KEY);
-    localStorage.removeItem(LS_KEY);
-    localStorage.removeItem(LS_MATCH_STATE_KEY);
-    location.href = location.origin + location.pathname;
-  });
+      /* =========================
+         ACTIONS GLOBALES
+      ========================= */
+      $("#btnReset").addEventListener("click", () => {
+        if (!requireAdminAction()) return;
+        if (!confirm("Reset complet (résultats + paris + crédits + historique) ?")) return;
+        localStorage.removeItem(LS_SESSION_KEY);
+        localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(LS_MATCH_STATE_KEY);
+        location.href = location.origin + location.pathname;
+      });
 
-  $("#btnCopyShare").addEventListener("click", async ()=>{
-    const s = encodeShare();
-    const u = new URL(location.href);
-    u.searchParams.set("s", s);
-    try{
-      await navigator.clipboard.writeText(u.toString());
-      alert("Lien copié !");
-    }catch(e){
-      prompt("Copie manuelle :", u.toString());
-    }
-  });
+      $("#btnCopyShare").addEventListener("click", async () => {
+        const s = encodeShare();
+        const u = new URL(location.href);
+        u.searchParams.set("s", s);
+        try {
+          await navigator.clipboard.writeText(u.toString());
+          alert("Lien copié !");
+        } catch (e) {
+          prompt("Copie manuelle :", u.toString());
+        }
+      });
 
-  $("#btnExportCSV").addEventListener("click", ()=>{
-    const rows = [];
-    rows.push(["match_id","round","playerA","playerB","stream_url","tkA","tkB","pkA","pkB","status","winner","pot_total","pot_A","pot_B"].join(","));
-    for(const m of allMatches()){
-      const r = ensureResult(m.id);
-      const st = matchStatus(m,r);
-      const win = st.valid ? (st.winner==="A" ? pName(m.a) : pName(m.b)) : "";
-      const pot = matchPot(m.id);
-      rows.push([
-        m.id, m.round, csv(pName(m.a)), csv(pName(m.b)),
-        csv(r.streamUrl||""), r.tkA, r.tkB, r.pkA, r.pkB,
-        csv(st.label), csv(win), pot.pot, pot.poolA, pot.poolB
-      ].join(","));
-    }
-    const blob = new Blob([rows.join("\n")], {type:"text/csv;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "tournoi_matchs_v2.csv";
-    a.click();
-  });
+      $("#btnExportCSV").addEventListener("click", () => {
+        const rows = [];
+        rows.push(["match_id", "round", "playerA", "playerB", "stream_url", "tkA", "tkB", "pkA", "pkB", "status", "winner", "pot_total", "pot_A", "pot_B"].join(","));
+        for (const m of allMatches()) {
+          const r = ensureResult(m.id);
+          const st = matchStatus(m, r);
+          const win = st.valid ? (st.winner === "A" ? pName(m.a) : pName(m.b)) : "";
+          const pot = matchPot(m.id);
+          rows.push([
+            m.id, m.round, csv(pName(m.a)), csv(pName(m.b)),
+            csv(r.streamUrl || ""), r.tkA, r.tkB, r.pkA, r.pkB,
+            csv(st.label), csv(win), pot.pot, pot.poolA, pot.poolB
+          ].join(","));
+        }
+        const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "tournoi_matchs_v2.csv";
+        a.click();
+      });
 
-  $("#btnExportJSON").addEventListener("click", ()=>{
-    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "league_planner_backup_v2.json";
-    a.click();
-  });
+      $("#btnExportJSON").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "league_planner_backup_v2.json";
+        a.click();
+      });
 
-  $("#btnExportMatchStateJSON").addEventListener("click", ()=>{
-    const payload = buildMatchStateJson();
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json;charset=utf-8"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "league_shared_state_v2.json";
-    a.click();
-  });
+      $("#btnExportMatchStateJSON").addEventListener("click", () => {
+        const payload = buildMatchStateJson();
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "league_shared_state_v2.json";
+        a.click();
+      });
 
-  $("#btnImportJSON").addEventListener("click", ()=>{
-    if(!requireAdminAction()) return;
-    $("#jsonImportInput").click();
-  });
+      $("#btnImportJSON").addEventListener("click", () => {
+        if (!requireAdminAction()) return;
+        $("#jsonImportInput").click();
+      });
 
-  $("#btnImportMatchStateJSON").addEventListener("click", ()=>{
-    if(!requireAdminAction()) return;
-    $("#matchStateImportInput").click();
-  });
+      $("#btnImportMatchStateJSON").addEventListener("click", () => {
+        if (!requireAdminAction()) return;
+        $("#matchStateImportInput").click();
+      });
 
-  $("#jsonImportInput").addEventListener("change", async (e)=>{
-    const file = e.target.files?.[0];
-    if(!file) return;
-    try{
-      const text = await file.text();
-      importJsonObject(JSON.parse(text));
-      e.target.value = "";
-    }catch(err){
-      alert("Import JSON impossible.");
-      console.error(err);
-    }
-  });
+      $("#jsonImportInput").addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          importJsonObject(JSON.parse(text));
+          e.target.value = "";
+        } catch (err) {
+          alert("Import JSON impossible.");
+          console.error(err);
+        }
+      });
 
-  $("#matchStateImportInput").addEventListener("change", async (e)=>{
-    const file = e.target.files?.[0];
-    if(!file) return;
-    try{
-      const text = await file.text();
-      importMatchStateJsonObject(JSON.parse(text));
-      e.target.value = "";
-    }catch(err){
-      alert("Import état global impossible.");
-      console.error(err);
-    }
-  });
+      $("#matchStateImportInput").addEventListener("change", async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          importMatchStateJsonObject(JSON.parse(text));
+          e.target.value = "";
+        } catch (err) {
+          alert("Import état global impossible.");
+          console.error(err);
+        }
+      });
 
-  $("#btnUndoLast").addEventListener("click", undoLastResultChange);
+      $("#btnUndoLast").addEventListener("click", undoLastResultChange);
 
-  function importJsonObject(obj){
-    if(!requireAdminAction()) return;
-    if(!sanitizeLoaded(obj)){
-      alert("JSON invalide / version non compatible.");
-      return;
-    }
-    state.rounds = generateRounds();
-    ensureAllCredits();
-    recalcAllEconomyAndStats();
-    renderLoginOptions();
-    addAudit("import_json", {});
-    save();
-    if(state.session.profileId){
-      $("#loginModal").classList.add("hide");
-      renderAll();
-    } else {
-      $("#loginModal").classList.remove("hide");
-      renderSidebarKPIs();
-    }
-    alert("Import JSON effectué.");
-  }
+      function importJsonObject(obj) {
+        if (!requireAdminAction()) return;
+        if (!sanitizeLoaded(obj)) {
+          alert("JSON invalide / version non compatible.");
+          return;
+        }
+        state.rounds = generateRounds();
+        ensureAllCredits();
+        recalcAllEconomyAndStats();
+        renderLoginOptions();
+        addAudit("import_json", {});
+        save();
+        if (state.session.profileId) {
+          $("#loginModal").classList.add("hide");
+          renderAll();
+        } else {
+          $("#loginModal").classList.remove("hide");
+          renderSidebarKPIs();
+        }
+        alert("Import JSON effectué.");
+      }
 
-  function importMatchStateJsonObject(obj){
-    if(!requireAdminAction()) return;
-    if(!applyMatchStateJson(obj)){
-      alert("JSON état global invalide.");
-      return;
-    }
-    recalcAllEconomyAndStats();
-    addAudit("import_match_state_json", {});
-    save();
-    renderAll();
-    alert("Etat global importé.");
-  }
+      function importMatchStateJsonObject(obj) {
+        if (!requireAdminAction()) return;
+        if (!applyMatchStateJson(obj)) {
+          alert("JSON état global invalide.");
+          return;
+        }
+        recalcAllEconomyAndStats();
+        addAudit("import_match_state_json", {});
+        save();
+        renderAll();
+        alert("Etat global importé.");
+      }
 
-  /* =========================
-     RENDER SIDEBAR / STATUS
-  ========================= */
-  function renderSidebarKPIs(){
-    const pid = sessionPid();
-    const admin = isAdmin(pid);
-    $("#who").textContent = pid ? profileName(pid) : "-";
-    $("#credits").textContent = pid ? ensureCredits(pid).balance : 0;
-    $("#roleLabel").textContent = !pid ? "-" : admin ? "Arbitre" : (pid==="pub" ? "Public" : "Joueur");
+      /* =========================
+         RENDER SIDEBAR / STATUS
+      ========================= */
+      function renderSidebarKPIs() {
+        const pid = sessionPid();
+        const admin = isAdmin(pid);
+        $("#who").textContent = pid ? profileName(pid) : "-";
+        $("#credits").textContent = pid ? ensureCredits(pid).balance : 0;
+        $("#roleLabel").textContent = !pid ? "-" : admin ? "Arbitre" : (pid === "pub" ? "Public" : "Joueur");
 
-    $("#btnUndoLast").disabled = !admin;
-    $("#btnImportJSON").disabled = !admin;
-    $("#btnImportMatchStateJSON").disabled = !admin;
-    $("#btnReset").disabled = !admin;
-    if($("#btnPasteImport")) $("#btnPasteImport").disabled = !admin;
+        $("#btnUndoLast").disabled = !admin;
+        $("#btnImportJSON").disabled = !admin;
+        $("#btnImportMatchStateJSON").disabled = !admin;
+        $("#btnReset").disabled = !admin;
+        if ($("#btnPasteImport")) $("#btnPasteImport").disabled = !admin;
 
-    const {validCount,total} = computeStandingsWins();
-    $("#prog").textContent = validCount;
-    const pct = total ? Math.round((validCount/total)*100) : 0;
-    $("#progPct").textContent = pct + "%";
-    $("#progressBar").style.width = pct + "%";
-  }
+        const { validCount, total } = computeStandingsWins();
+        $("#prog").textContent = validCount;
+        const pct = total ? Math.round((validCount / total) * 100) : 0;
+        $("#progPct").textContent = pct + "%";
+        $("#progressBar").style.width = pct + "%";
+      }
 
-  /* =========================
-     RENDER DASHBOARD
-  ========================= */
-  function renderDashboard(){
-    const matches = allMatches();
-    for(const m of matches) settleMatchIfNeeded(m);
+      /* =========================
+         RENDER DASHBOARD
+      ========================= */
+      function renderDashboard() {
+        const matches = allMatches();
+        for (const m of matches) settleMatchIfNeeded(m);
 
-    const finished=[], upcoming=[];
-    for(const m of matches){
-      const res = ensureResult(m.id);
-      const st = matchStatus(m,res);
-      if(st.valid) finished.push({m,res,st});
-      else upcoming.push({m,res,st});
-    }
+        const finished = [], upcoming = [];
+        for (const m of matches) {
+          const res = ensureResult(m.id);
+          const st = matchStatus(m, res);
+          if (st.valid) finished.push({ m, res, st });
+          else upcoming.push({ m, res, st });
+        }
 
-    $("#upCount").textContent = upcoming.length;
-    $("#finCount").textContent = finished.length;
+        $("#upCount").textContent = upcoming.length;
+        $("#finCount").textContent = finished.length;
 
-    $("#upcoming").innerHTML = upcoming.slice(0,8).map(({m,st})=>`
+        $("#upcoming").innerHTML = upcoming.slice(0, 8).map(({ m, st }) => `
       <div class="match" style="grid-template-columns:1fr 1fr 1fr">
         <div class="pcol"><span class="tag"></span><div class="pname"><b>${esc(pName(m.a))}</b><span>Round ${m.round}</span></div></div>
         <div class="center">
@@ -2323,15 +2281,15 @@
       </div>
     `).join("") || `<div class="small">Aucun match à venir.</div>`;
 
-    finished.sort((x,y)=> {
-      const tx = x.res.updatedAt || "";
-      const ty = y.res.updatedAt || "";
-      return ty.localeCompare(tx) || y.m.round-x.m.round;
-    });
+        finished.sort((x, y) => {
+          const tx = x.res.updatedAt || "";
+          const ty = y.res.updatedAt || "";
+          return ty.localeCompare(tx) || y.m.round - x.m.round;
+        });
 
-    $("#recent").innerHTML = finished.slice(0,8).map(({m,res,st})=>{
-      const win = st.winner==="A" ? pName(m.a) : pName(m.b);
-      return `
+        $("#recent").innerHTML = finished.slice(0, 8).map(({ m, res, st }) => {
+          const win = st.winner === "A" ? pName(m.a) : pName(m.b);
+          return `
       <div class="match" style="grid-template-columns:1fr 1fr 1fr">
         <div class="pcol"><span class="tag"></span><div class="pname"><b>${esc(pName(m.a))}</b><span>PK ${res.pkA} • TK ${res.tkA}</span></div></div>
         <div class="center">
@@ -2340,87 +2298,87 @@
         </div>
         <div class="pcol right"><div class="pname" style="align-items:flex-end"><b>${esc(pName(m.b))}</b><span>PK ${res.pkB} • TK ${res.tkB}</span></div><span class="tag b"></span></div>
       </div>`;
-    }).join("") || `<div class="small">Aucun résultat pour l'instant.</div>`;
+        }).join("") || `<div class="small">Aucun résultat pour l'instant.</div>`;
 
-    const wins = computeStandingsWins().list.slice(0,5);
-    $("#dashWins").innerHTML = wins.map((s,i)=>`
+        const wins = computeStandingsWins().list.slice(0, 5);
+        $("#dashWins").innerHTML = wins.map((s, i) => `
       <div class="pill" style="justify-content:space-between; width:100%">
-        <span><b>#${i+1}</b> ${esc(s.name)}</span>
+        <span><b>#${i + 1}</b> ${esc(s.name)}</span>
         <span class="mono"><b>${s.pts}</b> pts • W ${s.w}</span>
       </div>
     `).join("");
 
-    const bets = computeStandingsBets().slice(0,5);
-    $("#dashBets").innerHTML = bets.map((b,i)=>`
+        const bets = computeStandingsBets().slice(0, 5);
+        $("#dashBets").innerHTML = bets.map((b, i) => `
       <div class="pill" style="justify-content:space-between; width:100%">
-        <span><b>#${i+1}</b> ${esc(b.name)}</span>
-        <span class="mono"><b>${b.balance}</b> • ${b.profit>=0?'+':''}${b.profit}</span>
+        <span><b>#${i + 1}</b> ${esc(b.name)}</span>
+        <span class="mono"><b>${b.balance}</b> • ${b.profit >= 0 ? '+' : ''}${b.profit}</span>
       </div>
     `).join("");
 
-    renderQualificationScenarios();
-  }
+        renderQualificationScenarios();
+      }
 
-  /* =========================
-     RENDER MATCHES
-  ========================= */
-  function renderRoundFilterOptions(){
-    const sel = $("#roundFilter");
-    const current = sel.value || "all";
-    const rounds = [...new Set(allMatches().map(m=>m.round))];
-    sel.innerHTML = `<option value="all">Tous les rounds</option>` +
-      rounds.map(r=>`<option value="${r}">Round ${r}</option>`).join("");
-    sel.value = rounds.includes(Number(current)) ? String(current) : "all";
-  }
+      /* =========================
+         RENDER MATCHES
+      ========================= */
+      function renderRoundFilterOptions() {
+        const sel = $("#roundFilter");
+        const current = sel.value || "all";
+        const rounds = [...new Set(allMatches().map(m => m.round))];
+        sel.innerHTML = `<option value="all">Tous les rounds</option>` +
+          rounds.map(r => `<option value="${r}">Round ${r}</option>`).join("");
+        sel.value = rounds.includes(Number(current)) ? String(current) : "all";
+      }
 
-  function renderMatches(){
-    renderRoundFilterOptions();
+      function renderMatches() {
+        renderRoundFilterOptions();
 
-    const pid = sessionPid();
-    const q = ($("#q").value||"").trim().toLowerCase();
-    const mode = $("#viewMode").value;
-    const roundFilter = $("#roundFilter").value;
+        const pid = sessionPid();
+        const q = ($("#q").value || "").trim().toLowerCase();
+        const mode = $("#viewMode").value;
+        const roundFilter = $("#roundFilter").value;
 
-    for(const m of allMatches()) settleMatchIfNeeded(m);
+        for (const m of allMatches()) settleMatchIfNeeded(m);
 
-    const list = allMatches().filter(m=>{
-      const a = pName(m.a).toLowerCase();
-      const b = pName(m.b).toLowerCase();
-      const st = matchStatus(m, ensureResult(m.id));
+        const list = allMatches().filter(m => {
+          const a = pName(m.a).toLowerCase();
+          const b = pName(m.b).toLowerCase();
+          const st = matchStatus(m, ensureResult(m.id));
 
-      const qOk = !q || a.includes(q) || b.includes(q);
-      const roundOk = roundFilter==="all" || String(m.round)===roundFilter;
+          const qOk = !q || a.includes(q) || b.includes(q);
+          const roundOk = roundFilter === "all" || String(m.round) === roundFilter;
 
-      let modeOk = true;
-      if(mode==="mine") modeOk = !!pid && pid!=="pub" && (m.a===pid || m.b===pid);
-      if(mode==="open") modeOk = !st.valid;
-      if(mode==="done") modeOk = st.valid;
+          let modeOk = true;
+          if (mode === "mine") modeOk = !!pid && pid !== "pub" && (m.a === pid || m.b === pid);
+          if (mode === "open") modeOk = !st.valid;
+          if (mode === "done") modeOk = st.valid;
 
-      return qOk && roundOk && modeOk;
-    });
+          return qOk && roundOk && modeOk;
+        });
 
-    $("#matches").innerHTML = list.map(m=>{
-      const res = ensureResult(m.id);
-      const st = matchStatus(m,res);
-      const win = st.valid ? (st.winner==="A" ? pName(m.a) : pName(m.b)) : "";
-      const pot = matchPot(m.id);
-      const canEdit = canEditMatch(m);
-      const canBet = !!pid && !st.valid;
-      const tkWinner = (isIntStr(res.tkA) && isIntStr(res.tkB) && (+res.tkA !== +res.tkB))
-        ? (+res.tkA > +res.tkB ? "A" : "B")
-        : "";
-      const pkWinner = (isIntStr(res.pkA) && isIntStr(res.pkB) && (+res.pkA !== +res.pkB))
-        ? (+res.pkA > +res.pkB ? "A" : "B")
-        : "";
+        $("#matches").innerHTML = list.map(m => {
+          const res = ensureResult(m.id);
+          const st = matchStatus(m, res);
+          const win = st.valid ? (st.winner === "A" ? pName(m.a) : pName(m.b)) : "";
+          const pot = matchPot(m.id);
+          const canEdit = canEditMatch(m);
+          const canBet = !!pid && !st.valid;
+          const tkWinner = (isIntStr(res.tkA) && isIntStr(res.tkB) && (+res.tkA !== +res.tkB))
+            ? (+res.tkA > +res.tkB ? "A" : "B")
+            : "";
+          const pkWinner = (isIntStr(res.pkA) && isIntStr(res.pkB) && (+res.pkA !== +res.pkB))
+            ? (+res.pkA > +res.pkB ? "A" : "B")
+            : "";
 
-      const editableAttrs = canEdit ? "" : "disabled";
-      const streamBtnDisabled = res.streamUrl?.trim() ? "" : "disabled";
+          const editableAttrs = canEdit ? "" : "disabled";
+          const streamBtnDisabled = res.streamUrl?.trim() ? "" : "disabled";
 
-      const updatedMeta = res.updatedAt
-        ? `<span class="tiny">Maj: ${new Date(res.updatedAt).toLocaleString()}${res.updatedBy ? ` • ${esc(profileName(res.updatedBy))}` : ""}</span>`
-        : `<span class="tiny">Non renseigné</span>`;
+          const updatedMeta = res.updatedAt
+            ? `<span class="tiny">Maj: ${new Date(res.updatedAt).toLocaleString()}${res.updatedBy ? ` • ${esc(profileName(res.updatedBy))}` : ""}</span>`
+            : `<span class="tiny">Non renseigné</span>`;
 
-      return `
+          return `
         <div class="match">
           <div class="pcol">
             <span class="tag"></span>
@@ -2440,7 +2398,7 @@
             ${updatedMeta}
 
             <div class="row2">
-              <input class="input" placeholder="Lien stream (obligatoire pour valider)" data-stream="${m.id}" value="${escAttr(res.streamUrl||"")}" ${editableAttrs}/>
+              <input class="input" placeholder="Lien stream (obligatoire pour valider)" data-stream="${m.id}" value="${escAttr(res.streamUrl || "")}" ${editableAttrs}/>
               <button class="btn secondary" data-openstream="${m.id}" ${streamBtnDisabled}>Ouvrir</button>
             </div>
 
@@ -2448,15 +2406,15 @@
               <div class="scorebox">
                 <div class="lbl">Tower Kill (gagnant)</div>
                 <div class="switchvals">
-                  <button class="switchbtn ${tkWinner==="A" ? "active" : ""}" data-score-switch="tk" data-side="A" data-mid="${m.id}" ${editableAttrs}>A</button>
-                  <button class="switchbtn ${tkWinner==="B" ? "active" : ""}" data-score-switch="tk" data-side="B" data-mid="${m.id}" ${editableAttrs}>B</button>
+                  <button class="switchbtn ${tkWinner === "A" ? "active" : ""}" data-score-switch="tk" data-side="A" data-mid="${m.id}" ${editableAttrs}>A</button>
+                  <button class="switchbtn ${tkWinner === "B" ? "active" : ""}" data-score-switch="tk" data-side="B" data-mid="${m.id}" ${editableAttrs}>B</button>
                 </div>
               </div>
               <div class="scorebox">
                 <div class="lbl">Player Kill (gagnant)</div>
                 <div class="switchvals">
-                  <button class="switchbtn ${pkWinner==="A" ? "active" : ""}" data-score-switch="pk" data-side="A" data-mid="${m.id}" ${editableAttrs}>A</button>
-                  <button class="switchbtn ${pkWinner==="B" ? "active" : ""}" data-score-switch="pk" data-side="B" data-mid="${m.id}" ${editableAttrs}>B</button>
+                  <button class="switchbtn ${pkWinner === "A" ? "active" : ""}" data-score-switch="pk" data-side="A" data-mid="${m.id}" ${editableAttrs}>A</button>
+                  <button class="switchbtn ${pkWinner === "B" ? "active" : ""}" data-score-switch="pk" data-side="B" data-mid="${m.id}" ${editableAttrs}>B</button>
                 </div>
               </div>
             </div>
@@ -2490,551 +2448,489 @@
           </div>
         </div>
       `;
-    }).join("") || `<div class="small">Aucun match correspondant aux filtres.</div>`;
+        }).join("") || `<div class="small">Aucun match correspondant aux filtres.</div>`;
 
-    // Hydrate paris UI
-    for(const m of list){
-      const infoEl = $(`[data-betinfo="${m.id}"]`);
-      if(!infoEl) continue;
+        // Hydrate paris UI
+        for (const m of list) {
+          const infoEl = $(`[data-betinfo="${m.id}"]`);
+          if (!infoEl) continue;
 
-      const st = matchStatus(m, ensureResult(m.id));
-      const pot = matchPot(m.id);
+          const st = matchStatus(m, ensureResult(m.id));
+          const pot = matchPot(m.id);
 
-      if(!pid){
-        infoEl.innerHTML = `Connecte-toi pour parier.`;
-        continue;
-      }
-
-      const b = state.bets[m.id]?.[pid] || {pick:"A", amount:0, settled:false, payout:0, win:false};
-      const pickEl = $(`[data-betpick="${m.id}"]`);
-      const amtEl = $(`[data-betamt="${m.id}"]`);
-      if(pickEl) pickEl.value = b.pick || "A";
-      if(amtEl) amtEl.value = (b.amount && b.amount>0) ? String(b.amount) : "";
-
-      const myTxt = (b.amount>0)
-        ? `Mise: <b>${round2(b.amount)}</b> sur <b>${esc(b.pick==="A" ? pName(m.a) : pName(m.b))}</b>.`
-        : `Aucune mise.`;
-      const potTxt = ` Cagnotte: <b>${pot.pot}</b> (A ${pot.poolA} / B ${pot.poolB}).`;
-      const settledTxt = b.settled
-        ? ` Résultat: ${b.win ? `<span class="winner">gain ${b.payout}</span>` : `<span style="color:var(--bad);font-weight:1000">perdu</span>`}.`
-        : ``;
-      const closeTxt = st.valid ? ` <b>Paris fermés.</b>` : ``;
-      infoEl.innerHTML = myTxt + potTxt + settledTxt + closeTxt;
-    }
-
-    // Bind stream open
-    $$("[data-openstream]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const mid = btn.getAttribute("data-openstream");
-        const r = ensureResult(mid);
-        if(r.streamUrl?.trim()) window.open(r.streamUrl.trim(), "_blank");
-      });
-    });
-
-    // Bind stream input
-    bindResultInput("[data-stream]", "data-stream", (mid, value)=>{
-      const m = matchById(mid); if(!m || !canEditMatch(m)) return;
-      const r = ensureResult(mid);
-      const nextValue = value.trim();
-      if(r.streamUrl === nextValue) return;
-      const wasCommitted = !!r.committed;
-      pushUndoSnapshot(m);
-      r.streamUrl = nextValue;
-      r.committed = false;
-      r.updatedAt = nowIso();
-      r.updatedBy = sessionPid() || "";
-      addAudit("edit_stream", {matchId:mid});
-      if(wasCommitted){
-        recalcAllEconomyAndStats();
-        renderAll();
-      } else {
-        save();
-        renderAll();
-      }
-    }, {debounce:true});
-
-    // Bind score switches (A/B winners for TK and PK)
-    $$("[data-score-switch]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const mid = btn.getAttribute("data-mid");
-        const metric = btn.getAttribute("data-score-switch");
-        const side = btn.getAttribute("data-side");
-        switchScoreWinner(mid, metric, side);
-      });
-    });
-
-    function switchScoreWinner(mid, metric, side){
-      const m = matchById(mid); if(!m || !canEditMatch(m)) return;
-      if((metric !== "tk" && metric !== "pk") || (side !== "A" && side !== "B")) return;
-
-      const r = ensureResult(mid);
-      const keyA = metric === "tk" ? "tkA" : "pkA";
-      const keyB = metric === "tk" ? "tkB" : "pkB";
-      const onA = side === "A" ? "1" : "0";
-      const onB = side === "B" ? "1" : "0";
-      const isSameSelection = (r[keyA] === onA && r[keyB] === onB);
-      const nextA = isSameSelection ? "" : onA;
-      const nextB = isSameSelection ? "" : onB;
-      if(r[keyA] === nextA && r[keyB] === nextB) return;
-
-      const wasCommitted = !!r.committed;
-      pushUndoSnapshot(m);
-      r[keyA] = nextA;
-      r[keyB] = nextB;
-      r.committed = false;
-      r.updatedAt = nowIso();
-      r.updatedBy = sessionPid() || "";
-      addAudit("edit_score_switch", {matchId:mid, metric, side: isSameSelection ? "" : side});
-      if(wasCommitted){
-        recalcAllEconomyAndStats();
-        renderAll();
-      } else {
-        save();
-        renderAll();
-      }
-    }
-
-    // Explicit commit step so users know when a result is validated
-    $$("[data-commit-result]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const mid = btn.getAttribute("data-commit-result");
-        const m = matchById(mid);
-        if(!m || !canEditMatch(m)) return;
-
-        const r = ensureResult(mid);
-        if(!r.streamUrl?.trim()){
-          alert("Ajoute d'abord le lien stream.");
-          return;
-        }
-        if(!isIntStr(r.tkA) || !isIntStr(r.tkB) || !isIntStr(r.pkA) || !isIntStr(r.pkB)){
-          alert("Choisis un gagnant A/B pour Tower Kill et Player Kill.");
-          return;
-        }
-
-        const winner = resolveWinnerFromScores(r);
-        if(!winner){
-          alert("Résultat invalide (égalité).");
-          return;
-        }
-
-        r.committed = true;
-        r.updatedAt = nowIso();
-        r.updatedBy = sessionPid() || "";
-        addAudit("commit_result", {matchId:mid, winner});
-        save();
-        recalcAllEconomyAndStats();
-        renderAll();
-        alert(`Résultat validé: ${winner==="A" ? pName(m.a) : pName(m.b)}.`);
-      });
-    });
-
-    function bindResultInput(selector, attr, setter, opts={}){
-      const debounceMap = new Map();
-      $$(selector).forEach(inp=>{
-        inp.addEventListener("input", ()=>{
-          const mid = inp.getAttribute(attr);
-          const m = matchById(mid);
-          if(!m || !canEditMatch(m)) return;
-
-          const run = ()=>setter(mid, inp.value);
-          if(!opts.debounce){ run(); return; }
-
-          clearTimeout(debounceMap.get(inp));
-          debounceMap.set(inp, setTimeout(run, 300));
-        });
-      });
-    }
-
-    // Clear result (admin)
-    $$("[data-clear-result]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        if(!isAdmin()) return;
-        const mid = btn.getAttribute("data-clear-result");
-        const m = matchById(mid);
-        if(!m) return;
-        if(!confirm(`Effacer le résultat de ${pName(m.a)} vs ${pName(m.b)} ?`)) return;
-
-        pushUndoSnapshot(m);
-        state.results[mid] = {
-          streamUrl:"",
-          tkA:"", pkA:"",
-          tkB:"", pkB:"",
-          committed:false,
-          updatedAt: nowIso(),
-          updatedBy: sessionPid()
-        };
-        addAudit("clear_result", {matchId:mid});
-        recalcAllEconomyAndStats();
-        save();
-        renderAll();
-      });
-    });
-
-    // Bets
-    $$("[data-betbtn]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const pid = sessionPid();
-        if(!pid) return;
-
-        const mid = btn.getAttribute("data-betbtn");
-        const m = matchById(mid);
-        if(!m) return;
-
-        const st = matchStatus(m, ensureResult(mid));
-        if(st.valid){ alert("Match déjà validé, paris fermés."); return; }
-
-        const pick = $(`[data-betpick="${mid}"]`)?.value || "A";
-        const amtRaw = ($(`[data-betamt="${mid}"]`)?.value || "").trim();
-        if(!/^\d+(\.\d+)?$/.test(amtRaw)){ alert("Mise invalide."); return; }
-
-        const amt = Number(amtRaw);
-        if(!Number.isFinite(amt) || amt<=0){ alert("Mise invalide."); return; }
-
-        const c = ensureCredits(pid);
-        const b = ensureBet(mid,pid);
-
-        // refund old un-settled bet if replacement
-        if(!b.settled && (+b.amount||0) > 0){
-          c.balance = round2(c.balance + (+b.amount||0));
-        }
-
-        if(c.balance < amt){
-          // rollback refund
-          if(!b.settled && (+b.amount||0) > 0){
-            c.balance = round2(c.balance - (+b.amount||0));
+          if (!pid) {
+            infoEl.innerHTML = `Connecte-toi pour parier.`;
+            continue;
           }
-          alert("Crédits insuffisants.");
-          return;
+
+          const b = state.bets[m.id]?.[pid] || { pick: "A", amount: 0, settled: false, payout: 0, win: false };
+          const pickEl = $(`[data-betpick="${m.id}"]`);
+          const amtEl = $(`[data-betamt="${m.id}"]`);
+          if (pickEl) pickEl.value = b.pick || "A";
+          if (amtEl) amtEl.value = (b.amount && b.amount > 0) ? String(b.amount) : "";
+
+          const myTxt = (b.amount > 0)
+            ? `Mise: <b>${round2(b.amount)}</b> sur <b>${esc(b.pick === "A" ? pName(m.a) : pName(m.b))}</b>.`
+            : `Aucune mise.`;
+          const potTxt = ` Cagnotte: <b>${pot.pot}</b> (A ${pot.poolA} / B ${pot.poolB}).`;
+          const settledTxt = b.settled
+            ? ` Résultat: ${b.win ? `<span class="winner">gain ${b.payout}</span>` : `<span style="color:var(--bad);font-weight:1000">perdu</span>`}.`
+            : ``;
+          const closeTxt = st.valid ? ` <b>Paris fermés.</b>` : ``;
+          infoEl.innerHTML = myTxt + potTxt + settledTxt + closeTxt;
         }
 
-        b.pick = pick;
-        b.amount = round2(amt);
-        b.settled = false;
-        b.payout = 0;
-        b.win = false;
-        b.placedAt = nowIso();
+        // Bind stream open
+        $$("[data-openstream]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const mid = btn.getAttribute("data-openstream");
+            const r = ensureResult(mid);
+            if (r.streamUrl?.trim()) window.open(r.streamUrl.trim(), "_blank");
+          });
+        });
 
-        c.balance = round2(c.balance - b.amount);
-        addAudit("bet_place", {matchId:mid, pid, pick, amount:b.amount});
-        save();
-        renderAll();
-      });
-    });
+        // Bind stream input
+        bindResultInput("[data-stream]", "data-stream", (mid, value) => {
+          const m = matchById(mid); if (!m || !canEditMatch(m)) return;
+          const r = ensureResult(mid);
+          const nextValue = value.trim();
+          if (r.streamUrl === nextValue) return;
+          const wasCommitted = !!r.committed;
+          pushUndoSnapshot(m);
+          r.streamUrl = nextValue;
+          r.committed = false;
+          r.updatedAt = nowIso();
+          r.updatedBy = sessionPid() || "";
+          addAudit("edit_stream", { matchId: mid });
+          if (wasCommitted) {
+            recalcAllEconomyAndStats();
+            renderAll();
+          } else {
+            save();
+            renderAll();
+          }
+        }, { debounce: true });
 
-    $$("[data-betclear]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const pid = sessionPid();
-        if(!pid) return;
+        // Bind score switches (A/B winners for TK and PK)
+        $$("[data-score-switch]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const mid = btn.getAttribute("data-mid");
+            const metric = btn.getAttribute("data-score-switch");
+            const side = btn.getAttribute("data-side");
+            switchScoreWinner(mid, metric, side);
+          });
+        });
 
-        const mid = btn.getAttribute("data-betclear");
-        const m = matchById(mid);
-        if(!m) return;
+        function switchScoreWinner(mid, metric, side) {
+          const m = matchById(mid); if (!m || !canEditMatch(m)) return;
+          if ((metric !== "tk" && metric !== "pk") || (side !== "A" && side !== "B")) return;
 
-        const st = matchStatus(m, ensureResult(mid));
-        if(st.valid){ alert("Match terminé, impossible d'annuler."); return; }
+          const r = ensureResult(mid);
+          const keyA = metric === "tk" ? "tkA" : "pkA";
+          const keyB = metric === "tk" ? "tkB" : "pkB";
+          const onA = side === "A" ? "1" : "0";
+          const onB = side === "B" ? "1" : "0";
+          const isSameSelection = (r[keyA] === onA && r[keyB] === onB);
+          const nextA = isSameSelection ? "" : onA;
+          const nextB = isSameSelection ? "" : onB;
+          if (r[keyA] === nextA && r[keyB] === nextB) return;
 
-        const c = ensureCredits(pid);
-        const b = ensureBet(mid,pid);
-
-        if(!b.settled && (+b.amount||0) > 0){
-          c.balance = round2(c.balance + (+b.amount||0));
+          const wasCommitted = !!r.committed;
+          pushUndoSnapshot(m);
+          r[keyA] = nextA;
+          r[keyB] = nextB;
+          r.committed = false;
+          r.updatedAt = nowIso();
+          r.updatedBy = sessionPid() || "";
+          addAudit("edit_score_switch", { matchId: mid, metric, side: isSameSelection ? "" : side });
+          if (wasCommitted) {
+            recalcAllEconomyAndStats();
+            renderAll();
+          } else {
+            save();
+            renderAll();
+          }
         }
 
-        b.pick="A";
-        b.amount=0;
-        b.settled=false;
-        b.payout=0;
-        b.win=false;
-        b.placedAt="";
-        addAudit("bet_clear", {matchId:mid, pid});
-        save();
-        renderAll();
-      });
-    });
-  }
+        // Explicit commit step so users know when a result is validated
+        $$("[data-commit-result]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const mid = btn.getAttribute("data-commit-result");
+            const m = matchById(mid);
+            if (!m || !canEditMatch(m)) return;
 
-  /* =========================
-     HISTORY
-  ========================= */
-  function renderHistory(){
-    const matches = allMatches();
-    for(const m of matches) settleMatchIfNeeded(m);
+            const r = ensureResult(mid);
+            if (!r.streamUrl?.trim()) {
+              alert("Ajoute d'abord le lien stream.");
+              return;
+            }
+            if (!isIntStr(r.tkA) || !isIntStr(r.tkB) || !isIntStr(r.pkA) || !isIntStr(r.pkB)) {
+              alert("Choisis un gagnant A/B pour Tower Kill et Player Kill.");
+              return;
+            }
 
-    const fin=[], up=[];
-    for(const m of matches){
-      const res = ensureResult(m.id);
-      const st = matchStatus(m,res);
-      if(st.valid) fin.push({m,res,st});
-      else up.push({m,res,st});
-    }
+            const winner = resolveWinnerFromScores(r);
+            if (!winner) {
+              alert("Résultat invalide (égalité).");
+              return;
+            }
 
-    $("#histFin").textContent = fin.length;
-    $("#histUp").textContent = up.length;
+            r.committed = true;
+            r.updatedAt = nowIso();
+            r.updatedBy = sessionPid() || "";
+            addAudit("commit_result", { matchId: mid, winner });
+            save();
+            recalcAllEconomyAndStats();
+            renderAll();
+            alert(`Résultat validé: ${winner === "A" ? pName(m.a) : pName(m.b)}.`);
+          });
+        });
 
-    fin.sort((a,b)=>(b.res.updatedAt||"").localeCompare(a.res.updatedAt||""));
-    up.sort((a,b)=>a.m.round-b.m.round || a.m.id.localeCompare(b.m.id));
+        function bindResultInput(selector, attr, setter, opts = {}) {
+          const debounceMap = new Map();
+          $$(selector).forEach(inp => {
+            inp.addEventListener("input", () => {
+              const mid = inp.getAttribute(attr);
+              const m = matchById(mid);
+              if (!m || !canEditMatch(m)) return;
 
-    $("#historyFinished").innerHTML = fin.map(({m,res,st})=>{
-      const win = st.winner==="A" ? pName(m.a) : pName(m.b);
-      const pot = matchPot(m.id);
-      return `
+              const run = () => setter(mid, inp.value);
+              if (!opts.debounce) { run(); return; }
+
+              clearTimeout(debounceMap.get(inp));
+              debounceMap.set(inp, setTimeout(run, 300));
+            });
+          });
+        }
+
+        // Clear result (admin)
+        $$("[data-clear-result]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (!isAdmin()) return;
+            const mid = btn.getAttribute("data-clear-result");
+            const m = matchById(mid);
+            if (!m) return;
+            if (!confirm(`Effacer le résultat de ${pName(m.a)} vs ${pName(m.b)} ?`)) return;
+
+            pushUndoSnapshot(m);
+            state.results[mid] = {
+              streamUrl: "",
+              tkA: "", pkA: "",
+              tkB: "", pkB: "",
+              committed: false,
+              updatedAt: nowIso(),
+              updatedBy: sessionPid()
+            };
+            addAudit("clear_result", { matchId: mid });
+            recalcAllEconomyAndStats();
+            save();
+            renderAll();
+          });
+        });
+
+        // Bets
+        $$("[data-betbtn]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const pid = sessionPid();
+            if (!pid) return;
+
+            const mid = btn.getAttribute("data-betbtn");
+            const m = matchById(mid);
+            if (!m) return;
+
+            const st = matchStatus(m, ensureResult(mid));
+            if (st.valid) { alert("Match déjà validé, paris fermés."); return; }
+
+            const pick = $(`[data-betpick="${mid}"]`)?.value || "A";
+            const amtRaw = ($(`[data-betamt="${mid}"]`)?.value || "").trim();
+            if (!/^\d+(\.\d+)?$/.test(amtRaw)) { alert("Mise invalide."); return; }
+
+            const amt = Number(amtRaw);
+            if (!Number.isFinite(amt) || amt <= 0) { alert("Mise invalide."); return; }
+
+            const c = ensureCredits(pid);
+            const b = ensureBet(mid, pid);
+
+            // refund old un-settled bet if replacement
+            if (!b.settled && (+b.amount || 0) > 0) {
+              c.balance = round2(c.balance + (+b.amount || 0));
+            }
+
+            if (c.balance < amt) {
+              // rollback refund
+              if (!b.settled && (+b.amount || 0) > 0) {
+                c.balance = round2(c.balance - (+b.amount || 0));
+              }
+              alert("Crédits insuffisants.");
+              return;
+            }
+
+            b.pick = pick;
+            b.amount = round2(amt);
+            b.settled = false;
+            b.payout = 0;
+            b.win = false;
+            b.placedAt = nowIso();
+
+            c.balance = round2(c.balance - b.amount);
+            addAudit("bet_place", { matchId: mid, pid, pick, amount: b.amount });
+            save();
+            renderAll();
+          });
+        });
+
+        $$("[data-betclear]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const pid = sessionPid();
+            if (!pid) return;
+
+            const mid = btn.getAttribute("data-betclear");
+            const m = matchById(mid);
+            if (!m) return;
+
+            const st = matchStatus(m, ensureResult(mid));
+            if (st.valid) { alert("Match terminé, impossible d'annuler."); return; }
+
+            const c = ensureCredits(pid);
+            const b = ensureBet(mid, pid);
+
+            if (!b.settled && (+b.amount || 0) > 0) {
+              c.balance = round2(c.balance + (+b.amount || 0));
+            }
+
+            b.pick = "A";
+            b.amount = 0;
+            b.settled = false;
+            b.payout = 0;
+            b.win = false;
+            b.placedAt = "";
+            addAudit("bet_clear", { matchId: mid, pid });
+            save();
+            renderAll();
+          });
+        });
+      }
+
+      /* =========================
+         HISTORY
+      ========================= */
+      function renderHistory() {
+        const matches = allMatches();
+        for (const m of matches) settleMatchIfNeeded(m);
+
+        const fin = [], up = [];
+        for (const m of matches) {
+          const res = ensureResult(m.id);
+          const st = matchStatus(m, res);
+          if (st.valid) fin.push({ m, res, st });
+          else up.push({ m, res, st });
+        }
+
+        $("#histFin").textContent = fin.length;
+        $("#histUp").textContent = up.length;
+
+        fin.sort((a, b) => (b.res.updatedAt || "").localeCompare(a.res.updatedAt || ""));
+        up.sort((a, b) => a.m.round - b.m.round || a.m.id.localeCompare(b.m.id));
+
+        $("#historyFinished").innerHTML = fin.map(({ m, res, st }) => {
+          const win = st.winner === "A" ? pName(m.a) : pName(m.b);
+          const pot = matchPot(m.id);
+          return `
         <div class="pill" style="justify-content:space-between; width:100%">
           <span><b>R${m.round}</b> ${esc(pName(m.a))} vs ${esc(pName(m.b))} - <span class="winner">WIN ${esc(win)}</span></span>
           <span class="mono">PK ${res.pkA}:${res.pkB} • TK ${res.tkA}:${res.tkB} • Pot ${pot.pot}</span>
         </div>
       `;
-    }).join("") || `<div class="small">Aucune partie finie.</div>`;
+        }).join("") || `<div class="small">Aucune partie finie.</div>`;
 
-    $("#historyUpcoming").innerHTML = up.map(({m})=>{
-      const pot = matchPot(m.id);
-      return `
+        $("#historyUpcoming").innerHTML = up.map(({ m }) => {
+          const pot = matchPot(m.id);
+          return `
         <div class="pill" style="justify-content:space-between; width:100%">
           <span><b>R${m.round}</b> ${esc(pName(m.a))} vs ${esc(pName(m.b))}</span>
           <span class="mono">Pot ${pot.pot}</span>
         </div>
       `;
-    }).join("") || `<div class="small">Aucune partie à venir.</div>`;
-  }
+        }).join("") || `<div class="small">Aucune partie à venir.</div>`;
+      }
 
-  /* =========================
-     STANDINGS
-  ========================= */
-  function renderStandings(){
-    const {list} = computeStandingsWins();
-    const tbody = $("#standWins");
-    tbody.innerHTML = "";
+      /* =========================
+         STANDINGS
+      ========================= */
+      function renderStandings() {
+        const { list } = computeStandingsWins();
+        const tbody = $("#standWins");
+        tbody.innerHTML = "";
 
-    list.forEach((s, idx)=>{
-      const tr = document.createElement("tr");
-      const top4 = idx < 4;
-      const status = top4 ? `<span class="chip">TOP 4</span>` : "";
-      tr.innerHTML = `
-        <td class="mono">${idx+1}</td>
+        list.forEach((s, idx) => {
+          const tr = document.createElement("tr");
+          const top4 = idx < 4;
+          const status = top4 ? `<span class="chip">TOP 4</span>` : "";
+          tr.innerHTML = `
+        <td class="mono">${idx + 1}</td>
         <td>${esc(s.name)} ${status}</td>
         <td class="mono" style="font-weight:1000;color:var(--gold2)">${s.pts}</td>
         <td class="mono">${s.w}</td>
         <td class="mono">${s.l}</td>
         <td class="mono">${s.tk}</td>
         <td class="mono">${s.pk}</td>
-        <td class="mono" style="font-weight:1000;color:${s.pkDiff>=0?'var(--good)':'var(--bad)'}">${s.pkDiff>=0?'+':''}${s.pkDiff}</td>
+        <td class="mono" style="font-weight:1000;color:${s.pkDiff >= 0 ? 'var(--good)' : 'var(--bad)'}">${s.pkDiff >= 0 ? '+' : ''}${s.pkDiff}</td>
         <td>${top4 ? '<span class="goodText">Qualif provisoire</span>' : '<span class="tiny">En chasse</span>'}</td>
       `;
-      tbody.appendChild(tr);
-    });
+          tbody.appendChild(tr);
+        });
 
-    const bets = computeStandingsBets();
-    const tb2 = $("#standBets");
-    tb2.innerHTML = "";
-    bets.forEach((b, idx)=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="mono">${idx+1}</td>
-        <td>${esc(b.name)} ${b.id==="pub" ? `<span class="chip">PUBLIC</span>` : ""}</td>
+        const bets = computeStandingsBets();
+        const tb2 = $("#standBets");
+        tb2.innerHTML = "";
+        bets.forEach((b, idx) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+        <td class="mono">${idx + 1}</td>
+        <td>${esc(b.name)} ${b.id === "pub" ? `<span class="chip">PUBLIC</span>` : ""}</td>
         <td class="mono" style="font-weight:1000;color:var(--gold2)">${b.balance}</td>
-        <td class="mono" style="font-weight:1000;color:${b.profit>=0?'var(--good)':'var(--bad)'}">${b.profit>=0?'+':''}${b.profit}</td>
+        <td class="mono" style="font-weight:1000;color:${b.profit >= 0 ? 'var(--good)' : 'var(--bad)'}">${b.profit >= 0 ? '+' : ''}${b.profit}</td>
         <td class="mono">${b.bets}</td>
         <td class="mono">${b.winPct}%</td>
-        <td class="mono" style="color:${b.roi>=0?'var(--good)':'var(--bad)'}">${b.roi>=0?'+':''}${b.roi}%</td>
+        <td class="mono" style="color:${b.roi >= 0 ? 'var(--good)' : 'var(--bad)'}">${b.roi >= 0 ? '+' : ''}${b.roi}%</td>
       `;
-      tb2.appendChild(tr);
-    });
-  }
+          tb2.appendChild(tr);
+        });
+      }
 
-  /* =========================
-     ADMIN
-  ========================= */
-  function renderAdmin(){
-    const admin = isAdmin();
-    $("#adminNotice").innerHTML = isAdmin()
-      ? `Tu es connecté en <b>arbitre</b> (${esc(profileName(sessionPid()))}). Tu peux modifier tous les matchs, effacer des résultats et faire un undo.`
-      : `Tu n'es pas arbitre. Onglet visible pour consultation/backup, mais les actions sensibles sont limitées.`;
+      /* =========================
+         ADMIN
+      ========================= */
+      function renderAdmin() {
+        const admin = isAdmin();
+        $("#adminNotice").innerHTML = isAdmin()
+          ? `Tu es connecté en <b>arbitre</b> (${esc(profileName(sessionPid()))}). Tu peux modifier tous les matchs, effacer des résultats et faire un undo.`
+          : `Tu n'es pas arbitre. Onglet visible pour consultation/backup, mais les actions sensibles sont limitées.`;
 
-    const audit = state.audit.slice(0,30);
-    $("#auditLogBox").innerHTML = audit.length ? audit.map(a=>{
-      const by = profileName(a.by);
-      const when = new Date(a.at).toLocaleString();
-      return `
+        const audit = state.audit.slice(0, 30);
+        $("#auditLogBox").innerHTML = audit.length ? audit.map(a => {
+          const by = profileName(a.by);
+          const when = new Date(a.at).toLocaleString();
+          return `
         <div class="pill w100" style="justify-content:space-between">
           <span><b>${esc(a.action)}</b> • ${esc(by)}</span>
           <span class="mono">${esc(when)}</span>
         </div>`;
-    }).join("") : `<div class="small">Aucune action journalisée.</div>`;
+        }).join("") : `<div class="small">Aucune action journalisée.</div>`;
 
-    $("#btnRecalc").disabled = !admin;
-    $("#btnPurgeAudit").disabled = !admin;
-    $("#btnPasteImport").disabled = !admin;
+        $("#btnRecalc").disabled = !admin;
+        $("#btnPurgeAudit").disabled = !admin;
+        $("#btnPasteImport").disabled = !admin;
 
-    if($("#ghSyncStatus")) $("#ghSyncStatus").textContent = ghSync.lastStatus;
-    if($("#btnGhSyncSave")) $("#btnGhSyncSave").disabled = !admin;
-    if($("#btnGhSyncPush")) $("#btnGhSyncPush").disabled = !admin || !isGhSyncWritable();
-    if($("#btnGhSyncPull")) $("#btnGhSyncPull").disabled = !isGhSyncReadable();
-    if($("#ghSyncEnabled")) $("#ghSyncEnabled").disabled = !admin;
-    if($("#ghSyncRepo")) $("#ghSyncRepo").disabled = !admin;
-    if($("#ghSyncBranch")) $("#ghSyncBranch").disabled = !admin;
-    if($("#ghSyncPath")) $("#ghSyncPath").disabled = !admin;
-    if($("#ghSyncPollSec")) $("#ghSyncPollSec").disabled = !admin;
-    if($("#ghSyncToken")) $("#ghSyncToken").disabled = !admin;
-  }
+        if (document.getElementById("btnFbConnect")) document.getElementById("btnFbConnect").disabled = !admin;
+      }
 
-  $("#btnRecalc").addEventListener("click", ()=>{
-    if(!isAdmin()) return;
-    recalcAllEconomyAndStats();
-    addAudit("recalc_all", {});
-    save();
-    renderAll();
-    alert("Recalcul terminé.");
-  });
+      $("#btnRecalc").addEventListener("click", () => {
+        if (!isAdmin()) return;
+        recalcAllEconomyAndStats();
+        addAudit("recalc_all", {});
+        save();
+        renderAll();
+        alert("Recalcul terminé.");
+      });
 
-  $("#btnPurgeAudit").addEventListener("click", ()=>{
-    if(!isAdmin()) return;
-    if(!confirm("Vider le journal des actions ?")) return;
-    state.audit = [];
-    save();
-    renderAll();
-  });
+      $("#btnPurgeAudit").addEventListener("click", () => {
+        if (!isAdmin()) return;
+        if (!confirm("Vider le journal des actions ?")) return;
+        state.audit = [];
+        save();
+        renderAll();
+      });
 
-  $("#btnPasteImport").addEventListener("click", ()=>{
-    if(!requireAdminAction()) return;
-    try{
-      const txt = $("#jsonPaste").value.trim();
-      if(!txt) return;
-      importJsonObject(JSON.parse(txt));
-    }catch(e){
-      alert("JSON collé invalide.");
-    }
-  });
+      $("#btnPasteImport").addEventListener("click", () => {
+        if (!requireAdminAction()) return;
+        try {
+          const txt = $("#jsonPaste").value.trim();
+          if (!txt) return;
+          importJsonObject(JSON.parse(txt));
+        } catch (e) {
+          alert("JSON collé invalide.");
+        }
+      });
 
-  $("#btnFillJson").addEventListener("click", ()=>{
-    $("#jsonPaste").value = JSON.stringify(state, null, 2);
-  });
+      $("#btnFillJson").addEventListener("click", () => {
+        $("#jsonPaste").value = JSON.stringify(state, null, 2);
+      });
 
-  $("#btnClearJson").addEventListener("click", ()=>{
-    $("#jsonPaste").value = "";
-  });
+      $("#btnClearJson").addEventListener("click", () => {
+        $("#jsonPaste").value = "";
+      });
 
-  function commitGhSyncConfigFromForm(opts={}){
-    const manual = !!opts.manual;
-    const pullNow = !!opts.pullNow;
-    if(manual){
-      if(!requireAdminAction()) return false;
-    } else if(!isAdmin()){
-      return false;
-    }
+      if (document.getElementById("btnFbConnect")) {
+        document.getElementById("btnFbConnect").addEventListener("click", () => {
+          if (!requireAdminAction()) return;
+          try {
+            const txt = document.getElementById("fbConfigJson").value;
+            const config = JSON.parse(txt);
+            initFirebase(config, true);
+          } catch (e) {
+            alert("JSON de configuration Firebase invalide.");
+          }
+        });
+      }
 
-    Object.assign(ghSync, readGhSyncForm());
-    ghSync.enabled = true;
-    ghSync.readAuthAllowed = !!ghSync.token;
-    saveGhSyncConfig();
-    writeGhSyncForm();
-    startGhSyncPolling();
+      /* =========================
+         RENDER ALL
+      ========================= */
+      function renderAll() {
+        renderSidebarKPIs();
+        renderDashboard();
+        renderMatches();
+        renderHistory();
+        renderStandings();
+        renderAdmin();
+      }
 
-    if(manual) setGhSyncStatus("Configuration sync sauvegardée.");
-    else setGhSyncStatus("Configuration sync mise à jour automatiquement.");
+      /* =========================
+         INPUTS / FILTERS
+      ========================= */
+      $("#q").addEventListener("input", renderMatches);
+      $("#viewMode").addEventListener("change", renderMatches);
+      $("#roundFilter").addEventListener("change", renderMatches);
 
-    if(isGhSyncReadable() && pullNow){
-      githubPullMatchState(false);
-    }
-    if(isGhSyncWritable() && isAdmin()){
-      scheduleGithubSharedConfigPush(manual ? "manual" : "auto");
-      scheduleGithubPush("config");
-    }
+      /* =========================
+         INIT
+      ========================= */
+      async function initApp() {
+        writeFbForm();
+        const fbCfg = loadFbConfig();
+        if (fbCfg) {
+          initFirebase(fbCfg);
+        }
 
-    renderAdmin();
-    return true;
-  }
+        const normalizedSessionPid = normalizeSessionProfileId(state.session.profileId, state.profiles);
+        if (state.session.profileId !== normalizedSessionPid) {
+          state.session.profileId = normalizedSessionPid;
+          saveSessionCache();
+        }
 
-  function scheduleAutoGhSyncConfigApply(){
-    if(!isAdmin()) return;
-    clearTimeout(ghSyncConfigApplyTimer);
-    ghSyncConfigApplyTimer = setTimeout(()=>{
-      commitGhSyncConfigFromForm({manual:false, pullNow:true});
-    }, 100);
-  }
+        renderLoginOptions();
 
-  if($("#btnGhSyncSave")) $("#btnGhSyncSave").addEventListener("click", ()=>{
-    commitGhSyncConfigFromForm({manual:true, pullNow:true});
-  });
-  if($("#btnGhSyncPull")) $("#btnGhSyncPull").addEventListener("click", ()=>{
-    githubPullMatchState(true);
-  });
-  if($("#btnGhSyncPush")) $("#btnGhSyncPush").addEventListener("click", ()=>{
-    if(!requireAdminAction()) return;
-    githubPushMatchState("manual");
-  });
+        if (!state.session.profileId) {
+          $("#loginModal").classList.remove("hide");
+          renderSidebarKPIs();
+        } else {
+          $("#loginModal").classList.add("hide");
+          renderAll();
+        }
 
-  ["#ghSyncRepo","#ghSyncBranch","#ghSyncPath","#ghSyncPollSec","#ghSyncToken"].forEach(sel=>{
-    const el = $(sel);
-    if(!el) return;
-    el.addEventListener("input", scheduleAutoGhSyncConfigApply);
-    el.addEventListener("change", scheduleAutoGhSyncConfigApply);
-  });
-  if($("#ghSyncEnabled")) $("#ghSyncEnabled").addEventListener("change", scheduleAutoGhSyncConfigApply);
+        setTab("dashboard");
+      }
 
-  /* =========================
-     RENDER ALL
-  ========================= */
-  function renderAll(){
-    renderSidebarKPIs();
-    renderDashboard();
-    renderMatches();
-    renderHistory();
-    renderStandings();
-    renderAdmin();
-  }
-
-  /* =========================
-     INPUTS / FILTERS
-  ========================= */
-  $("#q").addEventListener("input", renderMatches);
-  $("#viewMode").addEventListener("change", renderMatches);
-  $("#roundFilter").addEventListener("change", renderMatches);
-
-  /* =========================
-     INIT
-  ========================= */
-  async function initApp(){
-    loadGhSyncConfig();
-
-    if(isGhSyncReadable()){
-      await githubPullSharedSyncConfig(false);
-    }
-
-    writeGhSyncForm();
-    startGhSyncPolling();
-
-    if(isGhSyncReadable()){
-      await githubPullMatchState(false);
-    }
-
-    const normalizedSessionPid = normalizeSessionProfileId(state.session.profileId, state.profiles);
-    if(state.session.profileId !== normalizedSessionPid){
-      state.session.profileId = normalizedSessionPid;
-      saveSessionCache();
-    }
-
-    renderLoginOptions();
-
-    if(!state.session.profileId){
-      $("#loginModal").classList.remove("hide");
-      renderSidebarKPIs();
-    } else {
-      $("#loginModal").classList.add("hide");
-      renderAll();
-    }
-
-    setTab("dashboard");
-  }
-
-  initApp().catch(err=>{
-    console.error("init app error", err);
-    renderLoginOptions();
-    $("#loginModal").classList.remove("hide");
-    renderSidebarKPIs();
-    setTab("dashboard");
-  });
-})();
-</script>
+      initApp().catch(err => {
+        console.error("init app error", err);
+        renderLoginOptions();
+        $("#loginModal").classList.remove("hide");
+        renderSidebarKPIs();
+        setTab("dashboard");
+      });
+    })();
+  </script>
 </body>
+
 </html>
-
-
