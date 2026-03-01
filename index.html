@@ -2897,11 +2897,20 @@
          INIT
       ========================= */
       async function initApp() {
+        // Automatically inject the provided configuration
+        const fbCfg = {
+          apiKey: "AIzaSyCacY7PWwxaEm-FrSC044BxAo0NPoSwpCI",
+          authDomain: "league-2f027.firebaseapp.com",
+          databaseURL: "https://league-2f027-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "league-2f027",
+          storageBucket: "league-2f027.firebasestorage.app",
+          messagingSenderId: "120664819458",
+          appId: "1:120664819458:web:e84e697b8d615aa4e3641b",
+          measurementId: "G-F5PZX2JEYM"
+        };
+
         writeFbForm();
-        const fbCfg = loadFbConfig();
-        if (fbCfg) {
-          initFirebase(fbCfg);
-        }
+        initFirebase(fbCfg);
 
         const normalizedSessionPid = normalizeSessionProfileId(state.session.profileId, state.profiles);
         if (state.session.profileId !== normalizedSessionPid) {
