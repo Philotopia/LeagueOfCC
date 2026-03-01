@@ -864,8 +864,15 @@
       }
     }
 
-    function resolveMatch(mid, winnerPick, format, scoreTxt) {
+    function resolveMatch(mid, scoreA, scoreB) {
       if (!sessionId) return alert("Connectez-vous.");
+
+      const sA = parseInt(scoreA, 10);
+      const sB = parseInt(scoreB, 10);
+      if (isNaN(sA) || isNaN(sB) || sA === sB) return alert("Score invalide ou match nul non supporté.");
+
+      const winnerPick = sA > sB ? "A" : "B";
+
       // Save for Undo
       const oldRes = state.results[mid] ? JSON.parse(JSON.stringify(state.results[mid])) : null;
       state.undoStack.push({ matchId: mid, prev: oldRes });
@@ -873,8 +880,9 @@
 
       state.results[mid] = {
         winner: winnerPick,
-        format: format, // "BO1" or "BO3"
-        score: scoreTxt,
+        scoreA: sA,
+        scoreB: sB,
+        score: `${sA}-${sB}`,
         updatedAt: new Date().toISOString()
       };
       syncState();
@@ -983,13 +991,12 @@
       let adminHTML = "";
       if (sessionId && !isFinished) {
         adminHTML = `
-           <div class="admin-actions">
-             <select id="fmt_${m.id}" class="input" style="width:70px; padding:4px;">
-                <option value="BO1">BO1</option><option value="BO3">BO3</option>
-             </select>
-             <input type="text" id="score_${m.id}" class="input" placeholder="Score (ex: 1-0)" style="width:100px; padding:4px;">
-             <button class="btn" style="padding:4px 8px; font-size:11px;" onclick="resolveMatch('${m.id}', 'A', $('fmt_${m.id}').value, $('score_${m.id}').value)">A Gagne</button>
-             <button class="btn" style="padding:4px 8px; font-size:11px;" onclick="resolveMatch('${m.id}', 'B', $('fmt_${m.id}').value, $('score_${m.id}').value)">B Gagne</button>
+           <div class="admin-actions" style="justify-content:center; align-items:center;">
+             <span style="font-size:12px;color:var(--text-muted); text-transform:uppercase;">Score :</span>
+             <input type="number" id="sa_${m.id}" class="input" value="0" min="0" max="3" style="width:60px; padding:4px; text-align:center; font-size:16px;">
+             <span style="font-weight:bold; margin:0 5px;">-</span>
+             <input type="number" id="sb_${m.id}" class="input" value="0" min="0" max="3" style="width:60px; padding:4px; text-align:center; font-size:16px;">
+             <button class="btn" style="padding:6px 14px; font-size:12px; margin-left:15px;" onclick="resolveMatch('${m.id}', $('sa_${m.id}').value, $('sb_${m.id}').value)">Valider Score</button>
            </div>
          `;
       }
@@ -1053,8 +1060,21 @@
       TOURNAMENT_MATCHES.forEach(m => {
         const res = state.results[m.id];
         if (!res) return;
-        if (res.winner === "A") { pts[m.a].w++; pts[m.b].l++; pts[m.a].pts += RULES.winPts; }
-        if (res.winner === "B") { pts[m.b].w++; pts[m.a].l++; pts[m.b].pts += RULES.winPts; }
+
+        // Dynamically calculate points: 2-1 gives less points than 2-0.
+        // Assuming base win gives 3 points (RULES.winPts). A close 2-1 gives 2 points.
+        let matchWinPts = RULES.winPts;
+        if (res.scoreA !== undefined && res.scoreB !== undefined) {
+          if ((res.scoreA === 2 && res.scoreB === 1) || (res.scoreA === 1 && res.scoreB === 2)) {
+            matchWinPts = 2;
+          }
+        } else if (res.score) {
+          // Fallback for matches manually entered as "2-1" or "1-2" in older versions
+          if (res.score === "2-1" || res.score === "1-2") matchWinPts = 2;
+        }
+
+        if (res.winner === "A") { pts[m.a].w++; pts[m.b].l++; pts[m.a].pts += matchWinPts; }
+        if (res.winner === "B") { pts[m.b].w++; pts[m.a].l++; pts[m.b].pts += matchWinPts; }
       });
 
       let ranking = Object.values(pts).sort((a, b) => b.pts - a.pts || a.name.localeCompare(b.name));
