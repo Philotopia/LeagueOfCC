@@ -986,7 +986,7 @@
 
       const winnerPick = sA > sB ? "A" : "B";
 
-      // Save for Undo
+      // Save for Undo (ensure deep copy and correct previous state)
       const oldRes = state.results[mid] ? JSON.parse(JSON.stringify(state.results[mid])) : null;
       state.undoStack.push({ matchId: mid, prev: oldRes });
       if (state.undoStack.length > 50) state.undoStack.shift();
@@ -1104,23 +1104,45 @@
 
       // Admin Controls (Visible if logged in, acting as global arbitrary ref)
       let adminHTML = "";
-      if (sessionId && !isFinished) {
-        adminHTML = `
-           <div class="admin-actions" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
-             <div style="display:flex; align-items:center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
-                 <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sa_${m.id}').stepDown()">-</button>
-                 <input type="number" id="sa_${m.id}" class="input mono" value="0" min="0" max="3" style="width:35px; padding:0; text-align:center; font-size:16px; background: transparent; border: none; box-shadow: none;">
-                 <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sa_${m.id}').stepUp()">+</button>
-                 
-                 <span style="font-weight:bold; margin:0 5px; color:var(--hex-gold-dark);">VS</span>
-                 
-                 <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sb_${m.id}').stepDown()">-</button>
-                 <input type="number" id="sb_${m.id}" class="input mono" value="0" min="0" max="3" style="width:35px; padding:0; text-align:center; font-size:16px; background: transparent; border: none; box-shadow: none;">
-                 <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sb_${m.id}').stepUp()">+</button>
+      if (sessionId) {
+        if (!isFinished) {
+          adminHTML = `
+             <div class="admin-actions" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+               <div style="display:flex; align-items:center; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                   <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sa_${m.id}').stepDown()">-</button>
+                   <input type="number" id="sa_${m.id}" class="input mono" value="0" min="0" max="3" style="width:35px; padding:0; text-align:center; font-size:16px; background: transparent; border: none; box-shadow: none;">
+                   <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sa_${m.id}').stepUp()">+</button>
+                   
+                   <span style="font-weight:bold; margin:0 5px; color:var(--hex-gold-dark);">VS</span>
+                   
+                   <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sb_${m.id}').stepDown()">-</button>
+                   <input type="number" id="sb_${m.id}" class="input mono" value="0" min="0" max="3" style="width:35px; padding:0; text-align:center; font-size:16px; background: transparent; border: none; box-shadow: none;">
+                   <button class="btn" style="padding:2px 8px; font-size:14px; min-width:30px;" onclick="$('sb_${m.id}').stepUp()">+</button>
+               </div>
+               <button class="btn btn-action" style="padding:6px 15px; font-size:12px;" onclick="resolveMatch('${m.id}', $('sa_${m.id}').value, $('sb_${m.id}').value)">Valider</button>
              </div>
-             <button class="btn btn-action" style="padding:6px 15px; font-size:12px;" onclick="resolveMatch('${m.id}', $('sa_${m.id}').value, $('sb_${m.id}').value)">Valider</button>
-           </div>
-         `;
+           `;
+        } else {
+          // Edit mode for finished matches
+          const currentA = res.scoreA !== undefined ? res.scoreA : 0;
+          const currentB = res.scoreB !== undefined ? res.scoreB : 0;
+
+          adminHTML = `
+             <div class="admin-actions" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+               <div style="display:flex; align-items:center; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 20px; border: 1px dashed rgba(200,155,60,0.3);">
+                   <span style="font-size:10px;color:var(--hex-gold-dark); text-transform:uppercase; margin-right:8px;">Éditer :</span>
+                   <button class="btn" style="padding:2px 6px; font-size:12px; min-width:25px;" onclick="$('esa_${m.id}').stepDown()">-</button>
+                   <input type="number" id="esa_${m.id}" class="input mono" value="${currentA}" min="0" max="3" style="width:30px; padding:0; text-align:center; font-size:14px; background: transparent; border: none; box-shadow: none; color:var(--text-muted);">
+                   <button class="btn" style="padding:2px 6px; font-size:12px; min-width:25px;" onclick="$('esa_${m.id}').stepUp()">+</button>
+                   <span style="font-weight:bold; margin:0 5px; color:var(--text-muted);">VS</span>
+                   <button class="btn" style="padding:2px 6px; font-size:12px; min-width:25px;" onclick="$('esb_${m.id}').stepDown()">-</button>
+                   <input type="number" id="esb_${m.id}" class="input mono" value="${currentB}" min="0" max="3" style="width:30px; padding:0; text-align:center; font-size:14px; background: transparent; border: none; box-shadow: none; color:var(--text-muted);">
+                   <button class="btn" style="padding:2px 6px; font-size:12px; min-width:25px;" onclick="$('esb_${m.id}').stepUp()">+</button>
+               </div>
+               <button class="btn" style="padding:4px 10px; font-size:11px; background:linear-gradient(180deg, #2A333C, #121A2F);" onclick="if(confirm('Corriger le score ? Cela recalculera tous les crédits !')) resolveMatch('${m.id}', $('esa_${m.id}').value, $('esb_${m.id}').value)">Corriger</button>
+             </div>
+           `;
+        }
       }
 
       return `
