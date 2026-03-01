@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="fr">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>League Planner V3 - Nexus</title>
-  
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
@@ -27,20 +28,24 @@
       --hex-border: #785A28;
       --text-main: #F0E6D2;
       --text-muted: #A09B8C;
-      
-      --shadow: 0 8px 32px rgba(0,0,0,0.6);
-      --r: 8px; /* Sharper corners for a gaming feel */
+
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      --r: 8px;
+      /* Sharper corners for a gaming feel */
     }
 
-    * { box-sizing: border-box; }
-    
-    html, body { 
-      height: 100%; 
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
       margin: 0;
       font-family: 'Spiegel', sans-serif;
       color: var(--text-main);
       background-color: var(--hex-bg);
-      background-image: 
+      background-image:
         radial-gradient(circle at 50% 0%, rgba(10, 200, 185, 0.1), transparent 40%),
         radial-gradient(circle at 100% 100%, rgba(200, 155, 60, 0.05), transparent 50%),
         url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0 L100 100 M100 0 L0 100" stroke="rgba(200,155,60,0.02)" stroke-width="1"/></svg>');
@@ -49,7 +54,10 @@
       overflow-x: hidden;
     }
 
-    h1, h2, h3, h4 {
+    h1,
+    h2,
+    h3,
+    h4 {
       font-family: 'Beaufort for LOL', serif;
       font-weight: 700;
       margin: 0;
@@ -76,13 +84,13 @@
       align-items: center;
       gap: 15px;
     }
-    
+
     .brand h1 {
       color: var(--hex-gold-dark);
       font-size: 24px;
-      text-shadow: 0 0 10px rgba(200,155,60,0.5);
+      text-shadow: 0 0 10px rgba(200, 155, 60, 0.5);
     }
-    
+
     .nav-links {
       display: flex;
       gap: 20px;
@@ -114,9 +122,19 @@
       transition: width 0.3s ease;
     }
 
-    .nav-btn:hover { color: var(--hex-gold-light); }
-    .nav-btn:hover::after, .nav-btn.active::after { width: 100%; }
-    .nav-btn.active { color: var(--hex-gold-light); text-shadow: 0 0 8px rgba(200,155,60,0.6); }
+    .nav-btn:hover {
+      color: var(--hex-gold-light);
+    }
+
+    .nav-btn:hover::after,
+    .nav-btn.active::after {
+      width: 100%;
+    }
+
+    .nav-btn.active {
+      color: var(--hex-gold-light);
+      text-shadow: 0 0 8px rgba(200, 155, 60, 0.6);
+    }
 
     .user-info {
       display: flex;
@@ -145,9 +163,26 @@
       padding: 0 20px;
     }
 
-    .section { display: none; animation: fadeIn 0.4s ease; }
-    .section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .section {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     /* Cards */
     .card {
@@ -164,7 +199,10 @@
     .card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 2px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
       background: linear-gradient(90deg, transparent, var(--hex-gold-dark), transparent);
     }
 
@@ -188,7 +226,7 @@
 
     /* Reimagined Match Card */
     .match-card {
-      background: linear-gradient(135deg, rgba(10,20,40,0.9), rgba(5,10,20,0.95));
+      background: linear-gradient(135deg, rgba(10, 20, 40, 0.9), rgba(5, 10, 20, 0.95));
       border: 1px solid rgba(120, 90, 40, 0.4);
       border-radius: 6px;
       padding: 15px;
@@ -198,15 +236,21 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       position: relative;
     }
-    
+
     .match-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 10px rgba(200,155,60,0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 10px rgba(200, 155, 60, 0.2);
       border-color: var(--hex-gold-dark);
     }
 
-    .match-card.finished { border-color: rgba(10, 200, 185, 0.4); }
-    .match-card.finished:hover { border-color: var(--hex-cyan); box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 10px rgba(10, 200, 185, 0.2); }
+    .match-card.finished {
+      border-color: rgba(10, 200, 185, 0.4);
+    }
+
+    .match-card.finished:hover {
+      border-color: var(--hex-cyan);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 10px rgba(10, 200, 185, 0.2);
+    }
 
     .match-header {
       display: flex;
@@ -231,16 +275,16 @@
       font-size: 18px;
       color: var(--text-main);
       padding: 10px;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 0, 0, 0.3);
       border-radius: 4px;
       border: 1px solid transparent;
     }
 
     .player.winner {
       color: var(--hex-gold-light);
-      background: rgba(200,155,60,0.15);
+      background: rgba(200, 155, 60, 0.15);
       border-color: var(--hex-gold-dark);
-      text-shadow: 0 0 8px rgba(200,155,60,0.5);
+      text-shadow: 0 0 8px rgba(200, 155, 60, 0.5);
     }
 
     .vs-badge {
@@ -252,11 +296,12 @@
 
     /* Betting Section */
     .bet-area {
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.4);
       border-top: 1px solid rgba(120, 90, 40, 0.2);
       padding: 12px;
       border-radius: 0 0 6px 6px;
-      margin: -15px; /* Pull to edges */
+      margin: -15px;
+      /* Pull to edges */
       margin-top: 5px;
       display: flex;
       flex-direction: column;
@@ -279,7 +324,7 @@
     .admin-actions {
       display: flex;
       gap: 10px;
-      border-top: 1px dashed rgba(200,155,60,0.3);
+      border-top: 1px dashed rgba(200, 155, 60, 0.3);
       padding-top: 10px;
       margin-top: 5px;
     }
@@ -297,38 +342,47 @@
       font-size: 13px;
       letter-spacing: 1px;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
       white-space: nowrap;
     }
 
     .btn:hover:not(:disabled) {
       background: linear-gradient(180deg, #2A333C, #1E2328);
       border-color: var(--hex-gold-light);
-      text-shadow: 0 0 5px rgba(240,230,210,0.5);
+      text-shadow: 0 0 5px rgba(240, 230, 210, 0.5);
     }
 
-    .btn:active:not(:disabled) { transform: translateY(1px); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; border-color: #333; color: #777; }
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #333;
+      color: #777;
+    }
 
     .btn-action {
-      background: linear-gradient(180deg, rgba(10,200,185,0.2), rgba(10,200,185,0.05));
+      background: linear-gradient(180deg, rgba(10, 200, 185, 0.2), rgba(10, 200, 185, 0.05));
       border-color: var(--hex-cyan);
       color: #E0FFFF;
     }
-    .btn-action:hover:not(:disabled){
-      background: linear-gradient(180deg, rgba(10,200,185,0.3), rgba(10,200,185,0.1));
+
+    .btn-action:hover:not(:disabled) {
+      background: linear-gradient(180deg, rgba(10, 200, 185, 0.3), rgba(10, 200, 185, 0.1));
       border-color: #E0FFFF;
     }
 
     .btn-danger {
-      background: linear-gradient(180deg, rgba(232,64,87,0.2), rgba(232,64,87,0.05));
+      background: linear-gradient(180deg, rgba(232, 64, 87, 0.2), rgba(232, 64, 87, 0.05));
       border-color: var(--hex-red);
       color: #FFE0E0;
     }
 
     /* Inputs */
     .input {
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(120, 90, 40, 0.4);
       color: var(--text-main);
       padding: 8px 12px;
@@ -338,19 +392,31 @@
       width: 100%;
       transition: border-color 0.2s ease;
     }
-    .input:focus { border-color: var(--hex-cyan); }
-    .input:disabled { opacity: 0.6; }
+
+    .input:focus {
+      border-color: var(--hex-cyan);
+    }
+
+    .input:disabled {
+      opacity: 0.6;
+    }
 
     /* Login Modal */
     .modal-overlay {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: rgba(1, 10, 19, 0.9);
       backdrop-filter: blur(8px);
-      display: flex; justify-content: center; align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
     }
-    .modal-overlay.hidden { display: none; }
-    
+
+    .modal-overlay.hidden {
+      display: none;
+    }
+
     .login-box {
       background: #0A1428;
       border: 2px solid var(--hex-border);
@@ -358,7 +424,7 @@
       border-radius: 8px;
       width: 400px;
       max-width: 90%;
-      box-shadow: 0 0 50px rgba(200,155,60,0.15);
+      box-shadow: 0 0 50px rgba(200, 155, 60, 0.15);
       text-align: center;
     }
 
@@ -369,7 +435,11 @@
     }
 
     /* Tables for Standings */
-    table { width: 100%; border-collapse: collapse; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
     th {
       text-align: left;
       color: var(--hex-gold-dark);
@@ -379,26 +449,64 @@
       text-transform: uppercase;
       font-size: 14px;
     }
+
     td {
       padding: 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--text-main);
     }
-    tr:hover td { background: rgba(255,255,255,0.03); }
 
-    .rank-1 { color: #FFD700; font-weight: bold; text-shadow: 0 0 5px rgba(255,215,0,0.5); }
-    .rank-2 { color: #C0C0C0; }
-    .rank-3 { color: #CD7F32; }
-    
-    .text-green { color: var(--hex-green); }
-    .text-red { color: var(--hex-red); }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .rank-1 {
+      color: #FFD700;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+
+    .rank-2 {
+      color: #C0C0C0;
+    }
+
+    .rank-3 {
+      color: #CD7F32;
+    }
+
+    .text-green {
+      color: var(--hex-green);
+    }
+
+    .text-red {
+      color: var(--hex-red);
+    }
 
     /* Utility */
-    .flex-row { display: flex; gap: 10px; align-items: center; }
-    .flex-col { display: flex; flex-direction: column; gap: 10px; }
-    .mt-20 { margin-top: 20px; }
-    .mb-10 { margin-bottom: 10px; }
-    .mono { font-family: monospace; font-size: 1.1em;}
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mt-20 {
+      margin-top: 20px;
+    }
+
+    .mb-10 {
+      margin-bottom: 10px;
+    }
+
+    .mono {
+      font-family: monospace;
+      font-size: 1.1em;
+    }
 
     /* Custom Select */
     select {
@@ -408,9 +516,9 @@
       background-position-x: 95%;
       background-position-y: 50%;
     }
-
   </style>
 </head>
+
 <body>
 
   <!-- Login Modal -->
@@ -419,8 +527,8 @@
       <h2>Connexion au Nexus</h2>
       <div class="flex-col">
         <select id="loginProfile" class="input"></select>
-        <input type="password" id="loginPass" class="input" placeholder="Mot de passe (vide si Public)" />
-        <button id="btnLogin" class="btn btn-action" style="margin-top:10px; padding:12px;">Entrer dans la faille</button>
+        <button id="btnLogin" class="btn btn-action" style="margin-top:10px; padding:12px;">Entrer dans la
+          faille</button>
       </div>
       <p style="font-size:12px; color:var(--text-muted); margin-top:20px;">
         Les parieurs démarrent avec 100 crédits.<br>Mode Arbitre global activé pour cette session.
@@ -450,19 +558,20 @@
 
   <!-- Main Content -->
   <div class="container">
-    
+
     <!-- DASHBOARD -->
     <div id="dashboard" class="section active">
       <div class="card">
         <div class="card-title">Aperçu du Tournoi (Round Robin 9 Joueurs)</div>
         <div style="display:flex; justify-content:space-between; color:var(--text-muted); margin-bottom: 20px;">
-          <span>Progression : <b id="progCompleted" style="color:var(--hex-cyan);">0</b> / <span id="progTotal">0</span> matchs</span>
+          <span>Progression : <b id="progCompleted" style="color:var(--hex-cyan);">0</b> / <span id="progTotal">0</span>
+            matchs</span>
           <span>Gain minimum d'un pari réussi : <b style="color:var(--hex-green);">x2</b></span>
         </div>
-        
+
         <h3 style="color:var(--hex-gold-dark); margin-bottom:15px; font-size:16px;">▶ Prochains Matchs à parier</h3>
         <div id="dashUpcoming" class="matches-grid"></div>
-        
+
         <h3 style="color:var(--hex-gold-dark); margin:30px 0 15px; font-size:16px;">▶ Derniers Résultats</h3>
         <div id="dashRecent" class="matches-grid"></div>
       </div>
@@ -484,11 +593,19 @@
     <!-- STANDINGS -->
     <div id="standings" class="section">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-        
+
         <div class="card">
           <div class="card-title">Classement des Joueurs (Victoires)</div>
           <table>
-            <thead><tr><th>Rank</th><th>Joueur</th><th>W</th><th>L</th><th>Pts</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Joueur</th>
+                <th>W</th>
+                <th>L</th>
+                <th>Pts</th>
+              </tr>
+            </thead>
             <tbody id="tableWins"></tbody>
           </table>
         </div>
@@ -496,7 +613,14 @@
         <div class="card">
           <div class="card-title">Classement des Parieurs (Crédits)</div>
           <table>
-            <thead><tr><th>Rank</th><th>Parieur</th><th>Solde</th><th>Win Rate</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Parieur</th>
+                <th>Solde</th>
+                <th>Win Rate</th>
+              </tr>
+            </thead>
             <tbody id="tableBets"></tbody>
           </table>
         </div>
@@ -550,17 +674,17 @@
     };
 
     const PLAYERS = [
-      {id:"p1", name:"Clément",  pass:"CLEM1"},
-      {id:"p2", name:"Quentin",  pass:"QUEN1"},
-      {id:"p3", name:"Mathieu",  pass:"MATH1"},
-      {id:"p4", name:"Benjamin", pass:"BENJ1"},
-      {id:"p5", name:"Chris",    pass:"CHRI1"},
-      {id:"p6", name:"Heifara",  pass:"HEIF1"},
-      {id:"p7", name:"Goat",     pass:"GOAT1"},
-      {id:"p8", name:"Rémi",     pass:"REMI1"},
-      {id:"p9", name:"Thomas",   pass:"THOM1"},
+      { id: "p1", name: "Clément", pass: "CLEM1" },
+      { id: "p2", name: "Quentin", pass: "QUEN1" },
+      { id: "p3", name: "Mathieu", pass: "MATH1" },
+      { id: "p4", name: "Benjamin", pass: "BENJ1" },
+      { id: "p5", name: "Chris", pass: "CHRI1" },
+      { id: "p6", name: "Heifara", pass: "HEIF1" },
+      { id: "p7", name: "Goat", pass: "GOAT1" },
+      { id: "p8", name: "Rémi", pass: "REMI1" },
+      { id: "p9", name: "Thomas", pass: "THOM1" },
     ];
-    const PUBLIC = {id:"pub", name:"Public", pass:""};
+    const PUBLIC = { id: "pub", name: "Public", pass: "" };
 
     // Main App State
     let state = {
@@ -570,7 +694,7 @@
       credits: {}, // profileId -> balance  (calculated on the fly mostly, but store allowed)
       undoStack: [] // {matchId, previousResultData}
     };
-    
+
     // Local session (not synced to FB)
     let sessionId = localStorage.getItem("lol_planner_sess") || null;
 
@@ -579,25 +703,25 @@
     /* =========================================================================
        CORE LOGIC
        ========================================================================= */
-    
+
     // 1. Generate Round Robin
-    function generateRounds(){
-      const ids = PLAYERS.map(p=>p.id);
-      if(ids.length % 2 === 1) ids.push("BYE");
+    function generateRounds() {
+      const ids = PLAYERS.map(p => p.id);
+      if (ids.length % 2 === 1) ids.push("BYE");
       const rounds = [];
       const m = ids.length;
       let arr = [...ids];
-      
-      for(let r=0; r<m-1; r++){
+
+      for (let r = 0; r < m - 1; r++) {
         const pairs = [];
-        for(let i=0; i<m/2; i++){
-          const a = arr[i], b=arr[m-1-i];
-          if(a!=="BYE" && b!=="BYE"){
-            const sorted = [a,b].sort();
-            pairs.push({ id:`m_${sorted[0]}_${sorted[1]}`, a, b, round:r+1 });
+        for (let i = 0; i < m / 2; i++) {
+          const a = arr[i], b = arr[m - 1 - i];
+          if (a !== "BYE" && b !== "BYE") {
+            const sorted = [a, b].sort();
+            pairs.push({ id: `m_${sorted[0]}_${sorted[1]}`, a, b, round: r + 1 });
           }
         }
-        rounds.push({round: r+1, pairs});
+        rounds.push({ round: r + 1, pairs });
         // Rotate
         const pivot = arr[0];
         const rest = arr.slice(1);
@@ -607,16 +731,16 @@
       return rounds;
     }
 
-    const TOURNAMENT_MATCHES = generateRounds().flatMap(r => r.pairs).sort((x,y)=>x.round - y.round);
+    const TOURNAMENT_MATCHES = generateRounds().flatMap(r => r.pairs).sort((x, y) => x.round - y.round);
     const MATCH_MAP = new Map(TOURNAMENT_MATCHES.map(m => [m.id, m]));
 
-    function getPlayerName(pid) { return PLAYERS.find(p=>p.id===pid)?.name || pid; }
-    function getProfileName(pid) { return ALL_PROFILES.find(p=>p.id===pid)?.name || pid; }
+    function getPlayerName(pid) { return PLAYERS.find(p => p.id === pid)?.name || pid; }
+    function getProfileName(pid) { return ALL_PROFILES.find(p => p.id === pid)?.name || pid; }
 
     /* =========================================================================
        ECONOMY & BET SETTLEMENT (Preserving prior rules)
        ========================================================================= */
-    
+
     // Initialize bases
     function getBaseEconomics() {
       const eco = { balances: {}, stats: {} };
@@ -633,79 +757,79 @@
 
     function rebuildEconomy() {
       ecoCache = getBaseEconomics();
-      
+
       // 1. Deduct all placed bets (even unsettled ones)
       Object.keys(state.bets || {}).forEach(mid => {
         const book = state.bets[mid];
         Object.keys(book).forEach(pid => {
           const amt = Number(book[pid].amount) || 0;
-          if(amt > 0) ecoCache.balances[pid] -= amt;
+          if (amt > 0) ecoCache.balances[pid] -= amt;
         });
       });
 
       // 2. Resolve settled matches
       TOURNAMENT_MATCHES.forEach(m => {
         const result = state.results[m.id];
-        if(!result || !result.winner) return; // Not finished
+        if (!result || !result.winner) return; // Not finished
 
         const book = state.bets[m.id] || {};
         const winId = result.winner; // "A" or "B"
-        
+
         let poolWin = 0, poolLose = 0;
-        
+
         // Calculate pools
         Object.values(book).forEach(b => {
           const amt = Number(b.amount) || 0;
-          if(amt <= 0) return;
-          if(b.pick === winId) poolWin += amt;
+          if (amt <= 0) return;
+          if (b.pick === winId) poolWin += amt;
           else poolLose += amt;
         });
 
-        if(poolWin > 0) {
-           // Distribute
-           Object.keys(book).forEach(pid => {
-             const b = book[pid];
-             const amt = Number(b.amount) || 0;
-             if(amt > 0) {
-               ecoCache.stats[pid].bets++;
-               if(b.pick === winId) {
-                  // Winners get their stake back + equal piece of their stake from losing pool
-                  const sharePercent = amt / poolWin;
-                  const payout = (amt * 2) + (poolLose * sharePercent); // Guaranteed minimum x2
-                  ecoCache.balances[pid] += payout;
-                  ecoCache.stats[pid].wins++;
-               }
-             }
-           });
+        if (poolWin > 0) {
+          // Distribute
+          Object.keys(book).forEach(pid => {
+            const b = book[pid];
+            const amt = Number(b.amount) || 0;
+            if (amt > 0) {
+              ecoCache.stats[pid].bets++;
+              if (b.pick === winId) {
+                // Winners get their stake back + equal piece of their stake from losing pool
+                const sharePercent = amt / poolWin;
+                const payout = (amt * 2) + (poolLose * sharePercent); // Guaranteed minimum x2
+                ecoCache.balances[pid] += payout;
+                ecoCache.stats[pid].wins++;
+              }
+            }
+          });
         } else {
-           // If no winners, house takes it (or rather, money is lost). Stats are updated.
-           Object.keys(book).forEach(pid => {
-             if(book[pid].amount > 0) ecoCache.stats[pid].bets++;
-           });
+          // If no winners, house takes it (or rather, money is lost). Stats are updated.
+          Object.keys(book).forEach(pid => {
+            if (book[pid].amount > 0) ecoCache.stats[pid].bets++;
+          });
         }
       });
-      
+
       // Round to 2 decimals
       Object.keys(ecoCache.balances).forEach(pid => {
         ecoCache.balances[pid] = Math.round(ecoCache.balances[pid] * 100) / 100;
       });
 
       // Update Nav
-      if(sessionId) {
+      if (sessionId) {
         document.getElementById('navCredits').textContent = ecoCache.balances[sessionId];
       }
     }
 
     function getPotInfo(mid) {
       const book = state.bets[mid] || {};
-      let total=0, a=0, b=0;
+      let total = 0, a = 0, b = 0;
       Object.values(book).forEach(bet => {
         const amt = Number(bet.amount) || 0;
         total += amt;
-        if(bet.pick === "A") a += amt;
-        if(bet.pick === "B") b += amt;
+        if (bet.pick === "A") a += amt;
+        if (bet.pick === "B") b += amt;
       });
-      return {total, a, b};
+      return { total, a, b };
     }
 
     /* =========================================================================
@@ -713,39 +837,39 @@
        ========================================================================= */
 
     function placeBet(mid, pick, amountStr) {
-      if(!sessionId) return alert("Connectez-vous pour parier.");
+      if (!sessionId) return alert("Connectez-vous pour parier.");
       const m = MATCH_MAP.get(mid);
-      if(state.results[mid]?.winner) return alert("Match terminé !");
-      
+      if (state.results[mid]?.winner) return alert("Match terminé !");
+
       const amt = parseFloat(amountStr);
-      if(isNaN(amt) || amt <= 0) return alert("Mise invalide");
-      
+      if (isNaN(amt) || amt <= 0) return alert("Mise invalide");
+
       // To replace a bet, we must calculate theoretical balance WITHOUT current bet for this match
       const currentBetAmt = state.bets[mid]?.[sessionId]?.amount || 0;
       const theoreticalBal = ecoCache.balances[sessionId] + currentBetAmt;
-      
-      if(theoreticalBal < amt) return alert("Crédits insuffisants");
 
-      if(!state.bets[mid]) state.bets[mid] = {};
+      if (theoreticalBal < amt) return alert("Crédits insuffisants");
+
+      if (!state.bets[mid]) state.bets[mid] = {};
       state.bets[mid][sessionId] = { pick, amount: amt };
       syncState();
     }
 
     function cancelBet(mid) {
-      if(!sessionId) return;
-      if(state.results[mid]?.winner) return alert("Match terminé !");
-      if(state.bets[mid] && state.bets[mid][sessionId]) {
+      if (!sessionId) return;
+      if (state.results[mid]?.winner) return alert("Match terminé !");
+      if (state.bets[mid] && state.bets[mid][sessionId]) {
         delete state.bets[mid][sessionId];
         syncState();
       }
     }
 
     function resolveMatch(mid, winnerPick, format, scoreTxt) {
-      if(!sessionId) return alert("Connectez-vous.");
+      if (!sessionId) return alert("Connectez-vous.");
       // Save for Undo
       const oldRes = state.results[mid] ? JSON.parse(JSON.stringify(state.results[mid])) : null;
       state.undoStack.push({ matchId: mid, prev: oldRes });
-      if(state.undoStack.length > 50) state.undoStack.shift();
+      if (state.undoStack.length > 50) state.undoStack.shift();
 
       state.results[mid] = {
         winner: winnerPick,
@@ -757,9 +881,9 @@
     }
 
     function undoLast() {
-      if(state.undoStack.length === 0) return alert("Rien à annuler.");
+      if (state.undoStack.length === 0) return alert("Rien à annuler.");
       const action = state.undoStack.pop();
-      if(action.prev === null) {
+      if (action.prev === null) {
         delete state.results[action.matchId];
       } else {
         state.results[action.matchId] = action.prev;
@@ -774,8 +898,8 @@
 
     function syncState() {
       fbPushSuppressed = true;
-      fbRef.set(state).then(()=>{
-        setTimeout(()=> fbPushSuppressed = false, 500);
+      fbRef.set(state).then(() => {
+        setTimeout(() => fbPushSuppressed = false, 500);
       });
       // Local optimstic update
       rebuildEconomy();
@@ -784,7 +908,7 @@
 
     fbRef.on('value', snap => {
       const data = snap.val();
-      if(data && !fbPushSuppressed) {
+      if (data && !fbPushSuppressed) {
         // Ensure structure mapping
         state.results = data.results || {};
         state.bets = data.bets || {};
@@ -803,13 +927,13 @@
       const res = state.results[m.id];
       const isFinished = !!res;
       const pot = getPotInfo(m.id);
-      
+
       const myBet = state.bets[m.id]?.[sessionId];
       const hasBet = !!myBet;
 
       // Header
-      let statusHTML = isFinished 
-        ? `<span class="text-green">Terminé (${res.format} - ${res.score || ''})</span>` 
+      let statusHTML = isFinished
+        ? `<span class="text-green">Terminé (${res.format} - ${res.score || ''})</span>`
         : `<span class="text-red">En attente</span>`;
 
       // Players
@@ -818,33 +942,33 @@
 
       // Betting UI
       let betHTML = "";
-      if(isFinished) {
-         if(hasBet) {
-            const won = myBet.pick === res.winner;
-            betHTML = `<div class="bet-area" style="text-align:center;">
+      if (isFinished) {
+        if (hasBet) {
+          const won = myBet.pick === res.winner;
+          betHTML = `<div class="bet-area" style="text-align:center;">
               <span class="${won ? 'text-green' : 'text-red'}">
-                Résultat de votre pari: ${won ? 'Gagné !' : 'Perdu'} (${myBet.amount}© sur ${myBet.pick==="A"?getPlayerName(m.a):getPlayerName(m.b)})
+                Résultat de votre pari: ${won ? 'Gagné !' : 'Perdu'} (${myBet.amount}© sur ${myBet.pick === "A" ? getPlayerName(m.a) : getPlayerName(m.b)})
               </span>
             </div>`;
-         } else {
-            betHTML = `<div class="bet-area" style="text-align:center; color:var(--text-muted)">Paris fermés (Cagnotte finale: ${pot.total}©)</div>`;
-         }
+        } else {
+          betHTML = `<div class="bet-area" style="text-align:center; color:var(--text-muted)">Paris fermés (Cagnotte finale: ${pot.total}©)</div>`;
+        }
       } else {
-         // Open for bets
-         let inputs = `
+        // Open for bets
+        let inputs = `
             <div class="flex-row">
               <select id="pick_${m.id}" class="input">
-                <option value="A" ${myBet?.pick==='A'?'selected':''}>${getPlayerName(m.a)}</option>
-                <option value="B" ${myBet?.pick==='B'?'selected':''}>${getPlayerName(m.b)}</option>
+                <option value="A" ${myBet?.pick === 'A' ? 'selected' : ''}>${getPlayerName(m.a)}</option>
+                <option value="B" ${myBet?.pick === 'B' ? 'selected' : ''}>${getPlayerName(m.b)}</option>
               </select>
-              <input type="number" id="amt_${m.id}" class="input" placeholder="Mise" value="${myBet?.amount||''}" style="width:100px;">
+              <input type="number" id="amt_${m.id}" class="input" placeholder="Mise" value="${myBet?.amount || ''}" style="width:100px;">
               <button class="btn btn-action" onclick="placeBet('${m.id}', $('pick_${m.id}').value, $('amt_${m.id}').value)">${hasBet ? 'Modifier' : 'Miser'}</button>
               ${hasBet ? `<button class="btn" style="background:transparent;border:none;" onclick="cancelBet('${m.id}')">❌</button>` : ''}
             </div>
          `;
-         if(!sessionId) inputs = `<div class="text-red" style="font-size:12px;">Connectez-vous pour parier.</div>`;
+        if (!sessionId) inputs = `<div class="text-red" style="font-size:12px;">Connectez-vous pour parier.</div>`;
 
-         betHTML = `
+        betHTML = `
            <div class="bet-area">
               <div class="bet-stats">
                 <span>Cagnotte : <b class="text-green">${pot.total}©</b></span>
@@ -857,8 +981,8 @@
 
       // Admin Controls (Visible if logged in, acting as global arbitrary ref)
       let adminHTML = "";
-      if(sessionId && !isFinished) {
-         adminHTML = `
+      if (sessionId && !isFinished) {
+        adminHTML = `
            <div class="admin-actions">
              <select id="fmt_${m.id}" class="input" style="width:70px; padding:4px;">
                 <option value="BO1">BO1</option><option value="BO3">BO3</option>
@@ -892,7 +1016,7 @@
     function renderDashboard() {
       let fin = [], up = [];
       TOURNAMENT_MATCHES.forEach(m => {
-        if(state.results[m.id]) fin.push(m);
+        if (state.results[m.id]) fin.push(m);
         else up.push(m);
       });
 
@@ -900,14 +1024,14 @@
       $('progTotal').textContent = TOURNAMENT_MATCHES.length;
 
       // Next 6 matches
-      $('dashUpcoming').innerHTML = up.slice(0,6).map(m => renderMatchCard(m, 'dash')).join('') || "<p style='color:var(--text-muted)'>Aucun match programmé.</p>";
-      
+      $('dashUpcoming').innerHTML = up.slice(0, 6).map(m => renderMatchCard(m, 'dash')).join('') || "<p style='color:var(--text-muted)'>Aucun match programmé.</p>";
+
       // Last 3 finished
-      let recent = fin.sort((a,b) => {
-         const tA = new Date(state.results[a.id].updatedAt).getTime();
-         const tB = new Date(state.results[b.id].updatedAt).getTime();
-         return tB - tA;
-      }).slice(0,3);
+      let recent = fin.sort((a, b) => {
+        const tA = new Date(state.results[a.id].updatedAt).getTime();
+        const tB = new Date(state.results[b.id].updatedAt).getTime();
+        return tB - tA;
+      }).slice(0, 3);
       $('dashRecent').innerHTML = recent.map(m => renderMatchCard(m, 'dash')).join('') || "<p style='color:var(--text-muted)'>Aucun match terminé.</p>";
     }
 
@@ -915,8 +1039,8 @@
       const fRound = $('filterRound').value;
       let html = "";
       TOURNAMENT_MATCHES.forEach(m => {
-        if(fRound === "all" || String(m.round) === fRound) {
-           html += renderMatchCard(m, 'list');
+        if (fRound === "all" || String(m.round) === fRound) {
+          html += renderMatchCard(m, 'list');
         }
       });
       $('matchesContainer').innerHTML = html;
@@ -924,19 +1048,19 @@
 
     function renderStandings() {
       // 1. Players Standings (Wins)
-      let pts = {}; PLAYERS.forEach(p => pts[p.id]={id:p.id, name:p.name, w:0, l:0, pts:0});
-      
+      let pts = {}; PLAYERS.forEach(p => pts[p.id] = { id: p.id, name: p.name, w: 0, l: 0, pts: 0 });
+
       TOURNAMENT_MATCHES.forEach(m => {
-         const res = state.results[m.id];
-         if(!res) return;
-         if(res.winner === "A") { pts[m.a].w++; pts[m.b].l++; pts[m.a].pts+=RULES.winPts; }
-         if(res.winner === "B") { pts[m.b].w++; pts[m.a].l++; pts[m.b].pts+=RULES.winPts; }
+        const res = state.results[m.id];
+        if (!res) return;
+        if (res.winner === "A") { pts[m.a].w++; pts[m.b].l++; pts[m.a].pts += RULES.winPts; }
+        if (res.winner === "B") { pts[m.b].w++; pts[m.a].l++; pts[m.b].pts += RULES.winPts; }
       });
 
-      let ranking = Object.values(pts).sort((a,b) => b.pts - a.pts || a.name.localeCompare(b.name));
+      let ranking = Object.values(pts).sort((a, b) => b.pts - a.pts || a.name.localeCompare(b.name));
       $('tableWins').innerHTML = ranking.map((p, i) => `
         <tr>
-          <td class="rank-${i+1}">${i+1}</td>
+          <td class="rank-${i + 1}">${i + 1}</td>
           <td style="font-family:'Beaufort for LOL', serif;">${p.name}</td>
           <td>${p.w}</td>
           <td>${p.l}</td>
@@ -946,15 +1070,15 @@
 
       // 2. Bettors Standings
       let betsRanking = ALL_PROFILES.map(p => {
-         const bal = ecoCache.balances[p.id] || 0;
-         const stats = ecoCache.stats[p.id] || {bets:0, wins:0};
-         const wr = stats.bets > 0 ? Math.round((stats.wins/stats.bets)*100) : 0;
-         return { name: p.name, bal, wr };
-      }).sort((a,b) => b.bal - a.bal || b.wr - a.wr);
+        const bal = ecoCache.balances[p.id] || 0;
+        const stats = ecoCache.stats[p.id] || { bets: 0, wins: 0 };
+        const wr = stats.bets > 0 ? Math.round((stats.wins / stats.bets) * 100) : 0;
+        return { name: p.name, bal, wr };
+      }).sort((a, b) => b.bal - a.bal || b.wr - a.wr);
 
       $('tableBets').innerHTML = betsRanking.map((p, i) => `
         <tr>
-          <td class="rank-${i+1}">${i+1}</td>
+          <td class="rank-${i + 1}">${i + 1}</td>
           <td>${p.name}</td>
           <td style="color:var(--hex-gold-light); font-weight:bold;" class="mono">${p.bal} ©</td>
           <td>${p.wr}%</td>
@@ -963,8 +1087,8 @@
     }
 
     function renderApp() {
-      if(!state.results) state.results = {}; // safe wrapper
-      if(!ecoCache) rebuildEconomy();
+      if (!state.results) state.results = {}; // safe wrapper
+      if (!ecoCache) rebuildEconomy();
 
       renderDashboard();
       renderMatchesTab();
@@ -974,31 +1098,27 @@
     /* =========================================================================
        NAVIGATION & INIT
        ========================================================================= */
-    
+
     // Auth logic
     function setSession(id) {
-       sessionId = id;
-       if(id) localStorage.setItem("lol_planner_sess", id);
-       else localStorage.removeItem("lol_planner_sess");
-       
-       if(id) {
-         $('loginModal').classList.add('hidden');
-         $('navUserName').textContent = getProfileName(id);
-       } else {
-         $('loginModal').classList.remove('hidden');
-         $('navUserName').textContent = "-";
-         $('navCredits').textContent = "0";
-       }
-       renderApp();
+      sessionId = id;
+      if (id) localStorage.setItem("lol_planner_sess", id);
+      else localStorage.removeItem("lol_planner_sess");
+
+      if (id) {
+        $('loginModal').classList.add('hidden');
+        $('navUserName').textContent = getProfileName(id);
+      } else {
+        $('loginModal').classList.remove('hidden');
+        $('navUserName').textContent = "-";
+        $('navCredits').textContent = "0";
+      }
+      renderApp();
     }
 
     $('btnLogin').addEventListener('click', () => {
       const p = $('loginProfile').value;
-      const pwd = $('loginPass').value.trim().toUpperCase();
-      const ref = ALL_PROFILES.find(x => x.id === p);
-      if(ref.pass && ref.pass !== pwd) return alert("Mot de passe incorrect");
       setSession(p);
-      $('loginPass').value = ""; // clear
     });
 
     $('btnLogOut').addEventListener('click', () => setSession(null));
@@ -1020,19 +1140,19 @@
     $('btnAdminUndo').addEventListener('click', undoLast);
     $('btnAdminRecalc').addEventListener('click', () => { rebuildEconomy(); renderApp(); alert("Economie recalculée."); });
     $('btnAdminReset').addEventListener('click', () => {
-       if(!confirm("DANGER : Supprimer tous les matchs, paris et resets l'argent à 100 ?")) return;
-       state.results = {};
-       state.bets = {};
-       state.undoStack = [];
-       syncState();
+      if (!confirm("DANGER : Supprimer tous les matchs, paris et resets l'argent à 100 ?")) return;
+      state.results = {};
+      state.bets = {};
+      state.undoStack = [];
+      syncState();
     });
 
     // Boot
     window.onload = () => {
       // Build selects
       $('loginProfile').innerHTML = ALL_PROFILES.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-      
-      const roundsSet = new Set(TOURNAMENT_MATCHES.map(m=>m.round));
+
+      const roundsSet = new Set(TOURNAMENT_MATCHES.map(m => m.round));
       $('filterRound').innerHTML += Array.from(roundsSet).map(r => `<option value="${r}">Round ${r}</option>`).join('');
 
       // Auto login check
@@ -1041,4 +1161,5 @@
 
   </script>
 </body>
+
 </html>
