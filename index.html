@@ -813,7 +813,6 @@
     pulling: false,
     pushing: false,
     pendingPushReason: "",
-    localDirty: false,
     readAuthAllowed: true,
     lastStatus: "Sync GitHub inactif."
   };
@@ -967,107 +966,6 @@
     }
 
     return applyLegacyResultsOnlyJson(obj);
-  }
-
-  function extractSharedStatePayload(obj){
-    if(!obj || typeof obj !== "object") return null;
-    if(obj.state && typeof obj.state === "object" && !Array.isArray(obj.state)) return deepClone(obj.state);
-    const metaVersion = Number(obj?.meta?.version);
-    const isCompleteState = !!(obj.meta && (metaVersion===2 || metaVersion===3) && Array.isArray(obj.players) && Array.isArray(obj.profiles));
-    if(isCompleteState) return deepClone(obj);
-    return null;
-  }
-
-  function toEpochSafe(v){
-    const t = Date.parse(String(v || ""));
-    return Number.isFinite(t) ? t : 0;
-  }
-
-  function pickNewestResultRecord(localRec, remoteRec){
-    const a = sanitizeMatchResultRecord(localRec);
-    const b = sanitizeMatchResultRecord(remoteRec);
-    const ta = toEpochSafe(a.updatedAt);
-    const tb = toEpochSafe(b.updatedAt);
-    if(tb > ta) return b;
-    if(ta > tb) return a;
-    return b.committed && !a.committed ? b : a;
-  }
-
-  function pickNewestBetRecord(localBet, remoteBet){
-    const a = {...(localBet || {})};
-    const b = {...(remoteBet || {})};
-    const ta = Math.max(toEpochSafe(a.settledAt), toEpochSafe(a.placedAt));
-    const tb = Math.max(toEpochSafe(b.settledAt), toEpochSafe(b.placedAt));
-    if(tb > ta) return b;
-    if(ta > tb) return a;
-    const aSettled = !!a.settled;
-    const bSettled = !!b.settled;
-    if(aSettled !== bSettled) return bSettled ? b : a;
-    return ((+b.amount||0) > (+a.amount||0)) ? b : a;
-  }
-
-  function mergeSharedStatesConservative(localStateObj, remoteStateObj){
-    const local = deepClone(localStateObj || buildSharedStateData());
-    const remote = deepClone(remoteStateObj || {});
-
-    const merged = deepClone(local);
-    merged.meta = {version:3, app:"league_planner_v2_complete"};
-
-    const playersMap = new Map((Array.isArray(local.players)?local.players:[]).map(p=>[normalizedId(p?.id), {id:normalizedId(p?.id), name:String(p?.name||"").trim()}]));
-    for(const p of (Array.isArray(remote.players)?remote.players:[])){
-      const id = normalizedId(p?.id); if(!id) continue;
-      playersMap.set(id, {id, name:String(p?.name||id).trim() || id});
-    }
-    merged.players = normalizePlayers([...playersMap.values()]);
-
-    const profilesMap = new Map((Array.isArray(local.profiles)?local.profiles:[]).map(p=>[normalizedId(p?.id), {id:normalizedId(p?.id), name:String(p?.name||"").trim()}]));
-    for(const p of (Array.isArray(remote.profiles)?remote.profiles:[])){
-      const id = normalizedId(p?.id); if(!id) continue;
-      profilesMap.set(id, {id, name:String(p?.name||id).trim() || id});
-    }
-    merged.profiles = normalizeProfiles([...profilesMap.values()]);
-
-    const localResults = (local.results && typeof local.results === "object") ? local.results : {};
-    const remoteResults = (remote.results && typeof remote.results === "object") ? remote.results : {};
-    const allResultIds = new Set([...Object.keys(localResults), ...Object.keys(remoteResults)]);
-    merged.results = {};
-    for(const mid of allResultIds){
-      merged.results[mid] = pickNewestResultRecord(localResults[mid], remoteResults[mid]);
-    }
-
-    const localBets = (local.bets && typeof local.bets === "object") ? local.bets : {};
-    const remoteBets = (remote.bets && typeof remote.bets === "object") ? remote.bets : {};
-    const allMatchIds = new Set([...Object.keys(localBets), ...Object.keys(remoteBets)]);
-    merged.bets = {};
-    for(const mid of allMatchIds){
-      const lBook = (localBets[mid] && typeof localBets[mid] === "object") ? localBets[mid] : {};
-      const rBook = (remoteBets[mid] && typeof remoteBets[mid] === "object") ? remoteBets[mid] : {};
-      const pids = new Set([...Object.keys(lBook), ...Object.keys(rBook)]);
-      merged.bets[mid] = {};
-      for(const pid of pids){
-        merged.bets[mid][pid] = pickNewestBetRecord(lBook[pid], rBook[pid]);
-      }
-    }
-
-    const auditRows = [...(Array.isArray(local.audit)?local.audit:[]), ...(Array.isArray(remote.audit)?remote.audit:[])];
-    const seen = new Set();
-    merged.audit = [];
-    for(const row of auditRows){
-      const key = `${row?.at||""}|${row?.by||""}|${row?.action||""}|${JSON.stringify(row?.payload||{})}`;
-      if(seen.has(key)) continue;
-      seen.add(key);
-      merged.audit.push(row);
-    }
-    merged.audit.sort((a,b)=>String(b?.at||"").localeCompare(String(a?.at||"")));
-    merged.audit = merged.audit.slice(0, 400);
-
-    merged.session = {profileId: local.session?.profileId ?? null};
-    merged.rounds = Array.isArray(local.rounds) && local.rounds.length ? local.rounds : [];
-    merged.credits = deepClone(local.credits || {});
-    merged.betStats = deepClone(local.betStats || {});
-    merged.undoStack = deepClone(local.undoStack || []);
-
-    return merged;
   }
 
   function saveMatchStateJson(){
@@ -1436,14 +1334,7 @@
       const localSig = sharedStateSignature();
       const legacyMode = isLegacyResultsOnlyPayload(remoteObj);
 
-      if(legacyMode){
-        if(!applyMatchStateJson(remoteObj, {preserveSession:true})) throw new Error("JSON distant invalide.");
-      } else {
-        const remoteState = extractSharedStatePayload(remoteObj);
-        if(!remoteState) throw new Error("JSON distant invalide.");
-        const merged = mergeSharedStatesConservative(buildSharedStateData(), remoteState);
-        if(!applyMatchStateJson({meta:{version:2}, state: merged}, {preserveSession:true})) throw new Error("Fusion état distant impossible.");
-      }
+      if(!applyMatchStateJson(remoteObj, {preserveSession:true})) throw new Error("JSON distant invalide.");
 
       const appliedSig = sharedStateSignature();
       if(localSig === appliedSig){
@@ -1509,33 +1400,12 @@
           throw getErr;
         }
       }
-      const remoteState = extractSharedStatePayload(existing.obj);
-      if(remoteState){
-        const beforeMergeSig = sharedStateSignature();
-        const merged = mergeSharedStatesConservative(buildSharedStateData(), remoteState);
-        const mergedSig = JSON.stringify(merged);
-        const currentSig = JSON.stringify(buildSharedStateData());
-        if(mergedSig !== currentSig){
-          if(!applyMatchStateJson({meta:{version:2}, state: merged}, {preserveSession:true})) throw new Error("Fusion état local/distant impossible avant push.");
-          githubPushSuppressed = true;
-          try{
-            recalcAllEconomyAndStats();
-          } finally {
-            githubPushSuppressed = false;
-          }
-        }
-        if(beforeMergeSig !== sharedStateSignature()){
-          saveMatchStateJson();
-        }
-      }
-
       const url = buildGhContentsApiUrl();
       const headers = {
         "Accept":"application/vnd.github+json",
         "Content-Type":"application/json",
         "Authorization":`Bearer ${ghSync.token}`
       };
-      const signatureToPush = sharedStateSignature();
       const body = {
         message: `sync tournament shared state (${reason}) ${nowIso()}`,
         content: b64EncodeUtf8(JSON.stringify(buildMatchStateJson(), null, 2)),
@@ -1558,7 +1428,7 @@
         throw new Error(`GitHub PUT ${res.status}: ${errTxt.slice(0, 160)}`);
       }
 
-      ghSync.lastPushedSignature = signatureToPush;
+      ghSync.lastPushedSignature = signature;
       ghSync.localDirty = false;
       setGhSyncStatus(`Push OK (${reason}).`);
       return true;
